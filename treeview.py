@@ -130,8 +130,6 @@ class treeviewer(QWidget):
     npath = pyqtSignal(object)
     preview = pyqtSignal(object)
     hopPath = pyqtSignal(object)
-    shortcut = pyqtSignal(object)
-
     def __init__(self, core, parent=None):
         super(treeviewer, self).__init__(parent)
         layout = QHBoxLayout()

@@ -129,7 +129,6 @@ class colviewer(QWidget):
     npath = pyqtSignal(object)
     preview = pyqtSignal(object)
     hopPath = pyqtSignal(object)
-    shortcut = pyqtSignal(object)
     def __init__(self, core, parent=None):
         super(colviewer, self).__init__(parent)
         layout = QHBoxLayout()

@@ -70,7 +70,8 @@ class resitem(QGraphicsItem):
         painter.setPen(pen)
         painter.setFont(QFont("Arial",int(12)))
         trect = self.boundingRect().adjusted(itemh+10,1,-10,-1)
-        painter.drawText(trect,Qt.AlignVCenter | Qt.AlignLeft ,self.path[self.baselen:])
+        dpath = self.path[self.baselen:].strip(os.path.sep)
+        painter.drawText(trect,Qt.AlignVCenter | Qt.AlignLeft ,dpath)
 
         if self.hlite:
             pen = QPen(Qt.gray,1)

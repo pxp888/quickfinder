@@ -25,14 +25,19 @@ class homeClass(QWidget):
         self.setLayout(layout)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
-        # self.setFont(QFont("Arial",10))
+        self.setFont(QFont("Arial",21))
         self.layout = layout
 
         self.core = core
         self.set = setter.setter('quickfinder1')
         self.homepaths = self.set.get('homepaths',[])
         if len(self.homepaths)==0:
-            self.homepaths.append(os.path.expanduser("~"))
+            self.homepaths.append(os.path.join(os.path.expanduser("~"), 'Desktop'))
+            self.homepaths.append(os.path.join(os.path.expanduser("~"), 'Downloads'))
+            self.homepaths.append(os.path.join(os.path.expanduser("~"), 'Documents'))
+            self.homepaths.append(os.path.join(os.path.expanduser("~"), 'Pictures'))
+            self.homepaths.append(os.path.join(os.path.expanduser("~"), 'Videos'))
+            self.homepaths.append(os.path.join(os.path.expanduser("~"), 'Music'))
             self.set.set('homepaths',self.homepaths)
 
         for i in self.homepaths:
@@ -43,7 +48,7 @@ class homeClass(QWidget):
 
         drives = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
         for i in drives:
-            path = i+r':\\'
+            path = i+':'+os.path.sep
             if os.path.exists(path):
                 self.layout.addWidget(QLabel(path))
 

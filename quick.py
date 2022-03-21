@@ -212,6 +212,7 @@ class primo(QWidget):
             self.sbs.hide()
             self.homepage.show()
             self.homepage.setup()
+            self.label.label.setText('QuickFinder home')
             self.front='home'
             return
         else:

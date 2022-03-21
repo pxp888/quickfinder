@@ -71,6 +71,7 @@ class node():
         self.mtime = 0
 
     def fpath(self):
+        if self.name=='': return ''
         path = self.name
         n = self
         while 1:
@@ -80,6 +81,9 @@ class node():
         return path
 
     def scan(self, ff):
+        if self.name=='':
+            next = list(self.kids.values())
+            return next
         path = self.fpath()
         kids = {}
         next = []
@@ -161,6 +165,30 @@ class coreClass():
         self.findthread2 = threading.Thread(target=self.find2, args=(self.fiz, self.foo), daemon=True)
         self.findthread1.start()
         self.findthread2.start()
+
+        self.sniffer = node()
+
+    def addSnifPath(self, path):
+        while 1:
+            if os.path.exists(path): break
+            path, name = os.path.split(path)
+        if not os.path.isdir(path):
+            path, name = os.path.split(path)
+
+        c = chain(path)
+        n = self.base
+        for i in c:
+            if i in n.kids:
+                n = n.kids[i]
+            else:
+                k = node()
+                k.name = i
+                k.up = n
+                k.dir = True
+                n.kids[i] = k
+                n = k
+        self.sniffer.kids[n.name]=n
+
 
     def locate(self, path):
         c = chain(path)
@@ -255,13 +283,14 @@ class coreClass():
                 pass
 
             for n in check:
-                if tar.lower() in n.name.lower():
-                    if tar.lower()==n.name.lower()[:len(tar)]:
-                        score = 110-rec
-                        entry = (tar, score, n.fpath(), n.dir)
-                        foo.put(entry)
-                    else:
-                        fiz.put((tar, n))
+                if len(n.name) >= len(tar):
+                    if tar.lower() in n.name.lower():
+                        if tar.lower()==n.name.lower()[:len(tar)]:
+                            score = 110-rec
+                            entry = (tar, score, n.fpath(), n.dir)
+                            foo.put(entry)
+                        else:
+                            fiz.put((tar, n))
                 nc += list(n.kids.values())
             check = nc
             nc = []

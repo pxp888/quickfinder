@@ -67,10 +67,15 @@ class primo(QWidget):
         home = os.path.expanduser("~")
         self.core = node.coreClass()
         self.core.setPath(home)
-        self.core.scan()
+        # self.core.scan()
 
         self.eye = QFileSystemWatcher()
         self.ctrlkey = False
+
+        self.core.addSnifPath(home)
+        self.core.addSnifPath('D:\\')
+        self.core.n = self.core.sniffer
+        self.core.scan()
 
 
         self.label = blabel()
@@ -104,7 +109,7 @@ class primo(QWidget):
         layout.addWidget(self.sbs)
         layout.addWidget(self.stat)
 
-        self.setPath(home)
+        # self.setPath(home)
         # self.view.refresh2()
 
         icbut = QPushButton('Icon View')
@@ -281,7 +286,7 @@ class primo(QWidget):
         if n==3: self.deepscan()
         if n==4: self.toggleprev()
 
-    
+
 ######################################################################################################################################################
 
 

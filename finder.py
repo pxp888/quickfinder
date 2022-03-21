@@ -310,11 +310,11 @@ class finderview(QWidget):
 
     def lookup(self):
         t = str(self.line.text())
-        if len(t)>0:
-            if not t[0].lower()==self.core.n.fpath().lower()[0]:
-                if os.path.exists(t):
-                    self.npath.emit(t)
-                    return
+        # if len(t)>0:
+        #     if not t[0].lower()==self.core.n.fpath().lower()[0]:
+        #         if os.path.exists(t):
+        #             self.npath.emit(t)
+        #             return
         if len(t) > 1:
             self.zen.target=t
             self.zen.tree = btree.tree()

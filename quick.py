@@ -112,17 +112,17 @@ class primo(QWidget):
 
         icbut = QPushButton('Icon View')
         self.stat.addPermanentWidget(icbut)
-        icbut.clicked.connect(self.icview)
+        icbut.clicked.connect(self.showIconView)
         icbut.setFocusPolicy(Qt.NoFocus)
 
         colbut = QPushButton('Column View')
         self.stat.addPermanentWidget(colbut)
-        colbut.clicked.connect(self.colview)
+        colbut.clicked.connect(self.showColumnView)
         colbut.setFocusPolicy(Qt.NoFocus)
 
         treebut = QPushButton('Tree View')
         self.stat.addPermanentWidget(treebut)
-        treebut.clicked.connect(self.treeview)
+        treebut.clicked.connect(self.showTreeView)
         treebut.setFocusPolicy(Qt.NoFocus)
 
         deepbut = QPushButton('Size Scan')
@@ -150,7 +150,7 @@ class primo(QWidget):
         self.core.n.sort(1,0)
         self.view.refresh2()
 
-    def colview(self):
+    def showColumnView(self):
         old = self.view
         old.cleanup()
         self.view = colview.colviewer(self.core)
@@ -164,7 +164,7 @@ class primo(QWidget):
         self.view.preview.connect(self.prev.preview)
         old.deleteLater()
 
-    def icview(self):
+    def showIconView(self):
         self.view.cleanup()
         self.newview = iconview.iconview(self.core)
         self.sbs.replaceWidget(0,self.newview)
@@ -180,7 +180,7 @@ class primo(QWidget):
         self.view = self.newview
         self.view.zen.shortcut.connect(self.shortcut)
 
-    def treeview(self):
+    def showTreeView(self):
         self.view.cleanup()
         self.newview = treeview.treeviewer(self.core)
         self.sbs.replaceWidget(0,self.newview)
@@ -258,9 +258,9 @@ class primo(QWidget):
         x = event.key()
         # print('primo',x)
         if self.ctrlkey:
-            if x==49: self.icview()
-            if x==50: self.colview()
-            if x==51: self.treeview()
+            if x==49: self.showIconView()
+            if x==50: self.showColumnView()
+            if x==51: self.showTreeView()
             if x==52: self.deepscan()
             if x==53: self.toggleprev()
             return
@@ -295,9 +295,9 @@ class primo(QWidget):
         self.stat.showMessage(msg)
 
     def shortcut(self, n):
-        if n==0: self.icview()
-        if n==1: self.colview()
-        if n==2: self.treeview()
+        if n==0: self.showIconView()
+        if n==1: self.showColumnView()
+        if n==2: self.showTreeView()
         if n==3: self.deepscan()
         if n==4: self.toggleprev()
 

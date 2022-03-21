@@ -189,7 +189,6 @@ class coreClass():
                 n = k
         self.sniffer.kids[n.name]=n
 
-
     def locate(self, path):
         c = chain(path)
         n = self.base

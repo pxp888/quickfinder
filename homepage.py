@@ -32,12 +32,13 @@ class homeClass(QWidget):
         self.set = setter.setter('quickfinder1')
         self.homepaths = self.set.get('homepaths',[])
         if len(self.homepaths)==0:
-            self.homepaths.append(os.path.join(os.path.expanduser("~"), 'Desktop'))
-            self.homepaths.append(os.path.join(os.path.expanduser("~"), 'Downloads'))
-            self.homepaths.append(os.path.join(os.path.expanduser("~"), 'Documents'))
-            self.homepaths.append(os.path.join(os.path.expanduser("~"), 'Pictures'))
-            self.homepaths.append(os.path.join(os.path.expanduser("~"), 'Videos'))
-            self.homepaths.append(os.path.join(os.path.expanduser("~"), 'Music'))
+            self.homepaths.append(os.path.expanduser("~"))
+            # self.homepaths.append(os.path.join(os.path.expanduser("~"), 'Desktop'))
+            # self.homepaths.append(os.path.join(os.path.expanduser("~"), 'Downloads'))
+            # self.homepaths.append(os.path.join(os.path.expanduser("~"), 'Documents'))
+            # self.homepaths.append(os.path.join(os.path.expanduser("~"), 'Pictures'))
+            # self.homepaths.append(os.path.join(os.path.expanduser("~"), 'Videos'))
+            # self.homepaths.append(os.path.join(os.path.expanduser("~"), 'Music'))
             self.set.set('homepaths',self.homepaths)
 
         for i in self.homepaths:

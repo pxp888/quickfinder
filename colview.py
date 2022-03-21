@@ -187,7 +187,8 @@ class colviewer(QWidget):
             if len(cur) > 0:
                 self.view.clearSelection()
             else:
-                self.npath.emit(os.path.expanduser("~"))
+                # self.npath.emit(os.path.expanduser("~"))
+                self.npath.emit('home')
             return
         if x==16777219:  # backspace
             path = self.core.back()

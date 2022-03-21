@@ -246,6 +246,8 @@ class coreClass():
             if len(check)==0: break
 
     def back(self):
+        if self.n==self.sniffer:
+            return list(self.n.kids.values())[0].fpath()
         if not self.n.up.name=='':
             return self.n.up.fpath()
         return self.n.fpath()

@@ -487,7 +487,8 @@ class iconview(QWidget):
             self.refresh2()
 
     def home(self):
-        self.npath.emit(os.path.expanduser("~"))
+        # self.npath.emit(os.path.expanduser("~"))
+        self.npath.emit('home')
 
     def cleanup(self):
         self.zen.thunder.cleanup()

@@ -132,7 +132,7 @@ class fscene(QGraphicsScene):
         if not tar==self.target: return
         base = self.core.n.fpath()
         if path==base: return
-        baselen = len(base)+1
+        baselen = len(base)
         self.tree.top(score, res, 16)
         out = self.tree.walkdown(2)
         if self.tree.count==1:
@@ -334,7 +334,8 @@ class finderview(QWidget):
         self.npath.emit(path)
 
     def home(self):
-        self.npath.emit(os.path.expanduser("~"))
+        # self.npath.emit(os.path.expanduser("~"))
+        self.npath.emit('home')
 
 
 ######################################################################################################################################################

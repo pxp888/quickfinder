@@ -17,6 +17,7 @@ import finder
 import preview
 import colview
 import treeview
+import homepage
 
 ######################################################################################################################################################
 
@@ -72,11 +73,7 @@ class primo(QWidget):
         self.eye = QFileSystemWatcher()
         self.ctrlkey = False
 
-        self.core.addSnifPath(home)
-        self.core.addSnifPath('D:\\')
-        self.core.n = self.core.sniffer
-        self.core.scan()
-
+        self.homepage = homepage.homeClass(self.core)
 
         self.label = blabel()
         self.fin = finder.finderview(self.core)
@@ -106,11 +103,12 @@ class primo(QWidget):
 
         layout.addWidget(self.label)
         layout.addWidget(self.fin)
+        layout.addWidget(self.homepage)
         layout.addWidget(self.sbs)
         layout.addWidget(self.stat)
 
-        # self.setPath(home)
-        # self.view.refresh2()
+        self.sbs.hide()
+        self.front='home'
 
         icbut = QPushButton('Icon View')
         self.stat.addPermanentWidget(icbut)
@@ -209,6 +207,18 @@ class primo(QWidget):
         self.fin.line.keyPressEvent(event)
 
     def setPath(self, path):
+        if path=='home':
+            path = os.path.expanduser("~")
+            self.sbs.hide()
+            self.homepage.show()
+            self.homepage.setup()
+            self.front='home'
+            return
+        else:
+            self.sbs.show()
+            self.homepage.hide()
+            self.front='view'
+
         self.core.setPath(path)
         self.npath.emit(path)
         dirs = self.eye.directories()
@@ -236,8 +246,12 @@ class primo(QWidget):
     def searching(self, n):
         if n==1:
             self.sbs.hide()
+            self.homepage.hide()
         else:
-            self.sbs.show()
+            if self.front=='home':
+                self.homepage.show()
+            else:
+                self.sbs.show()
 
     def keyPressEvent(self, event):
         x = event.key()

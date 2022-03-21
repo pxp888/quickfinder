@@ -16,6 +16,8 @@ from appdata import AppDataPaths
 import node
 import setter
 
+
+
 class homeClass(QWidget):
     def __init__(self, core, parent=None):
         super(homeClass, self).__init__(parent)
@@ -29,9 +31,35 @@ class homeClass(QWidget):
         self.core = core
         self.set = setter.setter('quickfinder1')
         self.homepaths = self.set.get('homepaths',[])
+        if len(self.homepaths)==0:
+            self.homepaths.append(os.path.expanduser("~"))
+            self.set.set('homepaths',self.homepaths)
+
+        for i in self.homepaths:
+            b = QLabel(i)
+            self.layout.addWidget(b)
+
+        self.layout.addWidget(QLabel('Drives : '))
+
+        drives = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+        for i in drives:
+            path = i+r':\\'
+            if os.path.exists(path):
+                self.layout.addWidget(QLabel(path))
+
+        # self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        self.layout.addItem(verticalSpacer)
+
+        self.setup()
+
+    def setup(self, path=''):
+        self.core.sniffer = node.node()
         for i in self.homepaths: self.core.addSnifPath(i)
         self.core.n = self.core.sniffer
         self.core.scan()
+
+
 
 
 ######################################################################################################################################################

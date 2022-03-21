@@ -170,7 +170,13 @@ class mview(QGraphicsView):
         self.noNameAction = QAction("Ignore Name",self)
         self.noPathAction = QAction("Ignore Path",self)
 
+        self.setAlignment(Qt.AlignTop | Qt.AlignLeft)
 
+
+    def resizeEvent(self, event):
+        # print(self.mapToScene(0,0))
+        # self.setAlignment(Qt.AlignTop | Qt.AlignLeft)
+        super(mview, self).resizeEvent(event)
 
     def contextMenuEvent(self, event):
         if self.scene().selected():
@@ -235,8 +241,7 @@ class mscene(QGraphicsScene):
             self.its.append(it)
             self.paths.append(path)
 
-        if len(self.its) > 0:
-            self.its[0].ensureVisible(xMargin=0,yMargin=0)
+        # if len(self.its) > 0: self.its[0].ensureVisible(xMargin=0,yMargin=0)
 
     def reflow(self, wide=0):
         if wide==0: wide=self.wide
@@ -462,6 +467,7 @@ class iconview(QWidget):
 
     def resizeEvent(self, event):
         self.zen.reflow(self.width())
+
         super(iconview,self).resizeEvent(event)
 
     def noIndexFunc(self):

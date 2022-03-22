@@ -99,7 +99,7 @@ class primo(QWidget):
         self.sbs.addWidget(self.view)
         self.sbs.addWidget(self.prev)
         self.sbs.setSizePolicy(QSizePolicy.Expanding,QSizePolicy.Expanding)
-        self.sbs.setStretchFactor(0,2)
+        self.sbs.setSizes([int(self.width()*(2/3)), int(self.width()*(1/3))])
 
         layout.addWidget(self.label)
         layout.addWidget(self.fin)

@@ -130,7 +130,7 @@ class fileitem(QGraphicsItem):
 
         pen = QPen(Qt.white,1)
         painter.setPen(pen)
-        painter.setFont(QFont("Arial",10))
+        painter.setFont(QFont("Arial",8))
         trect = self.boundingRect().adjusted(5,self.h-40,-5,-2)
         painter.drawText(trect,Qt.TextWordWrap | Qt.AlignHCenter ,os.path.split(self.path)[1][:30])
 

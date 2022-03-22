@@ -257,6 +257,7 @@ class finderview(QWidget):
 
         self.zen = fscene(core)
         self.view = QGraphicsView(self.zen)
+        self.view.setAlignment(Qt.AlignTop | Qt.AlignLeft)
         self.view.setBackgroundBrush(QBrush(QColor(40,40,40)))
         self.view.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.view.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)

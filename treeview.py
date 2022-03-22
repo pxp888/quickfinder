@@ -36,7 +36,6 @@ class TreeModel(QAbstractItemModel):
         super(TreeModel, self).__init__(parent)
 
         self.icon = setter.iconMaker()
-
         self.core = core
         self.base = core.n
 
@@ -116,7 +115,7 @@ class TreeModel(QAbstractItemModel):
             parentItem = self.base
         else:
             parentItem = parent.internalPointer()
-        return len(parentItem.kids)
+        return parentItem.childCount()
         # if parentItem.model==True:
         #     return len(parentItem.kids)
         # else:
@@ -136,7 +135,7 @@ class treeviewer(QWidget):
         self.setLayout(layout)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
-        self.setFont(QFont("Arial",10))
+        # self.setFont(QFont("Arial",10))
         # self.setFont(QFont("MS Shell Dlg 2",10))
         self.layout = layout
 

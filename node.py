@@ -69,6 +69,7 @@ class node():
         self.dir = True
         self.size = 0
         self.mtime = 0
+        self.lock = threading.Lock()
 
     def fpath(self):
         if self.name=='': return ''
@@ -106,13 +107,26 @@ class node():
                         if n.dir:
                             next.append(n)
         except:
+            self.lock.acquire()
             self.kids = {}
+            self.lock.release()
             next = []
+        self.lock.acquire()
         self.kids = kids
+        self.lock.release()
         return next
 
     def child(self, i):
-        return list(self.kids.values())[i]
+        self.lock.acquire()
+        n = list(self.kids.values())[i]
+        self.lock.release()
+        return n 
+
+    def childCount(self):
+        self.lock.acquire()
+        n = len(self.kids)
+        self.lock.release()
+        return n 
 
     def row(self):
         if self.up==None: return 0
@@ -155,7 +169,7 @@ class coreClass():
         self.lock = threading.Lock()
 
         self.qin = Queue()
-        self.grower = threading.Thread(target=self.scan1, args=(self.qin, self.lock ), daemon=True)
+        self.grower = threading.Thread(target=self.scan1, args=(self.qin, ), daemon=True)
         self.grower.start()
 
         self.fin = Queue()
@@ -226,13 +240,10 @@ class coreClass():
         if n==None: n=self.n
         check = [n]
         nc = []
-        self.lock.acquire()
         for i in range(3):
             for j in check: nc += j.scan(self.ff)
             check = nc
             nc = []
-        self.lock.release()
-        for j in check: self.qin.put((j,rec))
 
     def fullscan(self, n=None):
         if n==None: n=self.n
@@ -260,12 +271,10 @@ class coreClass():
                 break
         self.fin.put((tar,n))
 
-    def scan1(self, qin, lock):
+    def scan1(self, qin):
         while 1:
             n, rec = qin.get(True)
-            self.lock.acquire()
             next = n.scan(self.ff)
-            self.lock.release()
             if rec==0: continue
             for i in next:
                 qin.put((i,rec-1))

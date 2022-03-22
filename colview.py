@@ -137,7 +137,8 @@ class colviewer(QWidget):
         layout.setSpacing(0)
         # self.setFont(QFont("Arial",10))
         self.layout = layout
-
+        self.set = setter.setter('quickfinder1')
+        
         self.core = core
 
         self.mod = TreeModel(core)

@@ -138,6 +138,7 @@ class treeviewer(QWidget):
         # self.setFont(QFont("Arial",10))
         # self.setFont(QFont("MS Shell Dlg 2",10))
         self.layout = layout
+        self.set = setter.setter('quickfinder1')
 
         self.core = core
 

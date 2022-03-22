@@ -100,7 +100,7 @@ class listthing(QWidget):
         # layout.setContentsMargins(0, 0, 0, 0)
         # layout.setSpacing(0)
         self.label = QLabel(title)
-        self.label.setFont(QFont("Arial",14))
+        self.label.setFont(QFont("Arial",12))
         self.list = QListWidget()
         self.line = QLineEdit()
         self.data = {}
@@ -153,7 +153,7 @@ class setwin(QDialog):
 
         self.core = core
 
-        self.leftlist = listthing(title='Name starts with')
+        self.leftlist = listthing(title='Exclude Names Starting with')
         self.namelist = listthing(title='Excluded Names')
         self.pathlist = listthing(title='Excluded Paths')
         self.indexlist = listthing(title='No Index Paths')
@@ -169,14 +169,14 @@ class setwin(QDialog):
         self.dark.setFocusPolicy(Qt.NoFocus)
 
         explain1 = QLabel('Double click list items to remove.')
-        explain1.setFont(QFont("Arial",13))
+        explain1.setFont(QFont("Arial",11))
 
         layout.addWidget(self.leftlist,1,1)
         layout.addWidget(self.namelist,1,2)
         layout.addWidget(self.pathlist,1,3)
         layout.addWidget(self.indexlist,1,4)
         layout.addWidget(explain1,0,0)
-        layout.addWidget(self.dark,2,3)
+        # layout.addWidget(self.dark,2,3)
 
         self.leftlist.data = self.core.ff.left
         self.namelist.data = self.core.ff.names

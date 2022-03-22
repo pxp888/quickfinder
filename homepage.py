@@ -179,6 +179,7 @@ class homeClass(QWidget):
 		self.view1.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 		self.view2.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
+		layout.addWidget(QLabel(''))
 		layout.addWidget(QLabel('Home Paths'))
 		layout.addWidget(self.view1)
 		layout.addWidget(QLabel('Drives'))

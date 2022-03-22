@@ -45,7 +45,7 @@ class prevpane(QScrollArea):
 
     def preview(self, paths):
         if self.width() < 100: return
-        txtfiles = ['py','txt','bat','json','ini','log','sh','h','cpp','conf']
+        txtfiles = ['py','txt','bat','json','ini','log','sh','h','cpp','conf','csv']
         images = ['jpg','png','bmp','jpeg','webp']
 
         if len(paths)==1:

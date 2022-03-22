@@ -187,8 +187,7 @@ class colviewer(QWidget):
 
     def keyPressEvent(self, event):
         x = event.key()
-        print('cv',x)
-
+        # print('cv',x)
         if x==16777220:  #''' Enter '''
             self.entered()
             return

@@ -343,6 +343,11 @@ class mscene(QGraphicsScene):
             if x==51: self.shortcut.emit(2)
             if x==52: self.shortcut.emit(3)
             if x==53: self.shortcut.emit(4)
+            if x==84:
+                path = self.core.n.fpath()
+                if path=='': path = os.path.expanduser("~")
+                os.chdir(path)
+                os.system('start cmd')
             return
         if x==16777248:
             self.shiftkey=True

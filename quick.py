@@ -277,6 +277,11 @@ class primo(QWidget):
             if x==51: self.showTreeView()
             if x==52: self.deepscan()
             if x==53: self.toggleprev()
+            if x==84:
+                path = self.core.n.fpath()
+                if path=='': path = os.path.expanduser("~")
+                os.chdir(path)
+                os.system('start cmd')
             return
         if x==16777249:
             self.ctrlkey=True

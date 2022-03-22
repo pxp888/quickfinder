@@ -117,26 +117,31 @@ class primo(QWidget):
         self.stat.addPermanentWidget(icbut)
         icbut.clicked.connect(self.showIconView)
         icbut.setFocusPolicy(Qt.NoFocus)
+        icbut.setToolTip('Ctrl + 1')
 
         colbut = QPushButton('Column View')
         self.stat.addPermanentWidget(colbut)
         colbut.clicked.connect(self.showColumnView)
         colbut.setFocusPolicy(Qt.NoFocus)
+        colbut.setToolTip('Ctrl + 2')
 
         treebut = QPushButton('Tree View')
         self.stat.addPermanentWidget(treebut)
         treebut.clicked.connect(self.showTreeView)
         treebut.setFocusPolicy(Qt.NoFocus)
+        treebut.setToolTip('Ctrl + 3')
 
         deepbut = QPushButton('Size Scan')
         self.stat.addPermanentWidget(deepbut)
         deepbut.clicked.connect(self.deepscan)
         deepbut.setFocusPolicy(Qt.NoFocus)
+        deepbut.setToolTip('Ctrl + 4')
 
         prevbut = QPushButton('Preview')
         self.stat.addPermanentWidget(prevbut)
         prevbut.clicked.connect(self.toggleprev)
         prevbut.setFocusPolicy(Qt.NoFocus)
+        prevbut.setToolTip('Ctrl + 5')
 
         self.prev.setFocusPolicy(Qt.NoFocus)
 

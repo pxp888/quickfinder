@@ -150,9 +150,11 @@ class colviewer(QWidget):
         # self.view.selectionModel().currentChanged.connect(self.hop)
         self.view.selectionModel().selectionChanged.connect(self.selupdate)
 
+        self.addHomePathAction = QAction("Add Home Path",self)
         self.noIndexAction = QAction("No Index",self)
         self.noNameAction = QAction("Ignore Name",self)
         self.noPathAction = QAction("Ignore Path",self)
+        self.addHomePathAction.triggered.connect(self.addHomePathFunc)
         self.noIndexAction.triggered.connect(self.noIndexFunc)
         self.noNameAction.triggered.connect(self.noNameFunc)
         self.noPathAction.triggered.connect(self.noPathFunc)
@@ -224,6 +226,7 @@ class colviewer(QWidget):
     def contextMenuEvent(self, event):
         menu = QMenu(self)
         menu.setPalette(self.palette())
+        menu.addAction(self.addHomePathAction)
         menu.addAction(self.noIndexAction)
         menu.addAction(self.noNameAction)
         menu.addAction(self.noPathAction)
@@ -252,6 +255,10 @@ class colviewer(QWidget):
                 n = self.mod.data(it,257)
                 self.mod.core.ff.addPath(n.fpath())
                 self.set.set('ff',self.mod.core.ff)
+
+    def addHomePathFunc(self):
+        for i in self.zen.selected():
+            self.core.addHomePath(i)
 
 
 

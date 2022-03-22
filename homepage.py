@@ -28,7 +28,6 @@ class homebutton(QPushButton):
         self.npath.emit(self.text())
 
 
-
 class homeClass(QWidget):
     npath = pyqtSignal(object)
     def __init__(self, core, parent=None):

@@ -152,6 +152,7 @@ class primo(QWidget):
         self.view.refresh2()
 
     def showColumnView(self):
+        if self.core.n==self.core.sniffer: self.setPath(os.path.expanduser("~"))
         old = self.view
         old.cleanup()
         self.view = colview.colviewer(self.core)
@@ -167,6 +168,7 @@ class primo(QWidget):
         old.deleteLater()
 
     def showIconView(self):
+        if self.core.n==self.core.sniffer: self.setPath(os.path.expanduser("~"))
         self.view.cleanup()
         self.newview = iconview.iconview(self.core)
         self.sbs.replaceWidget(0,self.newview)
@@ -184,6 +186,7 @@ class primo(QWidget):
         self.view.zen.shortcut.connect(self.shortcut)
 
     def showTreeView(self):
+        if self.core.n==self.core.sniffer: self.setPath(os.path.expanduser("~"))
         self.view.cleanup()
         self.newview = treeview.treeviewer(self.core)
         self.sbs.replaceWidget(0,self.newview)

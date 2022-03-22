@@ -158,6 +158,13 @@ class treeviewer(QWidget):
         self.view.selectionModel().selectionChanged.connect(self.selupdate)
         self.view.header().sortIndicatorChanged.connect(self.sortclicked)
 
+        self.noIndexAction = QAction("No Index",self)
+        self.noNameAction = QAction("Ignore Name",self)
+        self.noPathAction = QAction("Ignore Path",self)
+        self.noIndexAction.triggered.connect(self.noIndexFunc)
+        self.noNameAction.triggered.connect(self.noNameFunc)
+        self.noPathAction.triggered.connect(self.noPathFunc)
+
         self.setAcceptDrops(True)
         self.view.setDragEnabled(True)
 
@@ -239,6 +246,38 @@ class treeviewer(QWidget):
             for i in out:
                 os.startfile(i.fpath())
 
+
+    def contextMenuEvent(self, event):
+        menu = QMenu(self)
+        menu.setPalette(self.palette())
+        menu.addAction(self.noIndexAction)
+        menu.addAction(self.noNameAction)
+        menu.addAction(self.noPathAction)
+        menu.exec(event.globalPos())
+
+    def noIndexFunc(self, event):
+        cur = self.view.selectedIndexes()
+        for it in cur:
+            if it.column()==0:
+                n = self.proxmod.data(it,257)
+                self.mod.core.ff.addNoIndex(n.fpath())
+                self.set.set('ff',self.mod.core.ff)
+
+    def noNameFunc(self, event):
+        cur = self.view.selectedIndexes()
+        for it in cur:
+            if it.column()==0:
+                n = self.proxmod.data(it,257)
+                self.mod.core.ff.addName(n.name)
+                self.set.set('ff',self.mod.core.ff)
+
+    def noPathFunc(self, event):
+        cur = self.view.selectedIndexes()
+        for it in cur:
+            if it.column()==0:
+                n = self.proxmod.data(it,257)
+                self.mod.core.ff.addPath(n.fpath())
+                self.set.set('ff',self.mod.core.ff)
 
 
 

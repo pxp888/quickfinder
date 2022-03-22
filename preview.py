@@ -41,7 +41,7 @@ class prevpane(QScrollArea):
 
         self.text.setPalette(darkPalette)
         # self.text.setFont(QFont("MS Shell Dlg 2",12))
-        self.text.setFont(QFont("Arial",13))
+        # self.text.setFont(QFont("Arial",13))
 
     def preview(self, paths):
         if self.width() < 100: return

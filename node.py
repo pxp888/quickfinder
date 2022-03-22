@@ -69,6 +69,7 @@ class node():
         self.dir = True
         self.size = 0
         self.mtime = 0
+        self.lock = threading.Lock()
 
     def fpath(self):
         if self.name=='': return ''
@@ -106,13 +107,26 @@ class node():
                         if n.dir:
                             next.append(n)
         except:
+            self.lock.acquire()
             self.kids = {}
+            self.lock.release()
             next = []
+        self.lock.acquire()
         self.kids = kids
+        self.lock.release()
         return next
 
     def child(self, i):
-        return list(self.kids.values())[i]
+        self.lock.acquire()
+        n = list(self.kids.values())[i]
+        self.lock.release()
+        return n 
+
+    def childCount(self):
+        self.lock.acquire()
+        n = len(self.kids)
+        self.lock.release()
+        return n 
 
     def row(self):
         if self.up==None: return 0

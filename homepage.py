@@ -141,7 +141,9 @@ class homeClass(QWidget):
         self.core.n = self.core.sniffer
         self.core.scan()
 
-        
+        for i in self.homepaths:
+            it = fileitem()
+            
 
 
 

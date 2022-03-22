@@ -86,6 +86,7 @@ class primo(QWidget):
         self.npath.connect(self.label.setPath)
         self.fin.npath.connect(self.setPath)
         self.fin.searching.connect(self.searching)
+        self.homepage.npath.connect(self.setPath)
 
         self.fin.line.returnPressed.connect(self.view.view.setFocus)
         self.npath.connect(self.view.setPath)

@@ -182,6 +182,15 @@ class coreClass():
 
         self.sniffer = node()
 
+        self.homepaths = self.set.get('homepaths',[])
+        if len(self.homepaths)==0:
+            self.homepaths.append(os.path.expanduser("~"))
+            self.set.set('homepaths',self.homepaths)
+
+    def addHomePath(self, path):
+        self.homepaths.append(path)
+        self.set.set('homepaths',self.homepaths)
+
     def addSnifPath(self, path):
         while 1:
             if os.path.exists(path): break

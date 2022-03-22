@@ -169,6 +169,7 @@ class mview(QGraphicsView):
         self.noIndexAction = QAction("No Index",self)
         self.noNameAction = QAction("Ignore Name",self)
         self.noPathAction = QAction("Ignore Path",self)
+        self.addHomePathAction = QAction("Add Index Path",self)
 
         self.setAlignment(Qt.AlignTop | Qt.AlignLeft)
 
@@ -181,7 +182,7 @@ class mview(QGraphicsView):
     def contextMenuEvent(self, event):
         if self.scene().selected():
             menu = QMenu(self)
-            # menu.setPalette(self.palette())
+            menu.addAction(self.addHomePathAction)
             menu.addAction(self.noIndexAction)
             menu.addAction(self.noNameAction)
             menu.addAction(self.noPathAction)
@@ -449,6 +450,7 @@ class iconview(QWidget):
         self.view.noIndexAction.triggered.connect(self.noIndexFunc)
         self.view.noNameAction.triggered.connect(self.noNameFunc)
         self.view.noPathAction.triggered.connect(self.noPathFunc)
+        self.view.addHomePathAction.triggered.connect(self.addHomePathFunc)
 
         layout.addWidget(self.view)
         self.zen.reflow(self.width())
@@ -491,6 +493,10 @@ class iconview(QWidget):
             self.set.set('ff',self.core.ff)
             self.core.scan()
             self.refresh2()
+
+    def addHomePathFunc(self):
+        for i in self.zen.selected():
+            self.core.addHomePath(i)
 
     def home(self):
         # self.npath.emit(os.path.expanduser("~"))

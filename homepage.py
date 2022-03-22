@@ -41,11 +41,9 @@ class homeClass(QWidget):
 
         self.core = core
         self.set = setter.setter('quickfinder1')
-        self.homepaths = self.set.get('homepaths',[])
-        if len(self.homepaths)==0:
-            self.homepaths.append(os.path.expanduser("~"))
-            self.set.set('homepaths',self.homepaths)
 
+        self.homepaths = self.core.homepaths
+        
         self.buts = []
         # self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
@@ -59,10 +57,12 @@ class homeClass(QWidget):
         self.core.n = self.core.sniffer
         self.core.scan()
 
-        for i in self.buts:
-            self.layout.removeWidget(i)
+        for i in self.buts: self.layout.removeWidget(i)
         self.buts = []
         row = 0 
+        
+        
+
         for i in self.homepaths:
             but = homebutton()
             but.setText(i)

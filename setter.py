@@ -122,12 +122,18 @@ class listthing(QWidget):
         t = self.line.text()
         if len(t)==0: return
         self.line.clear()
-        self.data[t]=None
+        if isinstance(self.data, dict):
+            self.data[t]=None
+        else:
+            self.data.append(t)
         self.update()
         self.save.emit()
 
     def removepath(self, it):
-        del self.data[it.text()]
+        if isinstance(self.data, dict):
+            del self.data[it.text()]
+        else:
+            self.data.remove(it.text())
         self.update()
         self.save.emit()
 
@@ -165,10 +171,10 @@ class setwin(QDialog):
         explain1 = QLabel('Double click list items to remove.')
         explain1.setFont(QFont("Arial",13))
 
-        layout.addWidget(self.leftlist,1,0)
-        layout.addWidget(self.namelist,1,1)
-        layout.addWidget(self.pathlist,1,2)
-        layout.addWidget(self.indexlist,1,3)
+        layout.addWidget(self.leftlist,1,1)
+        layout.addWidget(self.namelist,1,2)
+        layout.addWidget(self.pathlist,1,3)
+        layout.addWidget(self.indexlist,1,4)
         layout.addWidget(explain1,0,0)
         layout.addWidget(self.dark,2,3)
 
@@ -181,6 +187,19 @@ class setwin(QDialog):
         self.pathlist.update()
         self.indexlist.update()
 
+
+
+        
+        self.homelist = listthing(title='Homepaths')
+        self.homelist.save.connect(self.savehomes)
+        self.homelist.data = self.core.homepaths
+        layout.addWidget(self.homelist,1,0)
+        self.homelist.update()
+
     def save(self):
         self.set = setter('quickfinder1')
         self.set.set('ff',self.core.ff)
+
+    def savehomes(self):
+        self.set = setter('quickfinder1')
+        self.set.set('homepaths',self.core.homepaths)

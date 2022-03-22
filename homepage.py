@@ -5,6 +5,7 @@ from PyQt5.QtGui import *
 import os
 import sys
 import time
+import shutil 
 
 import multiprocessing as mp
 from queue import Queue
@@ -17,12 +18,12 @@ import node
 import setter
 
 
-
 class fileitem(QGraphicsItem):
 	doublenpath = pyqtSignal(object)
 	def __init__(self, path='', width=200, parent=None):
 		super(fileitem, self).__init__(parent)
 		self.path = path
+		self.dpath = path 
 		self.pic = None
 		self.sel = False
 		self.frame = False
@@ -65,7 +66,7 @@ class fileitem(QGraphicsItem):
 		painter.setPen(pen)
 		painter.setFont(QFont("Arial",8))
 		trect = self.boundingRect().adjusted(5,self.h-40,-5,-2)
-		painter.drawText(trect,Qt.TextWordWrap | Qt.AlignHCenter ,self.path)
+		painter.drawText(trect,Qt.TextWordWrap | Qt.AlignHCenter ,self.dpath)
 
 		if not self.pic==None:
 			s = self.pic.size()
@@ -96,18 +97,58 @@ class fileitem(QGraphicsItem):
 ######################################################################################################################################################
 
 
-class homebutton(QPushButton):
-	npath = pyqtSignal(object)
+class mscene(QGraphicsScene):
+	npath=pyqtSignal(object)
+	kevin = pyqtSignal(object)
 	def __init__(self, parent=None):
-		super(homebutton,self).__init__(parent)
-		self.clicked.connect(self.thing)
+		super(mscene, self).__init__(parent)
 
-	def thing(self):
-		self.npath.emit(self.text())
+		self.noIndexAction = QAction("No Index",self)
+		self.noNameAction = QAction("Ignore Name",self)
+		self.noPathAction = QAction("Ignore Path",self)
+		self.addHomePathAction = QAction("Add Home Path",self)
+
+
+	def mousePressEvent(self, event):
+		if event.button()==1:
+			it = self.itemAt(event.scenePos(),QTransform())
+			if not it==None:
+				self.npath.emit(it.path)
+		
+		super(mscene, self).mousePressEvent(event)
+
+
+	def keyPressEvent(self, event):
+		x=event.key()
+		if x < 93: self.kevin.emit(event)
+		super(mscene, self).keyPressEvent(event)
+
+
+# class mview(QGraphicsView):
+# 	def __init__(self, parent=None):
+# 		super(mview, self).__init__(parent)
+# 		self.removeHomePathAction = QAction("Remove Homepath",self)
+# 		self.setAlignment(Qt.AlignTop | Qt.AlignLeft)
+
+
+# 	def resizeEvent(self, event):
+# 		# print(self.mapToScene(0,0))
+# 		# self.setAlignment(Qt.AlignTop | Qt.AlignLeft)
+# 		super(mview, self).resizeEvent(event)
+
+# 	def contextMenuEvent(self, event):
+# 		# if self.scene().selected():
+# 		menu = QMenu(self)
+# 		menu.addAction(self.removeHomePathAction)
+# 		menu.exec(event.globalPos())
+
+
+######################################################################################################################################################
 
 
 class homeClass(QWidget):
 	npath = pyqtSignal(object)
+	kevin = pyqtSignal(object)
 	def __init__(self, core, parent=None):
 		super(homeClass, self).__init__(parent)
 		layout = QVBoxLayout()
@@ -120,33 +161,46 @@ class homeClass(QWidget):
 		self.core = core
 		self.set = setter.setter('quickfinder1')
 
-		self.homepaths = self.core.homepaths
-		
+		self.homepaths = self.core.homepaths	
+
 		self.its = []
 		self.drv = []
 
-		self.zen1 = QGraphicsScene()
-		self.zen2 = QGraphicsScene()
+		self.zen1 = mscene()
+		self.zen2 = mscene()
 		self.view1 = QGraphicsView()
 		self.view2 = QGraphicsView()
 		self.view1.setScene(self.zen1)
 		self.view2.setScene(self.zen2)
 		self.view1.setAlignment(Qt.AlignTop | Qt.AlignLeft)
 		self.view2.setAlignment(Qt.AlignTop | Qt.AlignLeft)
+		self.view1.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+		self.view2.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+		self.view1.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+		self.view2.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
-
-		layout.addWidget(QLabel('Indexed Paths'))
+		layout.addWidget(QLabel('Home Paths'))
 		layout.addWidget(self.view1)
 		layout.addWidget(QLabel('Drives'))
 		layout.addWidget(self.view2)
 
 		self.view1.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
+		self.view2.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
 
-		# self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-		# verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
-		# self.layout.addItem(verticalSpacer)
+		self.zen1.npath.connect(self.npath)
+		self.zen2.npath.connect(self.npath)
+		self.zen1.kevin.connect(self.kevin)
 
+		self.driveset()
 		self.setup()
+		self.setFocusPolicy(Qt.NoFocus)
+
+		self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+		verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+		self.layout.addItem(verticalSpacer)
+
+
+	
 
 	def setup(self, path=''):
 		self.core.sniffer = node.node()
@@ -157,13 +211,17 @@ class homeClass(QWidget):
 		for i in self.its: self.zen1.removeItem(i)
 		self.its = []
 
-
 		for i in self.homepaths:
 			it = fileitem(i)
+			it.dpath = i.split(os.path.sep)[-1]
 			it.setpic(QPixmap(':/icons/folder.png'),True)
 			self.zen1.addItem(it)
 			self.its.append(it)
 
+		self.reflow()
+
+
+	def driveset(self):
 		if len(self.drv)==0:
 			drvlet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 			for i in drvlet:
@@ -174,21 +232,24 @@ class homeClass(QWidget):
 					self.zen2.addItem(it)
 					self.drv.append(it)
 
-		self.reflow()
 
 	def reflow(self):
 		cols = max((self.width() / 200)-1 ,1)
 		n = 0 
 		for i in self.its:
-			col = int(n/cols)*150
-			row = int(n%cols)*200
+			# col = int(n/cols)*150
+			# row = int(n%cols)*200
+			col = 0
+			row = 200*n 
 			i.setPos(row,col)
 			n+=1
 
 		n = 0 
 		for i in self.drv:
-			col = int(n/cols)*150
-			row = int(n%cols)*200
+			# col = int(n/cols)*150
+			# row = int(n%cols)*200
+			col = 0
+			row = 200*n 
 			i.setPos(row,col)
 			n+=1
 

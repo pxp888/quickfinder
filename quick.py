@@ -74,6 +74,7 @@ class primo(QWidget):
         self.ctrlkey = False
 
         self.homepage = homepage.homeClass(self.core)
+        self.homepage.setup()
 
         self.label = blabel()
         self.fin = finder.finderview(self.core)
@@ -87,6 +88,7 @@ class primo(QWidget):
         self.fin.npath.connect(self.setPath)
         self.fin.searching.connect(self.searching)
         self.homepage.npath.connect(self.setPath)
+        self.homepage.kevin.connect(self.kevin)
 
         self.fin.line.returnPressed.connect(self.view.view.setFocus)
         self.npath.connect(self.view.setPath)

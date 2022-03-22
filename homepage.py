@@ -18,6 +18,84 @@ import setter
 
 
 
+class fileitem(QGraphicsItem):
+    doublenpath = pyqtSignal(object)
+    def __init__(self, path='', width=200, parent=None):
+        super(fileitem, self).__init__(parent)
+        self.path = path
+        self.pic = None
+        self.sel = False
+        self.frame = False
+        self.w = int(width)
+        self.h = int(width*.75)
+
+        self.setAcceptHoverEvents(True)
+        self.hlite = False
+
+    def boundingRect(self):
+        return QRectF(0,0,self.w, self.h)
+
+    def paint(self, painter, option, widget):
+        if self.sel:
+            pen = QPen(QColor(42, 130, 130),1)
+            painter.setPen(pen)
+            outrect = self.boundingRect().adjusted(1,1,-1,-1)
+            path = QPainterPath()
+            path.addRect(outrect)
+            painter.fillPath(path,QColor(42, 130, 130))
+            painter.drawRect(outrect)
+        else:
+            if self.frame:
+                pen = QPen(Qt.black,0)
+                painter.setPen(pen)
+                outrect = self.boundingRect()
+                path = QPainterPath()
+                path.addRect(outrect)
+                painter.fillPath(path,QColor(50,50,50))
+                painter.drawRect(outrect)
+
+        if self.hlite:
+            pen = QPen(Qt.gray,1)
+            painter.setPen(pen)
+            outrect = self.boundingRect()
+            painter.drawRect(outrect)
+
+
+        pen = QPen(Qt.white,1)
+        painter.setPen(pen)
+        painter.setFont(QFont("Arial",8))
+        trect = self.boundingRect().adjusted(5,self.h-40,-5,-2)
+        painter.drawText(trect,Qt.TextWordWrap | Qt.AlignHCenter ,os.path.split(self.path)[1][:30])
+
+        if not self.pic==None:
+            s = self.pic.size()
+            s.scale(self.w-20, self.h-50, Qt.KeepAspectRatio)
+            painter.drawPixmap( int((self.w-s.width())/2) , 10 ,  s.width(), s.height(), self.pic)
+
+    def setpic(self, pic, frame=False):
+        self.pic = pic
+        self.frame = frame
+        self.update()
+
+    def toggle(self):
+        if self.sel==True:
+            self.sel = False
+        else:
+            self.sel = True
+        self.update()
+
+    def hoverEnterEvent(self, event):
+        self.hlite=True
+        self.update()
+
+    def hoverLeaveEvent(self, event):
+        self.hlite=False
+        self.update()
+
+
+######################################################################################################################################################
+
+
 class homebutton(QPushButton):
     npath = pyqtSignal(object)
     def __init__(self, parent=None):
@@ -44,10 +122,16 @@ class homeClass(QWidget):
 
         self.homepaths = self.core.homepaths
         
-        self.buts = []
+        self.its = []
+
+        self.zen1 = QGraphicsScene()
+        self.zen2 = QGraphicsScene()
+        layout.addWidget(self.zen1)
+        layout.addWidget(self.zen2)
+
         # self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
-        self.layout.addItem(verticalSpacer)
+        # verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        # self.layout.addItem(verticalSpacer)
 
         self.setup()
 
@@ -57,40 +141,7 @@ class homeClass(QWidget):
         self.core.n = self.core.sniffer
         self.core.scan()
 
-        for i in self.buts: self.layout.removeWidget(i)
-        self.buts = []
-        row = 0 
-
-        lab = QLabel('Indexed Paths : ')
-        lab.setFont(QFont("Arial",16))
-        self.layout.insertWidget(row,lab)
-        self.buts.append(lab)
-        row+=1
-
-        for i in self.homepaths:
-            but = homebutton()
-            but.setText(i)
-            but.npath.connect(self.npath)
-            self.layout.insertWidget(row,but)
-            self.buts.append(but)
-            row+=1
-
-        lab = QLabel('Drives : ')
-        lab.setFont(QFont("Arial",16))
-        self.layout.insertWidget(row,lab)
-        self.buts.append(lab)
-        row+=1
-
-        drives = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-        for i in drives:
-            path = i+':'+os.path.sep
-            if os.path.exists(path):
-                but = homebutton()
-                but.setText(path)
-                but.npath.connect(self.npath)
-                self.layout.insertWidget(row,but)
-                self.buts.append(but)
-                row+=1
+        
 
 
 

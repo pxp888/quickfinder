@@ -253,6 +253,7 @@ class coreClass():
             for j in check: nc += j.scan(self.ff)
             check = nc
             nc = []
+        for j in check: self.qin.put((j, rec))
 
     def fullscan(self, n=None):
         if n==None: n=self.n

@@ -262,7 +262,7 @@ class treeviewer(QWidget):
         cur = self.view.selectedIndexes()
         for it in cur:
             if it.column()==0:
-                n = self.proxmod.data(it,257)
+                n = self.mod.data(it,257)
                 self.mod.core.ff.addNoIndex(n.fpath())
                 self.set.set('ff',self.mod.core.ff)
 
@@ -270,7 +270,7 @@ class treeviewer(QWidget):
         cur = self.view.selectedIndexes()
         for it in cur:
             if it.column()==0:
-                n = self.proxmod.data(it,257)
+                n = self.mod.data(it,257)
                 self.mod.core.ff.addName(n.name)
                 self.set.set('ff',self.mod.core.ff)
 
@@ -278,7 +278,7 @@ class treeviewer(QWidget):
         cur = self.view.selectedIndexes()
         for it in cur:
             if it.column()==0:
-                n = self.proxmod.data(it,257)
+                n = self.mod.data(it,257)
                 self.mod.core.ff.addPath(n.fpath())
                 self.set.set('ff',self.mod.core.ff)
 

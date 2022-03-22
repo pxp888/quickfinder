@@ -247,9 +247,10 @@ class mscene(QGraphicsScene):
     def reflow(self, wide=0):
         if wide==0: wide=self.wide
         self.wide = wide
-        cols = int(wide / 150) + 1
+        cols = max((int(wide / 150)),1)
         self.cols = cols
-        itemw = int((wide-10) / cols)
+        # itemw = int((wide-10) / cols)
+        itemw = 150 
         n = 0
         for i in self.its:
             i.w = itemw

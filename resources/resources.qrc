@@ -10,6 +10,6 @@
         <file alias="sheet.png">sheet.png</file>
         <file alias="word.png">word.png</file>
         <file alias="pdf.png">pdf.png</file>
-        <file alias="drive.ico">drive.ico</file>
+        <file alias="drive.png">drive.png</file>
     </qresource>
 </RCC>

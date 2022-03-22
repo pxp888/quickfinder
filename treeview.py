@@ -161,9 +161,11 @@ class treeviewer(QWidget):
         self.noIndexAction = QAction("No Index",self)
         self.noNameAction = QAction("Ignore Name",self)
         self.noPathAction = QAction("Ignore Path",self)
+        self.addHomePathAction = QAction("Add Index Path",self)
         self.noIndexAction.triggered.connect(self.noIndexFunc)
         self.noNameAction.triggered.connect(self.noNameFunc)
         self.noPathAction.triggered.connect(self.noPathFunc)
+        self.addHomePathAction.triggered.connect(self.addHomePathFunc)
 
         self.setAcceptDrops(True)
         self.view.setDragEnabled(True)
@@ -250,6 +252,7 @@ class treeviewer(QWidget):
     def contextMenuEvent(self, event):
         menu = QMenu(self)
         menu.setPalette(self.palette())
+        menu.addAction(self.addHomePathAction)
         menu.addAction(self.noIndexAction)
         menu.addAction(self.noNameAction)
         menu.addAction(self.noPathAction)
@@ -279,7 +282,9 @@ class treeviewer(QWidget):
                 self.mod.core.ff.addPath(n.fpath())
                 self.set.set('ff',self.mod.core.ff)
 
-
+    def addHomePathFunc(self):
+        for i in self.zen.selected():
+            self.core.addHomePath(i)
 
 
 ######################################################################################################################################################

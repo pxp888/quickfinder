@@ -60,8 +60,12 @@ class homeClass(QWidget):
         for i in self.buts: self.layout.removeWidget(i)
         self.buts = []
         row = 0 
-        
-        
+
+        lab = QLabel('Indexed Paths : ')
+        lab.setFont(QFont("Arial",16))
+        self.layout.insertWidget(row,lab)
+        self.buts.append(lab)
+        row+=1
 
         for i in self.homepaths:
             but = homebutton()
@@ -70,6 +74,12 @@ class homeClass(QWidget):
             self.layout.insertWidget(row,but)
             self.buts.append(but)
             row+=1
+
+        lab = QLabel('Drives : ')
+        lab.setFont(QFont("Arial",16))
+        self.layout.insertWidget(row,lab)
+        self.buts.append(lab)
+        row+=1
 
         drives = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
         for i in drives:

@@ -332,7 +332,7 @@ if __name__ == "__main__":
         def __init__(self, parent=None):
             super(mainwin, self).__init__(parent)
 
-            self.setWindowTitle('Quick Finder')
+            self.setWindowTitle('Speed Finder')
             frame = QFrame()
             self.setCentralWidget(frame)
             layout = QGridLayout()

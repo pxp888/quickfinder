@@ -155,7 +155,7 @@ class homeClass(QWidget):
 		self.setLayout(layout)
 		# layout.setContentsMargins(0, 0, 0, 0)
 		# layout.setSpacing(0)
-		self.setFont(QFont("Arial",13))
+		# self.setFont(QFont("Arial",11))
 		self.layout = layout
 
 		self.core = core
@@ -180,7 +180,7 @@ class homeClass(QWidget):
 		self.view2.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
 		layout.addWidget(QLabel(''))
-		layout.addWidget(QLabel('Home Paths'))
+		layout.addWidget(QLabel('Index Paths'))
 		layout.addWidget(self.view1)
 		layout.addWidget(QLabel('Drives'))
 		layout.addWidget(self.view2)

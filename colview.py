@@ -178,7 +178,7 @@ class colviewer(QWidget):
         # self.view.selectionModel().selectionChanged.connect(self.selupdate)
         self.view.selectionModel().currentChanged.connect(self.selupdate)
 
-        self.addHomePathAction = QAction("Add Home Path",self)
+        self.addHomePathAction = QAction("Add Index Path",self)
         self.noIndexAction = QAction("No Index",self)
         self.noNameAction = QAction("Ignore Name",self)
         self.noPathAction = QAction("Ignore Path",self)
@@ -316,8 +316,12 @@ class colviewer(QWidget):
                 self.set.set('ff',self.mod.core.ff)
 
     def addHomePathFunc(self):
-        for i in self.zen.selected():
-            self.core.addHomePath(i)
+        cur = self.view.selectedIndexes()
+        for it in cur:
+            if it.column()==0:
+                n = self.mod.data(it,257)
+                self.mod.core.ff.addHomePath(n.fpath())
+                self.set.set('ff',self.mod.core.ff)
 
 
 

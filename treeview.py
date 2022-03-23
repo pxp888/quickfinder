@@ -330,9 +330,13 @@ class treeviewer(QWidget):
                 self.set.set('ff',self.mod.core.ff)
 
     def addHomePathFunc(self):
-        for i in self.zen.selected():
-            self.core.addHomePath(i)
-
+        cur = self.view.selectedIndexes()
+        for it in cur:
+            if it.column()==0:
+                n = self.mod.data(it,257)
+                self.mod.core.ff.addHomePath(n.fpath())
+                self.set.set('ff',self.mod.core.ff)
+        
 
 ######################################################################################################################################################
 

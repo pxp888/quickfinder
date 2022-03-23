@@ -165,7 +165,14 @@ class coreClass():
 
         self.base = node()
         self.n = None
-        self.ff = self.set.get('ff',filefilter())
+        self.ff = self.set.get('ff',None)
+        if self.ff==None:
+            self.ff = filefilter()
+            self.ff.addLeft('ntuser.dat')
+            self.ff.addLeft('NTUSER.DAT')
+            self.ff.addName('desktop.ini')
+            self.ff.addName('ntuser.ini')
+
         self.lock = threading.Lock()
 
         self.qin = Queue()

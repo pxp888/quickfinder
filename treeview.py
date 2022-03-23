@@ -146,26 +146,6 @@ class TreeModel(QAbstractItemModel):
         return mimedata
 
 
-# ######################################################################################################################################################
-
-# class tview(QTreeView):
-#     def __init__(self,parent=None):
-#         super(tview, self).__init__(parent)
-#         self.setAcceptDrops(True)
-#         self.setDragEnabled(True)
-#         self.setDragDropMode(4)
-
-#     def dragEnterEvent(self, e):
-#         if e.mimeData().hasText():
-#             e.accept()
-#         else:
-#             e.ignore()
-
-#     def dropEvent(self, e):
-#         print('obj', e.mimeData().text())
-#         super(tview, self).dropEvent(e)
-
-
 ######################################################################################################################################################
 
 
@@ -186,7 +166,7 @@ class treeviewer(QWidget):
 
         self.core = core
 
-        self.reset = False 
+        self.reset = False
 
         self.mod = TreeModel(core)
         self.view = QTreeView()

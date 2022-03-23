@@ -19,6 +19,7 @@ import colview
 import treeview
 import homepage
 
+
 ######################################################################################################################################################
 
 
@@ -68,7 +69,6 @@ class primo(QWidget):
         home = os.path.expanduser("~")
         self.core = node.coreClass()
         self.core.setPath(home)
-        # self.core.scan()
 
         self.eye = QFileSystemWatcher()
         self.ctrlkey = False
@@ -137,11 +137,17 @@ class primo(QWidget):
         deepbut.setFocusPolicy(Qt.NoFocus)
         deepbut.setToolTip('Ctrl + 4')
 
+        timebut = QPushButton('Sort Latest')
+        self.stat.addPermanentWidget(timebut)
+        timebut.clicked.connect(self.timescan)
+        timebut.setFocusPolicy(Qt.NoFocus)
+        timebut.setToolTip('Ctrl + 5')
+
         prevbut = QPushButton('Preview')
         self.stat.addPermanentWidget(prevbut)
         prevbut.clicked.connect(self.toggleprev)
         prevbut.setFocusPolicy(Qt.NoFocus)
-        prevbut.setToolTip('Ctrl + 5')
+        prevbut.setToolTip('Ctrl + 6')
 
         self.prev.setFocusPolicy(Qt.NoFocus)
 
@@ -282,8 +288,9 @@ class primo(QWidget):
             if x==50: self.showColumnView()
             if x==51: self.showTreeView()
             if x==52: self.deepscan()
-            if x==53: self.toggleprev()
-            if x==54: self.timescan()
+            if x==53: self.timescan()
+            if x==54: self.toggleprev()
+            if x==78: self.segundo()
             if x==84:
                 path = self.core.n.fpath()
                 if path=='': path = os.path.expanduser("~")
@@ -325,8 +332,12 @@ class primo(QWidget):
         if n==1: self.showColumnView()
         if n==2: self.showTreeView()
         if n==3: self.deepscan()
-        if n==4: self.toggleprev()
+        if n==4: self.timescan()
+        if n==5: self.toggleprev()
 
+    def segundo(self):
+        w = mainwin()
+        w.show()
 
 ######################################################################################################################################################
 
@@ -338,19 +349,18 @@ if __name__ == "__main__":
         def __init__(self, parent=None):
             super(mainwin, self).__init__(parent)
 
-            self.setWindowTitle('Speed Finder')
+            self.setWindowTitle('Speedy Finder')
             frame = QFrame()
             self.setCentralWidget(frame)
             layout = QGridLayout()
             frame.setLayout(layout)
-            layout.setContentsMargins(0, 0, 0, 0)
-            layout.setSpacing(0)
+            layout.setContentsMargins(1,1,1,1)
+            layout.setSpacing(1)
             self.resize(1600,900)
 
             self.thing = primo()
             layout.addWidget(self.thing)
             self.thing.npath.connect(self.setWindowTitle)
-
 
     app = QApplication(sys.argv)
     app.setStyle(QStyleFactory.create("Fusion"))

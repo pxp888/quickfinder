@@ -1,9 +1,10 @@
-
-selection is cancelled by drag-click, 
+new window launching
 
 mover object, to do the work 
 rename functionality
+clipboard - copy paste
 recycle bin?  
 
+homepage drop targets
 
 zooming icons?  

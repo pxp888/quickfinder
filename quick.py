@@ -209,7 +209,8 @@ class primo(QWidget):
         self.view = self.newview
 
     def changes(self, path):
-        # print('chg',time.time(), path)
+        print('chg',time.time(), path)
+        while not os.path.exists: path, name = os.path.split(path)
         n = self.core.locate(path)
         if not n.up==None: n = n.up
         self.view.refresh1()

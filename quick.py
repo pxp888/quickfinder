@@ -158,6 +158,11 @@ class primo(QWidget):
         self.core.n.sort(1,0)
         self.view.refresh2()
 
+    def timescan(self):
+        self.view.refresh1()
+        self.core.n.sort(2,0)
+        self.view.refresh2()
+
     def showColumnView(self):
         if self.core.n==self.core.sniffer: self.setPath(os.path.expanduser("~"))
         old = self.view
@@ -278,6 +283,7 @@ class primo(QWidget):
             if x==51: self.showTreeView()
             if x==52: self.deepscan()
             if x==53: self.toggleprev()
+            if x==54: self.timescan()
             if x==84:
                 path = self.core.n.fpath()
                 if path=='': path = os.path.expanduser("~")

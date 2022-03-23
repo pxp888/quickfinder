@@ -161,16 +161,21 @@ class fileitem(QGraphicsItem):
         self.hlite=False
         self.update()
 
-    def dragEnterEvent(self, event):
-        print('item enter',event.possibleActions())
-        if event.mimeData().hasUrls():
-            event.setAccepted(True)
-            # print(event.mimeData().urls())
-        else:
-            event.setAccepted(False)
+    # def dragEnterEvent(self, event):
+    #     self.hlite=True
+    #     self.update()
+        
+    # def dragLeaveEvent(self, event):
+    #     self.hlite=False
+    #     self.update()
 
-    def dropEvent(self, event):
-        print('item drop', event)
+    # def dropEvent(self, event):
+    #     print('item drop', event)
+
+
+
+
+
 
 
 ######################################################################################################################################################
@@ -202,15 +207,29 @@ class mview(QGraphicsView):
 
     def dragEnterEvent(self, e):
         print('view enter', e)
-        if e.mimeData().hasUrls():
+        if e.mimeData().hasText():
             e.setAccepted(True)
-            print(e.mimeData().urls())
+        else:
+            e.setAccepted(False)
+
+    def dragMoveEvent(self, e):
+        if e.mimeData().hasText():
+            e.setAccepted(True)
         else:
             e.setAccepted(False)
 
     def dropEvent(self, e):
-        print('view drop', e )
-        
+        print('view drop')
+        for i in e.mimeData().urls(): print(i)
+
+        it = self.itemAt(e.pos())
+        if not it==None:
+            print(it.path)
+        else:
+            print('here')
+
+    # def mouseMoveEvent(self, event):
+    #     print(event)
 
 
 ######################################################################################################################################################
@@ -240,22 +259,6 @@ class mscene(QGraphicsScene):
         self.ctrlkey = False
         self.cursA = -1
         self.cursB = -1
-
-    # def dragEnterEvent(self, e):
-    #     print('scene enter', e)
-    #     if e.mimeData().hasUrls():
-    #         e.setAccepted(True)
-    #         print(e.mimeData().urls())
-    #     else:
-    #         e.setAccepted(False)
-
-    # def dropEvent(self, e):
-    #     print('scene drop', e )
-        
-        # dest = self.core.n.fpath()
-        # for i in e.mimeData().urls():
-        #     print('import : ', i.path(), dest)
-        # self.view.dropEvent(e)
 
     def geticon(self, path, pic):
         if path in self.paths:
@@ -354,10 +357,26 @@ class mscene(QGraphicsScene):
             else:
                 self.select('')
 
+            # mimedata = QMimeData()
+            # mimedata.setText('hello')
+            # urls.append(QUrl().fromLocalFile(path))
+            # drag = QDrag(self)
+            # drag.setMimeData(mimedata)
+            # drag.exec(Qt.CopyAction)
+
+
         if event.button()==8:
             path = self.core.back()
             self.npath.emit(path)
         super(mscene, self).mousePressEvent(event)
+
+    def mouseMoveEvent(self, event):
+        if event.button()==1:
+            start = event.buttonDownScreenPos(1)
+            now = event.pos()
+            dx = now.x() - start.x()
+            print(dx)
+
 
     def mouseDoubleClickEvent(self, event):
         if event.button()==1:
@@ -461,6 +480,10 @@ class mscene(QGraphicsScene):
             i.sel = not i.sel
             i.update()
         self.preview.emit(self.selected())
+
+
+
+
 
 
 ######################################################################################################################################################

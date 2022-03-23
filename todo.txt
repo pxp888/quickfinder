@@ -1,4 +1,6 @@
-drag and drop
+
+selection is cancelled by drag-click, 
+
 mover object, to do the work 
 rename functionality
 recycle bin?  

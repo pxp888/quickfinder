@@ -161,22 +161,6 @@ class fileitem(QGraphicsItem):
         self.hlite=False
         self.update()
 
-    # def dragEnterEvent(self, event):
-    #     self.hlite=True
-    #     self.update()
-        
-    # def dragLeaveEvent(self, event):
-    #     self.hlite=False
-    #     self.update()
-
-    # def dropEvent(self, event):
-    #     print('item drop', event)
-
-
-
-
-
-
 
 ######################################################################################################################################################
 
@@ -227,9 +211,6 @@ class mview(QGraphicsView):
             print(it.path)
         else:
             print('here')
-
-    # def mouseMoveEvent(self, event):
-    #     print(event)
 
 
 ######################################################################################################################################################
@@ -315,6 +296,7 @@ class mscene(QGraphicsScene):
                 self.its[self.cursA].ensureVisible(xMargin=0,yMargin=0)
             self.preview.emit(self.selected())
             return
+
         if self.ctrlkey:
             if not path=='':
                 i = self.paths.index(path)
@@ -350,6 +332,12 @@ class mscene(QGraphicsScene):
         return out
 
     def mousePressEvent(self, event):
+        if event.button()==8:
+            path = self.core.back()
+            self.npath.emit(path)
+        super(mscene, self).mousePressEvent(event)
+
+    def mouseReleaseEvent(self, event):
         if event.button()==1:
             it = self.itemAt(event.scenePos(),QTransform())
             if not it==None:
@@ -357,15 +345,7 @@ class mscene(QGraphicsScene):
             else:
                 self.select('')
 
-        if event.button()==8:
-            path = self.core.back()
-            self.npath.emit(path)
-        super(mscene, self).mousePressEvent(event)
-
-    def mouseReleaseEvent(self, event):
-
         super(mscene, self).mouseReleaseEvent(event)
-
 
     def mouseMoveEvent(self, event):
         if not event.buttons()&1: return 
@@ -483,10 +463,6 @@ class mscene(QGraphicsScene):
             i.sel = not i.sel
             i.update()
         self.preview.emit(self.selected())
-
-
-
-
 
 
 ######################################################################################################################################################

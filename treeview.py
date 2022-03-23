@@ -76,8 +76,8 @@ class TreeModel(QAbstractItemModel):
         if not index.isValid():
             return Qt.NoItemFlags
         if index.internalPointer().dir:
-            return Qt.ItemIsEnabled | Qt.ItemIsSelectable | Qt.ItemIsDragEnabled | Qt.ItemIsDropEnabled
-        return Qt.ItemIsEnabled | Qt.ItemIsSelectable | Qt.ItemIsDragEnabled
+            return Qt.ItemIsEnabled | Qt.ItemIsSelectable | Qt.ItemIsDragEnabled | Qt.ItemIsDropEnabled 
+        return Qt.ItemIsEnabled | Qt.ItemIsSelectable | Qt.ItemIsDragEnabled 
 
     def headerData(self, section, orientation, role):
         if orientation == Qt.Horizontal and role == Qt.DisplayRole:
@@ -121,6 +121,12 @@ class TreeModel(QAbstractItemModel):
         # else:
         #     return 0
 
+    def dropMimeData(data, action, row, column, parent):
+        print('mod', data)
+        return True 
+
+    def supportedDropActions(self):
+        return Qt.CopyAction | Qt.MoveAction 
 
 ######################################################################################################################################################
 
@@ -178,8 +184,9 @@ class treeviewer(QWidget):
             e.ignore()
 
     def dropEvent(self, e):
-        print(e)
-
+        print('view', e.mimeData().text())
+        self.mod.dropEvent(e)
+        
     def cleanup(self):
         pass
 

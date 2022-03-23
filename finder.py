@@ -48,7 +48,6 @@ class resitem(QGraphicsItem):
         self.hlite = False
         self.setAcceptHoverEvents(True)
 
-
     def boundingRect(self):
         return QRectF(0,0,self.width, itemh)
 
@@ -99,6 +98,7 @@ class resitem(QGraphicsItem):
 class fscene(QGraphicsScene):
     npath = pyqtSignal(object)
     search = pyqtSignal(object)
+    clearsig = pyqtSignal()
     def __init__(self, core, parent=None):
         super(fscene, self).__init__(parent)
 
@@ -181,6 +181,13 @@ class fscene(QGraphicsScene):
                 path = self.its[self.sel].path
                 self.npath.emit(path)
 
+    def mousePressEvent(self, event):
+        if event.button()==1:
+            it = self.itemAt(event.scenePos(),QTransform())
+            if not it==None:
+                self.npath.emit(it.path)
+                self.clearsig.emit()
+        super(fscene, self).mousePressEvent(event)
 
 
 ######################################################################################################################################################
@@ -271,6 +278,7 @@ class finderview(QWidget):
 
         self.zen.search.connect(self.view.setVisible)
         self.zen.npath.connect(self.npath)
+        self.zen.clearsig.connect(self.clear)
 
         layout.addWidget(self.line)
         layout.addWidget(self.view)

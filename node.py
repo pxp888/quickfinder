@@ -171,6 +171,8 @@ class coreClass():
         self.qin = Queue()
         self.grower = threading.Thread(target=self.scan1, args=(self.qin, ), daemon=True)
         self.grower.start()
+        self.grower2 = threading.Thread(target=self.scan1, args=(self.qin, ), daemon=True)
+        self.grower2.start()
 
         self.fin = Queue()
         self.fiz = Queue()

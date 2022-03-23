@@ -121,12 +121,50 @@ class TreeModel(QAbstractItemModel):
         # else:
         #     return 0
 
-    def dropMimeData(data, action, row, column, parent):
-        print('mod', data)
-        return True 
+    def dropMimeData(self, data, action, row, column, parent):
+        # print('mod', data, action, row, column, parent)
+        dest = parent.internalPointer().fpath()
+        if data.hasUrls():
+            for i in data.urls():
+                print('localmove : ', i, dest)
+        return True
 
     def supportedDropActions(self):
         return Qt.CopyAction | Qt.MoveAction 
+
+    def mimeTypes(self):
+        return ['text/plain','text/uri-list']
+
+    def mimeData(self, indexes):
+        urls = []
+        for i in indexes:
+            if i.column()==0:
+                path = i.internalPointer().fpath()
+                urls.append(QUrl().fromLocalFile(path))
+        mimedata = QMimeData()
+        mimedata.setUrls(urls)
+        return mimedata
+
+
+# ######################################################################################################################################################
+
+# class tview(QTreeView):
+#     def __init__(self,parent=None):
+#         super(tview, self).__init__(parent)
+#         self.setAcceptDrops(True)
+#         self.setDragEnabled(True)
+#         self.setDragDropMode(4)
+
+#     def dragEnterEvent(self, e):
+#         if e.mimeData().hasText():
+#             e.accept()
+#         else:
+#             e.ignore()
+
+#     def dropEvent(self, e):
+#         print('obj', e.mimeData().text())
+#         super(tview, self).dropEvent(e)
+
 
 ######################################################################################################################################################
 
@@ -148,6 +186,8 @@ class treeviewer(QWidget):
 
         self.core = core
 
+        self.reset = False 
+
         self.mod = TreeModel(core)
         self.view = QTreeView()
         self.view.setModel(self.mod)
@@ -162,7 +202,8 @@ class treeviewer(QWidget):
         self.layout.addWidget(self.view)
 
         # self.view.selectionModel().currentChanged.connect(self.hop)
-        self.view.selectionModel().selectionChanged.connect(self.selupdate)
+        # self.view.selectionModel().selectionChanged.connect(self.selupdate)
+        self.view.selectionModel().currentChanged.connect(self.selupdate)
         self.view.header().sortIndicatorChanged.connect(self.sortclicked)
 
         self.noIndexAction = QAction("No Index",self)
@@ -175,18 +216,23 @@ class treeviewer(QWidget):
         self.addHomePathAction.triggered.connect(self.addHomePathFunc)
 
         self.setAcceptDrops(True)
+        self.view.setAcceptDrops(True)
         self.view.setDragEnabled(True)
+        self.view.setDragDropMode(4)
 
     def dragEnterEvent(self, e):
-        if e.mimeData().hasText():
+        if e.mimeData().hasUrls():
             e.accept()
         else:
             e.ignore()
 
     def dropEvent(self, e):
-        print('view', e.mimeData().text())
-        self.mod.dropEvent(e)
-        
+        # print('import file' , e.mimeData().urls())
+        dest = self.core.n.fpath()
+        for i in e.mimeData().urls():
+            print('import : ', i.path(), dest)
+        # self.view.dropEvent(e)
+
     def cleanup(self):
         pass
 
@@ -196,10 +242,23 @@ class treeviewer(QWidget):
         self.mod.endResetModel()
 
     def refresh1(self):
-        self.mod.layoutAboutToBeChanged.emit()
+        self.reset = False
+        for i in self.view.selectedIndexes():
+            path = self.mod.data(i,257).fpath()
+            if not os.path.exists(path):
+                self.reset = True 
+        if self.reset:
+            self.view.clearSelection()
+            self.mod.beginResetModel()
+        else:
+            self.mod.layoutAboutToBeChanged.emit()
 
     def refresh2(self):
-        self.mod.layoutChanged.emit()
+        if self.reset:
+            self.mod.endResetModel()
+            self.reset = False
+        else:
+            self.mod.layoutChanged.emit()
 
     def selupdate(self, a, b):
         cur = self.view.selectedIndexes()

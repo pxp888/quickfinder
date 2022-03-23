@@ -87,7 +87,7 @@ class thumbmaker(QObject):
 
 class fileitem(QGraphicsItem):
     doublenpath = pyqtSignal(object)
-    def __init__(self, path='', width=200, parent=None):
+    def __init__(self, path='', dir=True, width=200, parent=None):
         super(fileitem, self).__init__(parent)
         self.path = path
         self.pic = None
@@ -95,9 +95,11 @@ class fileitem(QGraphicsItem):
         self.frame = False
         self.w = int(width)
         self.h = int(width*.75)
+        self.dir = dir 
 
         self.setAcceptHoverEvents(True)
         self.hlite = False
+        if self.dir: self.setAcceptDrops(True)
 
     def boundingRect(self):
         return QRectF(0,0,self.w, self.h)
@@ -159,6 +161,17 @@ class fileitem(QGraphicsItem):
         self.hlite=False
         self.update()
 
+    def dragEnterEvent(self, event):
+        print('item enter',event.possibleActions())
+        if event.mimeData().hasUrls():
+            event.setAccepted(True)
+            # print(event.mimeData().urls())
+        else:
+            event.setAccepted(False)
+
+    def dropEvent(self, event):
+        print('item drop', event)
+
 
 ######################################################################################################################################################
 
@@ -186,6 +199,18 @@ class mview(QGraphicsView):
             menu.addAction(self.noNameAction)
             menu.addAction(self.noPathAction)
             menu.exec(event.globalPos())
+
+    def dragEnterEvent(self, e):
+        print('view enter', e)
+        if e.mimeData().hasUrls():
+            e.setAccepted(True)
+            print(e.mimeData().urls())
+        else:
+            e.setAccepted(False)
+
+    def dropEvent(self, e):
+        print('view drop', e )
+        
 
 
 ######################################################################################################################################################
@@ -216,6 +241,22 @@ class mscene(QGraphicsScene):
         self.cursA = -1
         self.cursB = -1
 
+    # def dragEnterEvent(self, e):
+    #     print('scene enter', e)
+    #     if e.mimeData().hasUrls():
+    #         e.setAccepted(True)
+    #         print(e.mimeData().urls())
+    #     else:
+    #         e.setAccepted(False)
+
+    # def dropEvent(self, e):
+    #     print('scene drop', e )
+        
+        # dest = self.core.n.fpath()
+        # for i in e.mimeData().urls():
+        #     print('import : ', i.path(), dest)
+        # self.view.dropEvent(e)
+
     def geticon(self, path, pic):
         if path in self.paths:
             i = self.paths.index(path)
@@ -235,7 +276,7 @@ class mscene(QGraphicsScene):
         for n in list(self.core.n.kids.values()):
             path = n.fpath()
             self.thunder.qin.put((path, n.mtime))
-            it = fileitem(path)
+            it = fileitem(path, n.dir)
             it.setpic(self.maker.pic(n.name,n.dir))
             self.addItem(it)
             self.its.append(it)

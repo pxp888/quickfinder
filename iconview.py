@@ -207,13 +207,13 @@ class mview(QGraphicsView):
 
     def dragEnterEvent(self, e):
         print('view enter', e)
-        if e.mimeData().hasText():
+        if e.mimeData().hasUrls():
             e.setAccepted(True)
         else:
             e.setAccepted(False)
 
     def dragMoveEvent(self, e):
-        if e.mimeData().hasText():
+        if e.mimeData().hasUrls():
             e.setAccepted(True)
         else:
             e.setAccepted(False)
@@ -357,26 +357,29 @@ class mscene(QGraphicsScene):
             else:
                 self.select('')
 
-            # mimedata = QMimeData()
-            # mimedata.setText('hello')
-            # urls.append(QUrl().fromLocalFile(path))
-            # drag = QDrag(self)
-            # drag.setMimeData(mimedata)
-            # drag.exec(Qt.CopyAction)
-
-
         if event.button()==8:
             path = self.core.back()
             self.npath.emit(path)
         super(mscene, self).mousePressEvent(event)
 
-    def mouseMoveEvent(self, event):
-        if event.button()==1:
-            start = event.buttonDownScreenPos(1)
-            now = event.pos()
-            dx = now.x() - start.x()
-            print(dx)
+    def mouseReleaseEvent(self, event):
 
+        super(mscene, self).mouseReleaseEvent(event)
+
+
+    def mouseMoveEvent(self, event):
+        if not event.buttons()&1: return 
+        dx = (event.buttonDownScenePos(1)-event.scenePos()).manhattanLength()
+        if dx < 60: return 
+
+        urls = []
+        for i in self.selected():
+            urls.append(QUrl().fromLocalFile(i))
+        mimedata = QMimeData()
+        mimedata.setUrls(urls)
+        drag = QDrag(self)
+        drag.setMimeData(mimedata)
+        drag.exec(Qt.MoveAction | Qt.CopyAction)
 
     def mouseDoubleClickEvent(self, event):
         if event.button()==1:

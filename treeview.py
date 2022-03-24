@@ -152,6 +152,17 @@ class TreeModel(QAbstractItemModel):
 ######################################################################################################################################################
 
 
+class tview(QTreeView):
+    back = pyqtSignal()
+    def mousePressEvent(self, event):
+        if event.button()==8:
+            self.back.emit()
+        super(tview, self).mousePressEvent(event)
+
+
+######################################################################################################################################################
+
+
 class treeviewer(QWidget):
     npath = pyqtSignal(object)
     preview = pyqtSignal(object)
@@ -175,7 +186,9 @@ class treeviewer(QWidget):
         self.mod = TreeModel(core)
         self.mod.nmove.connect(self.nmove)
 
-        self.view = QTreeView()
+        self.view = tview()
+        self.view.back.connect(self.back)
+
         self.view.setModel(self.mod)
         self.view.setSortingEnabled(True)
         self.view.setSelectionMode(3)
@@ -276,8 +289,7 @@ class treeviewer(QWidget):
                 self.npath.emit('home')
             return
         if x==16777219:  # backspace
-            path = self.core.back()
-            self.npath.emit(path)
+            self.back()
             return
         super(treeviewer, self).keyPressEvent(event)
 
@@ -341,7 +353,9 @@ class treeviewer(QWidget):
                 self.mod.core.addHomePath(n.fpath())
                 self.set.set('ff',self.mod.core.ff)
         
-
+    def back(self):
+        path = self.core.back()
+        self.npath.emit(path)
 
 
 ######################################################################################################################################################

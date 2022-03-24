@@ -303,8 +303,6 @@ class mscene(QGraphicsScene):
             self.its.append(it)
             self.paths.append(path)
 
-        # if len(self.its) > 0: self.its[0].ensureVisible(xMargin=0,yMargin=0)
-
     def reflow(self, wide=0):
         if wide==0: wide=self.wide
         self.wide = wide
@@ -313,12 +311,16 @@ class mscene(QGraphicsScene):
         # itemw = int((wide-10) / cols)
         itemw = 150 
         n = 0
+        mxrow = 150
         for i in self.its:
             i.w = itemw
             row = int(n / cols) * i.h
             col = (n % cols ) * itemw
             i.setPos(col,row)
             n+=1
+            mxrow = max(mxrow, row)
+        mxrow += 150
+        self.setSceneRect(self.itemsBoundingRect())
 
     def select(self, path):
         if self.shiftkey:

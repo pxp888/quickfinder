@@ -84,6 +84,8 @@ class primo(QWidget):
         self.prev = preview.prevpane()
         self.stat = QStatusBar()
 
+        self.prev.setFocusPolicy(Qt.NoFocus)
+
         self.eye.directoryChanged.connect(self.changes)
         self.label.clicked.connect(self.setwin)
         self.npath.connect(self.label.setPath)
@@ -117,6 +119,9 @@ class primo(QWidget):
         self.sbs.hide()
         self.front='home'
 
+        self.setupStatButtons()
+
+    def setupStatButtons(self):
         icbut = QPushButton('Icon View')
         self.stat.addPermanentWidget(icbut)
         icbut.clicked.connect(self.showIconView)
@@ -152,8 +157,6 @@ class primo(QWidget):
         prevbut.clicked.connect(self.toggleprev)
         prevbut.setFocusPolicy(Qt.NoFocus)
         prevbut.setToolTip('Ctrl + 6')
-
-        self.prev.setFocusPolicy(Qt.NoFocus)
 
     def toggleprev(self):
         if self.prev.isVisible():
@@ -225,7 +228,6 @@ class primo(QWidget):
         self.view = self.newview
 
     def changes(self, path):
-        # print('chg',time.time(), path)
         while not os.path.exists: path, name = os.path.split(path)
         n = self.core.locate(path)
         if not n.up==None: n = n.up
@@ -287,7 +289,7 @@ class primo(QWidget):
 
     def keyPressEvent(self, event):
         x = event.key()
-        print('primo',x)
+        # print('primo',x)
         if self.ctrlkey:
             if x==49: self.showIconView()
             if x==50: self.showColumnView()
@@ -347,7 +349,7 @@ class primo(QWidget):
         w.show()
 
     def copyToClip(self):
-        cid = self.view.selectedIndexes()
+        cid = self.view.view.selectedIndexes()
         if not cid: return 
         cur = []
         for i in cid:

@@ -26,11 +26,12 @@ def humanSize(s):
     return str(s)+'  b  '
 
 
-
 ######################################################################################################################################################
 
 
 class TreeModel(QAbstractItemModel):
+    preview = pyqtSignal(object)
+    nmove = pyqtSignal(object, object)
     def __init__(self, core, parent=None):
         super(TreeModel, self).__init__(parent)
 

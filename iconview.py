@@ -366,7 +366,11 @@ class mscene(QGraphicsScene):
         if dx < 60: return 
 
         cur = self.selected()
-        if not cur: return 
+        if not cur:
+            # return 
+            it = self.itemAt(event.buttonDownScenePos(1),QTransform())
+            if it==None: return
+            cur = [it.path]
 
         urls = []
         for i in cur:

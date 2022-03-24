@@ -249,6 +249,7 @@ class mscene(QGraphicsScene):
     home=pyqtSignal()
     preview = pyqtSignal(object)
     shortcut = pyqtSignal(object)
+    ncopy = pyqtSignal(object, object)
     def __init__(self, core, parent=None):
         super(mscene, self).__init__(parent)
 
@@ -407,7 +408,6 @@ class mscene(QGraphicsScene):
         drag.setMimeData(mimedata)
         drag.exec(Qt.MoveAction | Qt.CopyAction)
 
-
     def copyToClip(self):
         cur = self.selected()
         if not cur: return 
@@ -425,8 +425,7 @@ class mscene(QGraphicsScene):
             dest = self.core.n.fpath()
             urls = mimedata.urls()
             for i in urls:
-                print('copy', i.path(), dest)
-
+                self.ncopy.emit(i.path(), dest)
 
     def mouseDoubleClickEvent(self, event):
         self.clickbuffer = True
@@ -566,7 +565,7 @@ class iconview(QWidget):
         self.zen.kevin.connect(self.kevin)
         self.zen.home.connect(self.home)
         self.zen.preview.connect(self.preview)
-
+        self.zen.ncopy.connect(self.ncopy)
 
         self.view.copyAction.triggered.connect(self.zen.copyToClip)
         self.view.pasteAction.triggered.connect(self.zen.pasteFromClip)

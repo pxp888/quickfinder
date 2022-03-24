@@ -18,6 +18,9 @@ class mover(QObject):
 		print('move',src,dest)
 		shutil.move(src, dest)
 
-
 	def copy(self, src, dest):
 		print('copy',src,dest)
+		src = QDir.toNativeSeparators(src)
+		src = src.strip(os.path.sep)
+		print('move',src,dest)
+		shutil.copy2(src, dest)

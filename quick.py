@@ -362,7 +362,7 @@ if __name__ == "__main__":
             frame.setLayout(layout)
             layout.setContentsMargins(1,1,1,1)
             layout.setSpacing(1)
-            self.resize(1600,900)
+            self.resize(1200,800)
 
             self.thing = primo()
             layout.addWidget(self.thing)

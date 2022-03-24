@@ -18,7 +18,6 @@ import hashlib
 import node
 import setter
 
-
 def fash(path, tim=0):
     m = hashlib.md5()
     m.update(str(path).encode('utf-8'))
@@ -256,6 +255,12 @@ class mscene(QGraphicsScene):
         self.shiftkey = False
         self.ctrlkey = False
         self.cols = 1
+
+        while 1:
+            try:
+                self.thunder.qin.get(False)
+            except:
+                break
 
         for n in list(self.core.n.kids.values()):
             path = n.fpath()

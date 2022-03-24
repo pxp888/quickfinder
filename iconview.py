@@ -181,10 +181,15 @@ class mview(QGraphicsView):
     nmove = pyqtSignal(object, object)
     def __init__(self, parent=None):
         super(mview, self).__init__(parent)
+        
+        self.copyAction = QAction("Copy",self)
+        self.cutAction = QAction("Cut",self)
+        self.pasteAction = QAction("Paste",self)
         self.noIndexAction = QAction("No Index",self)
         self.noNameAction = QAction("Ignore Name",self)
         self.noPathAction = QAction("Ignore Path",self)
         self.addHomePathAction = QAction("Add Index Path",self)
+
 
         self.setAlignment(Qt.AlignTop | Qt.AlignLeft)
 
@@ -196,11 +201,19 @@ class mview(QGraphicsView):
     def contextMenuEvent(self, event):
         if self.scene().selected():
             menu = QMenu(self)
+            menu.addAction(self.copyAction)
+            # menu.addAction(self.cutAction)
+            menu.addAction(self.pasteAction)
             menu.addAction(self.addHomePathAction)
             menu.addAction(self.noIndexAction)
             menu.addAction(self.noNameAction)
             menu.addAction(self.noPathAction)
             menu.exec(event.globalPos())
+        else:
+            menu = QMenu(self)
+            menu.addAction(self.pasteAction)
+            menu.exec(event.globalPos())
+
 
     def dragEnterEvent(self, e):
         # print('view enter', e)
@@ -394,6 +407,27 @@ class mscene(QGraphicsScene):
         drag.setMimeData(mimedata)
         drag.exec(Qt.MoveAction | Qt.CopyAction)
 
+
+    def copyToClip(self):
+        cur = self.selected()
+        if not cur: return 
+        urls = []
+        for i in cur:
+            urls.append(QUrl().fromLocalFile(i))
+        mimedata = QMimeData()
+        mimedata.setUrls(urls)
+
+        QGuiApplication.clipboard().setMimeData(mimedata)
+
+    def pasteFromClip(self):
+        mimedata = QGuiApplication.clipboard().mimeData()
+        if mimedata.hasUrls():
+            dest = self.core.n.fpath()
+            urls = mimedata.urls()
+            for i in urls:
+                print('copy', i.path(), dest)
+
+
     def mouseDoubleClickEvent(self, event):
         self.clickbuffer = True
         if event.button()==1:
@@ -508,6 +542,7 @@ class iconview(QWidget):
     preview = pyqtSignal(object)
     kevin = pyqtSignal(object)
     nmove = pyqtSignal(object, object)
+    ncopy = pyqtSignal(object, object)
     def __init__(self, core, parent=None):
         super(iconview, self).__init__(parent)
         layout = QGridLayout()
@@ -532,6 +567,9 @@ class iconview(QWidget):
         self.zen.home.connect(self.home)
         self.zen.preview.connect(self.preview)
 
+
+        self.view.copyAction.triggered.connect(self.zen.copyToClip)
+        self.view.pasteAction.triggered.connect(self.zen.pasteFromClip)
         self.view.noIndexAction.triggered.connect(self.noIndexFunc)
         self.view.noNameAction.triggered.connect(self.noNameFunc)
         self.view.noPathAction.triggered.connect(self.noPathFunc)

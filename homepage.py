@@ -158,6 +158,7 @@ class homeClass(QWidget):
 		# self.setFont(QFont("Arial",11))
 		self.layout = layout
 
+		self.icmaker = QFileIconProvider()
 		self.core = core
 		self.set = setter.setter('quickfinder1')
 
@@ -200,7 +201,7 @@ class homeClass(QWidget):
 		verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
 		self.layout.addItem(verticalSpacer)
 
-
+		
 	
 
 	def setup(self, path=''):
@@ -229,7 +230,8 @@ class homeClass(QWidget):
 				path = str(i)+':'+os.path.sep 
 				if os.path.exists(path):
 					it = fileitem(path)
-					it.setpic(QPixmap(':/icons/drive.png'),True)
+					# it.setpic(QPixmap(':/icons/drive.png'),True)
+					it.setpic(self.icmaker.icon(QFileInfo(path)).pixmap(256,256))
 					self.zen2.addItem(it)
 					self.drv.append(it)
 

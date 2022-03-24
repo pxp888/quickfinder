@@ -226,6 +226,7 @@ class mscene(QGraphicsScene):
 
         self.core = core
         self.maker = setter.iconMaker()
+        self.icmaker = QFileIconProvider()
 
         self.thunder = thumbmaker()
         self.thunder.result.connect(self.geticon)
@@ -266,7 +267,8 @@ class mscene(QGraphicsScene):
             path = n.fpath()
             self.thunder.qin.put((path, n.mtime))
             it = fileitem(path, n.dir)
-            it.setpic(self.maker.pic(n.name,n.dir))
+            # it.setpic(self.maker.pic(n.name,n.dir))
+            it.setpic(self.icmaker.icon(QFileInfo(path)).pixmap(256,256))
             self.addItem(it)
             self.its.append(it)
             self.paths.append(path)

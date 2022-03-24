@@ -35,10 +35,23 @@ def thumbnailpro(qin, qoo):
         path, mtime = qin.get(True)
         if not path.split('.')[-1].lower() in ['jpg','png','webp','gif','jpeg']: continue
 
-        im = Image.open(path)
-        im = ImageOps.exif_transpose(im)
-        im.thumbnail((200,200))
-        qoo.put((path, im))
+        try:
+            tpath = os.path.join(thumbroot,fash(path, mtime))
+            if os.path.exists(tpath):
+                im = Image.open(tpath)
+                qoo.put((path,im))
+            else:
+                im = Image.open(path)
+                im = ImageOps.exif_transpose(im)
+                im.thumbnail((200,200))
+                qoo.put((path, im))
+                im.save(tpath,"JPEG")
+        except:
+            if os.path.exists(path):
+                im = Image.open(path)
+                im = ImageOps.exif_transpose(im)
+                im.thumbnail((200,200))
+                qoo.put((path, im))
 
 class thumbworker(QObject):
     result = pyqtSignal(object,object)

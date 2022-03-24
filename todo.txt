@@ -1,6 +1,5 @@
 new window launching
 
-mover object, to do the work 
 rename functionality
 clipboard - copy paste
 recycle bin?  

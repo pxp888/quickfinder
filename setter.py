@@ -34,7 +34,6 @@ darkPalette.setColor(QPalette.HighlightedText, Qt.white);
 darkPalette.setColor(QPalette.Disabled, QPalette.HighlightedText, QColor(127, 127, 127));
 
 
-
 class iconMaker():
     def __init__(self):
         self.foldermap = QPixmap(':/icons/folder.png')
@@ -66,8 +65,6 @@ class iconMaker():
         return QIcon(self.pic(name,dir))
 
 
-
-
 class setter():
     def __init__(self, name):
         self.paths = AppDataPaths(name)
@@ -88,7 +85,6 @@ class setter():
         self.data[key] = val
         with open(self.paths.config_path, 'wb') as foo:
             pickle.dump(self.data, foo)
-
 
 
 class listthing(QWidget):
@@ -186,9 +182,6 @@ class setwin(QDialog):
         self.namelist.update()
         self.pathlist.update()
         self.indexlist.update()
-
-
-
         
         self.homelist = listthing(title='Homepaths')
         self.homelist.save.connect(self.savehomes)

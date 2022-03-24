@@ -287,7 +287,7 @@ class primo(QWidget):
 
     def keyPressEvent(self, event):
         x = event.key()
-        # print('primo',x)
+        print('primo',x)
         if self.ctrlkey:
             if x==49: self.showIconView()
             if x==50: self.showColumnView()
@@ -296,6 +296,8 @@ class primo(QWidget):
             if x==53: self.timescan()
             if x==54: self.toggleprev()
             if x==78: self.segundo()
+            if x==67: self.copyToClip()
+            if x==86: self.pasteFromClip()
             if x==84:
                 path = self.core.n.fpath()
                 if path=='': path = os.path.expanduser("~")
@@ -343,6 +345,28 @@ class primo(QWidget):
     def segundo(self):
         w = mainwin()
         w.show()
+
+    def copyToClip(self):
+        cid = self.view.selectedIndexes()
+        if not cid: return 
+        cur = []
+        for i in cid:
+            cur.append( self.view.mod.data(i,257).fpath() )
+        urls = []
+        for i in cur:
+            urls.append(QUrl().fromLocalFile(i))
+        mimedata = QMimeData()
+        mimedata.setUrls(urls)
+        QGuiApplication.clipboard().setMimeData(mimedata)
+
+    def pasteFromClip(self):
+        mimedata = QGuiApplication.clipboard().mimeData()
+        if mimedata.hasUrls():
+            dest = self.core.n.fpath()
+            urls = mimedata.urls()
+            for i in urls:
+                self.mover.copy(i.path(), dest)
+
 
 ######################################################################################################################################################
 

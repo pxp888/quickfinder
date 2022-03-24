@@ -214,7 +214,6 @@ class mview(QGraphicsView):
             menu.addAction(self.pasteAction)
             menu.exec(event.globalPos())
 
-
     def dragEnterEvent(self, e):
         # print('view enter', e)
         if e.mimeData().hasUrls():
@@ -409,6 +408,7 @@ class mscene(QGraphicsScene):
         drag.exec(Qt.MoveAction | Qt.CopyAction)
 
     def copyToClip(self):
+        print('icon copy')
         cur = self.selected()
         if not cur: return 
         urls = []
@@ -420,6 +420,7 @@ class mscene(QGraphicsScene):
         QGuiApplication.clipboard().setMimeData(mimedata)
 
     def pasteFromClip(self):
+        print('icon paste')
         mimedata = QGuiApplication.clipboard().mimeData()
         if mimedata.hasUrls():
             dest = self.core.n.fpath()
@@ -454,6 +455,8 @@ class mscene(QGraphicsScene):
             if x==52: self.shortcut.emit(3)
             if x==53: self.shortcut.emit(4)
             if x==54: self.shortcut.emit(5)
+            if x==67: self.copyToClip()
+            if x==86: self.pasteFromClip()
             if x==84:
                 path = self.core.n.fpath()
                 if path=='': path = os.path.expanduser("~")

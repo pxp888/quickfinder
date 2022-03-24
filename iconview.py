@@ -241,6 +241,8 @@ class mscene(QGraphicsScene):
         self.cursA = -1
         self.cursB = -1
 
+        self.clickbuffer = False
+
     def geticon(self, path, pic):
         if path in self.paths:
             i = self.paths.index(path)
@@ -345,6 +347,9 @@ class mscene(QGraphicsScene):
         super(mscene, self).mousePressEvent(event)
 
     def mouseReleaseEvent(self, event):
+        if self.clickbuffer:
+            self.clickbuffer=False
+            return
         if event.button()==1:
             it = self.itemAt(event.scenePos(),QTransform())
             if not it==None:
@@ -359,8 +364,11 @@ class mscene(QGraphicsScene):
         dx = (event.buttonDownScenePos(1)-event.scenePos()).manhattanLength()
         if dx < 60: return 
 
+        cur = self.selected()
+        if not cur: return 
+
         urls = []
-        for i in self.selected():
+        for i in cur:
             urls.append(QUrl().fromLocalFile(i))
         mimedata = QMimeData()
         mimedata.setUrls(urls)
@@ -369,6 +377,7 @@ class mscene(QGraphicsScene):
         drag.exec(Qt.MoveAction | Qt.CopyAction)
 
     def mouseDoubleClickEvent(self, event):
+        self.clickbuffer = True
         if event.button()==1:
             it = self.itemAt(event.scenePos(),QTransform())
             if not it==None:

@@ -124,11 +124,10 @@ class TreeModel(QAbstractItemModel):
         #     return 0
 
     def dropMimeData(self, data, action, row, column, parent):
-        # print('mod', data, action, row, column, parent)
         dest = parent.internalPointer().fpath()
         if data.hasUrls():
             for i in data.urls():
-                print('localmove : ', i, dest)
+                self.nmove.emit(i.path(), dest)
         return True
 
     def supportedDropActions(self):
@@ -155,6 +154,7 @@ class colviewer(QWidget):
     npath = pyqtSignal(object)
     preview = pyqtSignal(object)
     hopPath = pyqtSignal(object)
+    nmove = pyqtSignal(object, object)
     def __init__(self, core, parent=None):
         super(colviewer, self).__init__(parent)
         layout = QHBoxLayout()
@@ -201,11 +201,9 @@ class colviewer(QWidget):
             e.ignore()
 
     def dropEvent(self, e):
-        # print('import file' , e.mimeData().urls())
         dest = self.core.n.fpath()
         for i in e.mimeData().urls():
-            print('import : ', i.path(), dest)
-        # self.view.dropEvent(e)
+            self.nmove.emit(i.path(), dest)
 
     def cleanup(self):
         pass
@@ -227,14 +225,12 @@ class colviewer(QWidget):
         else:
             self.mod.layoutAboutToBeChanged.emit()
 
-
     def refresh2(self):
         if self.reset:
             self.mod.endResetModel()
             self.reset = False
         else:
             self.mod.layoutChanged.emit()
-
 
     def selupdate(self, a, b):
         cur = self.view.selectedIndexes()
@@ -282,7 +278,6 @@ class colviewer(QWidget):
         if len(out)>1:
             for i in out:
                 os.startfile(i.fpath())
-
 
     def contextMenuEvent(self, event):
         menu = QMenu(self)

@@ -32,6 +32,7 @@ def humanSize(s):
 
 class TreeModel(QAbstractItemModel):
     preview = pyqtSignal(object)
+    nmove = pyqtSignal(object, object)
     def __init__(self, core, parent=None):
         super(TreeModel, self).__init__(parent)
 
@@ -125,11 +126,10 @@ class TreeModel(QAbstractItemModel):
         #     return 0
 
     def dropMimeData(self, data, action, row, column, parent):
-        # print('mod', data, action, row, column, parent)
         dest = parent.internalPointer().fpath()
         if data.hasUrls():
             for i in data.urls():
-                print('localmove : ', i, dest)
+                self.nmove.emit(i.path(), dest)
         return True
 
     def supportedDropActions(self):
@@ -156,6 +156,7 @@ class treeviewer(QWidget):
     npath = pyqtSignal(object)
     preview = pyqtSignal(object)
     hopPath = pyqtSignal(object)
+    nmove = pyqtSignal(object, object)
     def __init__(self, core, parent=None):
         super(treeviewer, self).__init__(parent)
         layout = QHBoxLayout()
@@ -172,6 +173,8 @@ class treeviewer(QWidget):
         self.reset = False
 
         self.mod = TreeModel(core)
+        self.mod.nmove.connect(self.nmove)
+
         self.view = QTreeView()
         self.view.setModel(self.mod)
         self.view.setSortingEnabled(True)
@@ -181,6 +184,7 @@ class treeviewer(QWidget):
         self.view.header().setSectionResizeMode(1,3)
         self.view.header().setSectionResizeMode(2,3)
         self.view.setVerticalScrollMode(1)
+        
 
         self.layout.addWidget(self.view)
 
@@ -210,11 +214,9 @@ class treeviewer(QWidget):
             e.ignore()
 
     def dropEvent(self, e):
-        # print('import file' , e.mimeData().urls())
         dest = self.core.n.fpath()
         for i in e.mimeData().urls():
-            print('import : ', i.path(), dest)
-        # self.view.dropEvent(e)
+            self.nmove.emit(i.path(), dest)
 
     def cleanup(self):
         pass
@@ -297,7 +299,6 @@ class treeviewer(QWidget):
         if len(out)>1:
             for i in out:
                 os.startfile(i.fpath())
-
 
     def contextMenuEvent(self, event):
         menu = QMenu(self)

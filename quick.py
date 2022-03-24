@@ -18,6 +18,7 @@ import preview
 import colview
 import treeview
 import homepage
+import mover
 
 
 ######################################################################################################################################################
@@ -65,6 +66,7 @@ class primo(QWidget):
         self.layout = layout
 
         self.set = setter.setter('quickfinder1')
+        self.mover = mover.mover()
 
         home = os.path.expanduser("~")
         self.core = node.coreClass()
@@ -97,6 +99,7 @@ class primo(QWidget):
         self.view.preview.connect(self.preview)
         self.view.preview.connect(self.prev.preview)
         self.view.zen.shortcut.connect(self.shortcut)
+        self.view.nmove.connect(self.mover.move)
 
         self.sbs = QSplitter()
         self.sbs.addWidget(self.view)
@@ -183,6 +186,7 @@ class primo(QWidget):
         self.view.hopPath.connect(self.hopPath)
         self.view.preview.connect(self.preview)
         self.view.preview.connect(self.prev.preview)
+        self.view.nmove.connect(self.mover.move)
         old.deleteLater()
 
     def showIconView(self):
@@ -198,6 +202,7 @@ class primo(QWidget):
         self.newview.kevin.connect(self.kevin)
         self.newview.preview.connect(self.preview)
         self.newview.preview.connect(self.prev.preview)
+        self.newview.nmove.connect(self.mover.move)
         self.newview.refresh2()
         self.view.deleteLater()
         self.view = self.newview
@@ -216,6 +221,7 @@ class primo(QWidget):
         self.newview.hopPath.connect(self.hopPath)
         self.newview.preview.connect(self.preview)
         self.newview.preview.connect(self.prev.preview)
+        self.newview.nmove.connect(self.mover.move)
         self.view.deleteLater()
         self.view = self.newview
 

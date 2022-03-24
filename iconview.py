@@ -55,7 +55,7 @@ class thumbworker(QObject):
             qim = QImage(data, im.width, im.height, QImage.Format_ARGB32)
             pm = QPixmap.fromImage(qim)
             self.result.emit(path, pm)
-        print('all done')
+        # print('all done')
 
 class thumbmaker(QObject):
     result = pyqtSignal(object, object)
@@ -165,6 +165,7 @@ class fileitem(QGraphicsItem):
 
 
 class mview(QGraphicsView):
+    nmove = pyqtSignal(object, object)
     def __init__(self, parent=None):
         super(mview, self).__init__(parent)
         self.noIndexAction = QAction("No Index",self)
@@ -189,7 +190,7 @@ class mview(QGraphicsView):
             menu.exec(event.globalPos())
 
     def dragEnterEvent(self, e):
-        print('view enter', e)
+        # print('view enter', e)
         if e.mimeData().hasUrls():
             e.setAccepted(True)
         else:
@@ -202,14 +203,15 @@ class mview(QGraphicsView):
             e.setAccepted(False)
 
     def dropEvent(self, e):
-        print('view drop')
-        for i in e.mimeData().urls(): print(i)
-
         it = self.itemAt(e.pos())
         if not it==None:
-            print(it.path)
+            dest = it.path
         else:
-            print('here')
+            dest = self.scene().core.n.fpath()
+
+        for i in e.mimeData().urls(): 
+            self.nmove.emit(i.path(), dest)
+
 
 
 ######################################################################################################################################################
@@ -356,7 +358,6 @@ class mscene(QGraphicsScene):
                 self.select(it.path)
             else:
                 self.select('')
-
         super(mscene, self).mouseReleaseEvent(event)
 
     def mouseMoveEvent(self, event):
@@ -489,6 +490,7 @@ class iconview(QWidget):
     npath = pyqtSignal(object)
     preview = pyqtSignal(object)
     kevin = pyqtSignal(object)
+    nmove = pyqtSignal(object, object)
     def __init__(self, core, parent=None):
         super(iconview, self).__init__(parent)
         layout = QGridLayout()
@@ -506,6 +508,7 @@ class iconview(QWidget):
         self.view = mview(self.zen)
         self.view.setBackgroundBrush(QBrush(QColor(40,40,40)))
         self.view.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.view.nmove.connect(self.nmove)
 
         self.zen.npath.connect(self.npath)
         self.zen.kevin.connect(self.kevin)

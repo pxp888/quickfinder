@@ -260,7 +260,7 @@ class coreClass():
         self.scan()
         return self.n
 
-    def scan(self, n=None, rec=4):
+    def scan(self, n=None, rec=5):
         if n==None: n=self.n
         check = [n]
         nc = []

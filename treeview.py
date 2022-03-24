@@ -66,12 +66,13 @@ class TreeModel(QAbstractItemModel):
             if index.column()==0:
                 item = index.internalPointer()
                 # return QVariant(self.icon.icon(item.name, item.dir))
-                return QVariant(self.icmaker.icon(QFileInfo(index.internalPointer().fpath())).pixmap(24,24))
+                return QVariant(self.icmaker.icon(QFileInfo(index.internalPointer().fpath())))
             return None
         if role == Qt.TextAlignmentRole:
             if index.column()==1:
                 return Qt.AlignRight
             return Qt.AlignLeft
+        if role == Qt.SizeHintRole and index.column()==0: return QSize(200,20)
         return None
 
     def flags(self, index):
@@ -336,7 +337,7 @@ class treeviewer(QWidget):
         for it in cur:
             if it.column()==0:
                 n = self.mod.data(it,257)
-                self.mod.core.ff.addHomePath(n.fpath())
+                self.mod.core.addHomePath(n.fpath())
                 self.set.set('ff',self.mod.core.ff)
         
 

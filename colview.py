@@ -35,6 +35,7 @@ class TreeModel(QAbstractItemModel):
         super(TreeModel, self).__init__(parent)
 
         self.icon = setter.iconMaker()
+        self.icmaker = QFileIconProvider()
 
         self.core = core
         self.base = core.n
@@ -64,7 +65,8 @@ class TreeModel(QAbstractItemModel):
         if role == Qt.DecorationRole:
             if index.column()==0:
                 item = index.internalPointer()
-                return QVariant(self.icon.icon(item.name, item.dir))
+                # return QVariant(self.icon.icon(item.name, item.dir))
+                return QVariant(self.icmaker.icon(QFileInfo(index.internalPointer().fpath())))
             return None
         if role == Qt.TextAlignmentRole:
             if index.column()==1:
@@ -320,7 +322,7 @@ class colviewer(QWidget):
         for it in cur:
             if it.column()==0:
                 n = self.mod.data(it,257)
-                self.mod.core.ff.addHomePath(n.fpath())
+                self.mod.core.addHomePath(n.fpath())
                 self.set.set('ff',self.mod.core.ff)
 
 

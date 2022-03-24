@@ -170,7 +170,7 @@ class mview(QGraphicsView):
         self.noIndexAction = QAction("No Index",self)
         self.noNameAction = QAction("Ignore Name",self)
         self.noPathAction = QAction("Ignore Path",self)
-        self.addHomePathAction = QAction("Add Home Path",self)
+        self.addHomePathAction = QAction("Add Index Path",self)
 
         self.setAlignment(Qt.AlignTop | Qt.AlignLeft)
 

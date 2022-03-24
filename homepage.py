@@ -124,27 +124,6 @@ class mscene(QGraphicsScene):
 		super(mscene, self).keyPressEvent(event)
 
 
-# class mview(QGraphicsView):
-# 	def __init__(self, parent=None):
-# 		super(mview, self).__init__(parent)
-# 		self.removeHomePathAction = QAction("Remove Homepath",self)
-# 		self.setAlignment(Qt.AlignTop | Qt.AlignLeft)
-
-
-# 	def resizeEvent(self, event):
-# 		# print(self.mapToScene(0,0))
-# 		# self.setAlignment(Qt.AlignTop | Qt.AlignLeft)
-# 		super(mview, self).resizeEvent(event)
-
-# 	def contextMenuEvent(self, event):
-# 		# if self.scene().selected():
-# 		menu = QMenu(self)
-# 		menu.addAction(self.removeHomePathAction)
-# 		menu.exec(event.globalPos())
-
-
-######################################################################################################################################################
-
 
 class homeClass(QWidget):
 	npath = pyqtSignal(object)
@@ -216,7 +195,8 @@ class homeClass(QWidget):
 		for i in self.homepaths:
 			it = fileitem(i)
 			it.dpath = i.split(os.path.sep)[-1]
-			it.setpic(QPixmap(':/icons/folder.png'),True)
+			# it.setpic(QPixmap(':/icons/folder.png'),True)
+			it.setpic(self.icmaker.icon(QFileInfo(i)).pixmap(256,256))
 			self.zen1.addItem(it)
 			self.its.append(it)
 

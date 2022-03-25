@@ -250,6 +250,7 @@ class mscene(QGraphicsScene):
     preview = pyqtSignal(object)
     shortcut = pyqtSignal(object)
     ncopy = pyqtSignal(object, object)
+    segundo = pyqtSignal()
     def __init__(self, core, parent=None):
         super(mscene, self).__init__(parent)
 
@@ -470,6 +471,7 @@ class mscene(QGraphicsScene):
             if x==54: self.shortcut.emit(5)
             if x==67: self.copyToClip() # C
             if x==86: self.pasteFromClip() # V 
+            if x==78: self.segundo.emit()
             if x==84:  # T  
                 path = self.core.n.fpath()
                 if path=='': path = os.path.expanduser("~")
@@ -592,6 +594,7 @@ class iconview(QWidget):
     kevin = pyqtSignal(object)
     nmove = pyqtSignal(object, object)
     ncopy = pyqtSignal(object, object)
+    segundo = pyqtSignal()
     def __init__(self, core, parent=None):
         super(iconview, self).__init__(parent)
         layout = QGridLayout()
@@ -616,6 +619,7 @@ class iconview(QWidget):
         self.zen.home.connect(self.home)
         self.zen.preview.connect(self.preview)
         self.zen.ncopy.connect(self.ncopy)
+        self.zen.segundo.connect(self.segundo)
 
         self.view.copyAction.triggered.connect(self.zen.copyToClip)
         self.view.pasteAction.triggered.connect(self.zen.pasteFromClip)

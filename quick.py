@@ -76,6 +76,8 @@ class primo(QWidget):
         self.eye = QFileSystemWatcher()
         self.ctrlkey = False
 
+        self.bros = []
+
         self.homepage = homepage.homeClass(self.core)
         self.homepage.setup()
 
@@ -104,6 +106,7 @@ class primo(QWidget):
         self.view.zen.shortcut.connect(self.shortcut)
         self.view.nmove.connect(self.mover.move)
         self.view.ncopy.connect(self.mover.copy)
+        self.view.segundo.connect(self.segundo)
 
         self.sbs = QSplitter()
         self.sbs.addWidget(self.view)
@@ -211,6 +214,7 @@ class primo(QWidget):
         self.view.deleteLater()
         self.view = self.newview
         self.view.zen.shortcut.connect(self.shortcut)
+        self.view.segundo.connect(self.segundo)
 
     def showTreeView(self):
         if self.core.n==self.core.sniffer: self.setPath(os.path.expanduser("~"))
@@ -354,6 +358,8 @@ class primo(QWidget):
     def segundo(self):
         w = mainwin()
         w.show()
+        self.bros.append(w)
+
 
     def copyToClip(self):
         cid = self.view.view.selectedIndexes()

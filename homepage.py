@@ -17,7 +17,6 @@ from appdata import AppDataPaths
 import node
 import setter
 
-
 class fileitem(QGraphicsItem):
 	doublenpath = pyqtSignal(object)
 	def __init__(self, path='', width=200, parent=None):
@@ -60,7 +59,6 @@ class fileitem(QGraphicsItem):
 			painter.setPen(pen)
 			outrect = self.boundingRect()
 			painter.drawRect(outrect)
-
 
 		pen = QPen(Qt.white,1)
 		painter.setPen(pen)
@@ -194,7 +192,13 @@ class homeClass(QWidget):
 
 		for i in self.homepaths:
 			it = fileitem(i)
-			it.dpath = i.split(os.path.sep)[-1]
+			# it.dpath = i.split(os.path.sep)[-1]
+			base, name = os.path.split(i)
+			if name=='': 
+				it.dpath=base
+			else:
+				it.dpath=name 
+
 			# it.setpic(QPixmap(':/icons/folder.png'),True)
 			it.setpic(self.icmaker.icon(QFileInfo(i)).pixmap(256,256))
 			self.zen1.addItem(it)

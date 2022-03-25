@@ -18,6 +18,7 @@ import shutil
 
 import node
 import setter
+import mover 
 
 def fash(path, tim=0):
     m = hashlib.md5()
@@ -468,6 +469,7 @@ class mscene(QGraphicsScene):
             return
         if x==16777248: self.shiftkey=True
         if x==16777249: self.ctrlkey=True
+        if x==16777265: self.rename()
 
         if x==16777223:  # DELETE
             self.deleteFiles()
@@ -555,6 +557,14 @@ class mscene(QGraphicsScene):
                     shutil.rmtree(i)
                 else:
                     os.remove(i)
+
+    def rename(self):
+        cur = self.selected()
+        if not cur: return 
+        self.namer = mover.renameClass()
+        self.namer.populate(cur)
+        self.namer.show()
+
 
 ######################################################################################################################################################
 

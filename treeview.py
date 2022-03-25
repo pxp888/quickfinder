@@ -11,7 +11,7 @@ import threading
 
 import node
 import setter
-
+import mover 
 
 def humanTime(t):
     lt = time.localtime(t)
@@ -258,13 +258,17 @@ class treeviewer(QWidget):
         else:
             self.mod.layoutChanged.emit()
 
-    def selupdate(self, a, b):
+    def selectedPaths(self):
         cur = self.view.selectedIndexes()
         out = []
         for i in cur:
             if i.column()==0:
                 n = self.mod.data(i,257)
                 out.append(n.fpath())
+        return out 
+
+    def selupdate(self, a, b):
+        out = self.selectedPaths()
         self.preview.emit(out)
         if len(out)>0:
             self.hopPath.emit(out[-1])
@@ -294,6 +298,7 @@ class treeviewer(QWidget):
         if x==16777219:  # backspace
             self.back()
             return
+        if x==16777265: self.rename()
         super(treeviewer, self).keyPressEvent(event)
 
     def entered(self):
@@ -380,6 +385,12 @@ class treeviewer(QWidget):
                     shutil.rmtree(i)
                 else:
                     os.remove(i)
+
+    def rename(self):
+        cur = self.selectedPaths()
+        self.namer = mover.renameClass()
+        self.namer.populate(cur)
+        self.namer.show()
 
 ######################################################################################################################################################
 

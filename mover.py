@@ -40,3 +40,72 @@ class mover(QObject):
 		src = src.strip(os.path.sep)
 		self.qin.put((2,src,dest))
 		# shutil.copy2(src, dest)
+
+
+class renameClass(QDialog):
+	def __init__(self, parent=None):
+		super(renameClass, self).__init__(parent)
+		self.setWindowTitle('Rename Files')
+		layout = QGridLayout()
+		self.setLayout(layout)
+		
+		self.srclist = QListWidget()
+		self.destlist = QListWidget()
+		self.line = QLineEdit()
+		self.confirmbut = QPushButton('Implement')
+
+		layout.addWidget(self.line,0,1)
+		layout.addWidget(self.srclist,1,0)
+		layout.addWidget(self.destlist,1,1)
+		layout.addWidget(self.confirmbut,2,1)
+
+		self.line.setText('* #')
+		self.line.textChanged.connect(self.preview)
+		
+		self.confirmbut.setEnabled(False)
+		self.confirmbut.clicked.connect(self.rename)
+
+		self.ipaths = []
+		self.opaths = []
+
+	def populate(self, its):
+		self.ipaths = its 
+		self.srclist.clear()
+		for i in its:
+			self.srclist.addItem(os.path.split(i)[1])
+		self.preview()
+
+	def preview(self):
+		t = self.line.text()
+		self.destlist.clear()
+		self.opaths = []
+		
+		n = 0
+		for i in self.ipaths:
+			base, name = os.path.split(i)
+			if name=='':
+				name = base 
+				base = ''
+			name, ext = os.path.splitext(name)
+			nt = t 
+			nt = nt.replace('*',name)
+			nt = nt.replace('#',str(n))
+			nt = nt + ext 
+			np = os.path.join(base,nt)
+			self.opaths.append(np)
+			self.destlist.addItem(nt)
+			n+=1
+
+		test = {}
+		for i in self.opaths: test[i]=1
+		self.confirmbut.setEnabled(len(test)==len(self.opaths))
+		
+	def rename(self):
+		for i in range(len(self.ipaths)):
+			shutil.move(self.ipaths[i], self.opaths[i])
+		self.close()
+
+
+
+
+

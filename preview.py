@@ -36,17 +36,22 @@ class prevpane(QScrollArea):
         self.label1 = QLabel()
         self.extractbutton = QPushButton('Extract Zip File')
         self.zipbutton = QPushButton('Create Zip File')
+        self.zipname = QLineEdit()
 
         layout.addWidget(self.text)
         layout.addWidget(self.label1)
         layout.addWidget(self.extractbutton)
+        layout.addWidget(self.zipname)
         layout.addWidget(self.zipbutton)
+
         self.text.hide()
         self.label1.hide()
         self.extractbutton.hide()
+        self.zipname.hide()
         self.zipbutton.hide()
 
         self.extractbutton.clicked.connect(self.unzip)
+        self.zipbutton.clicked.connect(self.makezip)
 
         darkPalette = QPalette()
         darkPalette.setColor(QPalette.Base, QColor(40, 42, 54));
@@ -82,7 +87,9 @@ class prevpane(QScrollArea):
             if path.split('.')[-1].lower() in zipfiles:
                 self.showzip(path)
                 return
-        if len(paths)>1: self.showmany(paths)
+        if len(paths)>1: 
+            self.showmany(paths)
+            return 
         self.clear()
         
 
@@ -91,12 +98,14 @@ class prevpane(QScrollArea):
         self.label1.hide()
         self.extractbutton.hide()
         self.zipbutton.hide()
+        self.zipname.hide()
 
     def showtext(self, path):
         self.label1.hide()
         self.text.show()
         self.extractbutton.hide()
         self.zipbutton.hide()
+        self.zipname.hide()
         try:
             fin = open(path,'r')
             self.text.setPlainText(fin.read(10000))
@@ -109,6 +118,7 @@ class prevpane(QScrollArea):
         self.text.hide()
         self.extractbutton.hide()
         self.zipbutton.hide()
+        self.zipname.hide()
 
         im = Image.open(path)
         im = ImageOps.exif_transpose(im)
@@ -133,12 +143,13 @@ class prevpane(QScrollArea):
         self.text.show()
         self.extractbutton.show()
         self.zipbutton.hide()
+        self.zipname.hide()
 
         t = ''
         with zipfile.ZipFile(path, 'r') as zipper:
             list = zipper.infolist()
             for i in list:
-                t += i.filename + '\t\t' + humanSize(i.file_size) + '\n'
+                t += i.filename + '\t\t\t' + str(i.date_time[0]) + '/'+str(i.date_time[1])+'/'+str(i.date_time[2])+ '\n'
             self.text.setPlainText(t)
         self.zfile = path 
 
@@ -153,11 +164,29 @@ class prevpane(QScrollArea):
         self.text.show()
         self.extractbutton.hide()
         self.zipbutton.show()
+        self.zipname.show()
 
         self.lastpaths = paths
-        t = '' 
-        t += str(len(paths)) + ' files'
-        self.text.setPlainText(t)
+        cur = os.path.split(self.lastpaths[0])[0]
+        os.chdir(cur)
+        cur = os.path.split(cur)[1]
+        size = 0
+        for i in paths:
+            size+=os.path.getsize(i)
+        msg = str(len(paths)) + ' Selected, '+ humanSize(size) 
+        msg += '\n\n'
+        for i in paths:
+            msg += os.path.relpath(i) + '\n'
+        self.text.setPlainText(msg)
+        proposedname = cur + '.zip'
+        self.zipname.setText(proposedname)
+
+    def makezip(self):
+        with zipfile.ZipFile(self.zipname.text(), 'w') as zipper:
+            for i in self.lastpaths:
+                zipper.write(os.path.relpath(i))
+
+
 
 
 # class prevwin(QDialog):

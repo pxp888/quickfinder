@@ -305,6 +305,12 @@ class primo(QWidget):
                 if path=='': path = os.path.expanduser("~")
                 os.chdir(path)
                 os.system('start cmd')
+            if x==76:  # L
+                path = self.core.n.fpath()
+                if path=='': path = os.path.expanduser("~")
+                os.chdir(path)
+                os.system('start wsl')
+                
             return
         if x==16777249:
             self.ctrlkey=True

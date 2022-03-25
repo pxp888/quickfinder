@@ -463,7 +463,7 @@ class mscene(QGraphicsScene):
 
     def keyPressEvent(self, event):
         x = event.key()
-        # print('ic',x)
+        print('ic',x)
         if self.ctrlkey:
             if x==65: self.selectAll()
             if x==73: self.selectInvert()
@@ -473,13 +473,19 @@ class mscene(QGraphicsScene):
             if x==52: self.shortcut.emit(3)
             if x==53: self.shortcut.emit(4)
             if x==54: self.shortcut.emit(5)
-            if x==67: self.copyToClip()
-            if x==86: self.pasteFromClip()
-            if x==84:
+            if x==67: self.copyToClip() # C
+            if x==86: self.pasteFromClip() # V 
+            if x==84:  # T  
                 path = self.core.n.fpath()
                 if path=='': path = os.path.expanduser("~")
                 os.chdir(path)
                 os.system('start cmd')
+            if x==76:  # L
+                path = self.core.n.fpath()
+                if path=='': path = os.path.expanduser("~")
+                os.chdir(path)
+                os.system('start wsl')
+
             return
         if x==16777248: self.shiftkey=True
         if x==16777249: self.ctrlkey=True

@@ -14,6 +14,7 @@ from PIL import Image, ImageOps
 from appdata import AppDataPaths
 import base64
 import hashlib
+import shutil 
 
 import node
 import setter
@@ -465,12 +466,12 @@ class mscene(QGraphicsScene):
                 os.chdir(path)
                 os.system('start cmd')
             return
-        if x==16777248:
-            self.shiftkey=True
-            # return
-        if x==16777249:
-            self.ctrlkey=True
-            # return
+        if x==16777248: self.shiftkey=True
+        if x==16777249: self.ctrlkey=True
+
+        if x==16777223:  # DELETE
+            self.deleteFiles()
+            return
         if x==16777234:  # LEFT
             self.cursA = (self.cursA -1 )%len(self.its)
             self.select(self.paths[self.cursA])
@@ -537,6 +538,23 @@ class mscene(QGraphicsScene):
             i.update()
         self.preview.emit(self.selected())
 
+    def deleteFiles(self):
+        cur = self.selected()
+        if not cur: return 
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Information)
+        msg.setText("Are you sure?")
+        msg.setInformativeText("This cannot be undone.")
+        msg.setWindowTitle("Confirm Delete")
+        msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+        msg.setEscapeButton(QMessageBox.Cancel)
+        retval = msg.exec_()
+        if retval==1024:
+            for i in cur:
+                if os.path.isdir(i):
+                    shutil.rmtree(i)
+                else:
+                    os.remove(i)
 
 ######################################################################################################################################################
 

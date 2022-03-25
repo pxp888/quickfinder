@@ -288,6 +288,9 @@ class treeviewer(QWidget):
                 # self.npath.emit(os.path.expanduser("~"))
                 self.npath.emit('home')
             return
+        if x==16777223:  # DELETE
+            self.deleteFiles()
+            return
         if x==16777219:  # backspace
             self.back()
             return
@@ -357,6 +360,26 @@ class treeviewer(QWidget):
         path = self.core.back()
         self.npath.emit(path)
 
+    def deleteFiles(self):
+        sid = self.view.selectedIndexes()
+        cur = []
+        for i in sid: 
+            cur.append(self.mod.data(i,257).fpath())
+        if not cur: return 
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Information)
+        msg.setText("Are you sure?")
+        msg.setInformativeText("This cannot be undone.")
+        msg.setWindowTitle("Confirm Delete")
+        msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+        msg.setEscapeButton(QMessageBox.Cancel)
+        retval = msg.exec_()
+        if retval==1024:
+            for i in cur:
+                if os.path.isdir(i):
+                    shutil.rmtree(i)
+                else:
+                    os.remove(i)
 
 ######################################################################################################################################################
 

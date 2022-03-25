@@ -1,3 +1,5 @@
+mover object threading - currently not threaded. 
+
 new window launching
 
 rename functionality

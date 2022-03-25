@@ -52,12 +52,14 @@ class renameClass(QDialog):
 		self.srclist = QListWidget()
 		self.destlist = QListWidget()
 		self.line = QLineEdit()
-		self.confirmbut = QPushButton('Implement')
+		self.confirmbut = QPushButton('Rename Files')
 
 		layout.addWidget(self.line,0,1)
-		layout.addWidget(self.srclist,1,0)
-		layout.addWidget(self.destlist,1,1)
-		layout.addWidget(self.confirmbut,2,1)
+		layout.addWidget(QLabel('From'),1,0)
+		layout.addWidget(QLabel('To'),1,1)
+		layout.addWidget(self.srclist,2,0)
+		layout.addWidget(self.destlist,2,1)
+		layout.addWidget(self.confirmbut,3,1)
 
 		self.line.setText('* #')
 		self.line.textChanged.connect(self.preview)
@@ -80,6 +82,8 @@ class renameClass(QDialog):
 		self.destlist.clear()
 		self.opaths = []
 		
+		ok = True
+
 		n = 0
 		for i in self.ipaths:
 			base, name = os.path.split(i)
@@ -90,6 +94,7 @@ class renameClass(QDialog):
 			nt = t 
 			nt = nt.replace('*',name)
 			nt = nt.replace('#',str(n))
+			if nt=='': ok=False
 			nt = nt + ext 
 			np = os.path.join(base,nt)
 			self.opaths.append(np)
@@ -99,6 +104,7 @@ class renameClass(QDialog):
 		test = {}
 		for i in self.opaths: test[i]=1
 		self.confirmbut.setEnabled(len(test)==len(self.opaths))
+		if not ok: self.confirmbut.setEnabled(False)
 		
 	def rename(self):
 		for i in range(len(self.ipaths)):

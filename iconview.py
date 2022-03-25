@@ -429,7 +429,21 @@ class mscene(QGraphicsScene):
         if mimedata.hasUrls():
             dest = self.core.n.fpath()
             urls = mimedata.urls()
+
             for i in urls:
+                name = os.path.split(i.path())[1]
+                target = os.path.join(dest, name)
+                if os.path.exists(target):
+                    msg = QMessageBox()
+                    msg.setIcon(QMessageBox.Information)
+                    msg.setText(name)
+                    msg.setInformativeText("will be over-written")
+                    msg.setWindowTitle("Confirm Paste Operation?")
+                    msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+                    msg.setEscapeButton(QMessageBox.Cancel)
+                    retval = msg.exec_()
+                    if not retval==1024: return 
+
                 self.ncopy.emit(i.path(), dest)
 
     def mouseDoubleClickEvent(self, event):

@@ -16,6 +16,7 @@ import base64
 import hashlib
 import shutil 
 import subprocess 
+import glob 
 
 import node
 import setter
@@ -564,7 +565,10 @@ class mscene(QGraphicsScene):
         if retval==1024:
             for i in cur:
                 if os.path.isdir(i):
-                    shutil.rmtree(i)
+                    for f in glob.glob(i+'*'):
+                        print(f)
+
+
                 else:
                     os.remove(i)
 

@@ -20,7 +20,11 @@ def copmove(qin):
 		if job==2:
 			print('copy',src,dest)
 			if os.path.isdir(src):
-				shutil.copytree(src, dest)
+				target = os.path.join(dest, os.path.split(src)[1])
+				while os.path.exists(target):
+					target = target + ' Copy'
+				shutil.copytree(src, target)
+				# print('copytree',src,dest,dirs_exist_ok=True)
 			else:
 				shutil.copy2(src, dest)
 			print('finished', dest)

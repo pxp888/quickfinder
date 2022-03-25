@@ -186,7 +186,6 @@ class mview(QGraphicsView):
         super(mview, self).__init__(parent)
         
         self.copyAction = QAction("Copy",self)
-        self.cutAction = QAction("Cut",self)
         self.pasteAction = QAction("Paste",self)
         self.noIndexAction = QAction("No Index",self)
         self.noNameAction = QAction("Ignore Name",self)
@@ -205,7 +204,6 @@ class mview(QGraphicsView):
         if self.scene().selected():
             menu = QMenu(self)
             menu.addAction(self.copyAction)
-            # menu.addAction(self.cutAction)
             menu.addAction(self.pasteAction)
             menu.addAction(self.addHomePathAction)
             menu.addAction(self.noIndexAction)
@@ -435,17 +433,13 @@ class mscene(QGraphicsScene):
                 name = os.path.split(i.path())[1]
                 target = os.path.join(dest, name)
                 if os.path.exists(target):
-                    msg = QMessageBox()
-                    msg.setIcon(QMessageBox.Information)
-                    msg.setText(name)
-                    msg.setInformativeText("will be over-written")
-                    msg.setWindowTitle("Confirm Paste Operation?")
-                    msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
-                    msg.setEscapeButton(QMessageBox.Cancel)
-                    retval = msg.exec_()
-                    if not retval==1024: return 
-
-                self.ncopy.emit(i.path(), dest)
+                    fname, ext = os.path.splitext(name)
+                    fname = fname + ' Copy'
+                    name = fname + ext 
+                    target = os.path.join(dest, name)
+                    self.ncopy.emit(i.path(), target)
+                else:
+                    self.ncopy.emit(i.path(), dest)
 
     def mouseDoubleClickEvent(self, event):
         self.clickbuffer = True

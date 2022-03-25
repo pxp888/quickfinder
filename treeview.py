@@ -198,7 +198,6 @@ class treeviewer(QWidget):
         self.view.header().setSectionResizeMode(2,3)
         self.view.setVerticalScrollMode(1)
         
-
         self.layout.addWidget(self.view)
 
         # self.view.selectionModel().currentChanged.connect(self.hop)
@@ -206,10 +205,13 @@ class treeviewer(QWidget):
         self.view.selectionModel().currentChanged.connect(self.selupdate)
         self.view.header().sortIndicatorChanged.connect(self.sortclicked)
 
+        self.copyAction = QAction("Copy",self)
+        self.pasteAction = QAction("Paste",self)
         self.noIndexAction = QAction("No Index",self)
         self.noNameAction = QAction("Ignore Name",self)
         self.noPathAction = QAction("Ignore Path",self)
         self.addHomePathAction = QAction("Add Index Path",self)
+
         self.noIndexAction.triggered.connect(self.noIndexFunc)
         self.noNameAction.triggered.connect(self.noNameFunc)
         self.noPathAction.triggered.connect(self.noPathFunc)
@@ -366,10 +368,7 @@ class treeviewer(QWidget):
         self.npath.emit(path)
 
     def deleteFiles(self):
-        sid = self.view.selectedIndexes()
-        cur = []
-        for i in sid: 
-            cur.append(self.mod.data(i,257).fpath())
+        cur = self.selectedPaths()
         if not cur: return 
         msg = QMessageBox()
         msg.setIcon(QMessageBox.Information)

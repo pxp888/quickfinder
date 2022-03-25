@@ -377,16 +377,13 @@ class primo(QWidget):
                 name = os.path.split(i.path())[1]
                 target = os.path.join(dest, name)
                 if os.path.exists(target):
-                    msg = QMessageBox()
-                    msg.setIcon(QMessageBox.Information)
-                    msg.setText(name)
-                    msg.setInformativeText("will be over-written")
-                    msg.setWindowTitle("Confirm Paste Operation?")
-                    msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
-                    msg.setEscapeButton(QMessageBox.Cancel)
-                    retval = msg.exec_()
-                    if not retval==1024: return 
-                self.mover.copy(i.path(), dest)
+                    fname, ext = os.path.splitext(name)
+                    fname = fname + ' Copy'
+                    name = fname + ext 
+                    target = os.path.join(dest, name)
+                    self.mover.copy(i.path(), target)
+                else:
+                    self.mover.copy(i.path(), dest)
 
 
 ######################################################################################################################################################

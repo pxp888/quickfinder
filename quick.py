@@ -9,6 +9,7 @@ import pickle
 from queue import Queue
 import threading
 import multiprocessing
+import subprocess
 
 import node
 import setter
@@ -304,12 +305,12 @@ class primo(QWidget):
                 path = self.core.n.fpath()
                 if path=='': path = os.path.expanduser("~")
                 os.chdir(path)
-                os.system('start cmd')
+                subprocess.run('start cmd',shell=True)
             if x==76:  # L
                 path = self.core.n.fpath()
                 if path=='': path = os.path.expanduser("~")
                 os.chdir(path)
-                os.system('start wsl')
+                subprocess.run('start wsl',shell=True)
                 
             return
         if x==16777249:

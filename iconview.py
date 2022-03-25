@@ -15,6 +15,7 @@ from appdata import AppDataPaths
 import base64
 import hashlib
 import shutil 
+import subprocess 
 
 import node
 import setter
@@ -463,7 +464,7 @@ class mscene(QGraphicsScene):
 
     def keyPressEvent(self, event):
         x = event.key()
-        print('ic',x)
+        # print('ic',x)
         if self.ctrlkey:
             if x==65: self.selectAll()
             if x==73: self.selectInvert()
@@ -479,12 +480,14 @@ class mscene(QGraphicsScene):
                 path = self.core.n.fpath()
                 if path=='': path = os.path.expanduser("~")
                 os.chdir(path)
-                os.system('start cmd')
+                subprocess.run('start cmd',shell=True)
+                self.ctrlkey = False
             if x==76:  # L
                 path = self.core.n.fpath()
                 if path=='': path = os.path.expanduser("~")
                 os.chdir(path)
-                os.system('start wsl')
+                subprocess.run('start wsl',shell=True)
+                self.ctrlkey = False
 
             return
         if x==16777248: self.shiftkey=True

@@ -73,17 +73,16 @@ class renameClass(QDialog):
 	def populate(self, its):
 		self.ipaths = its 
 		self.srclist.clear()
-		for i in its:
-			self.srclist.addItem(os.path.split(i)[1])
+		for i in its: self.srclist.addItem(os.path.split(i)[1])
+		if len(self.ipaths)==1: self.line.setText(os.path.splitext( os.path.split( self.ipaths[0] )[1] )[0] )
 		self.preview()
 
 	def preview(self):
 		t = self.line.text()
 		self.destlist.clear()
 		self.opaths = []
-		
-		ok = True
 
+		ok = True
 		n = 0
 		for i in self.ipaths:
 			base, name = os.path.split(i)

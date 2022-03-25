@@ -34,7 +34,7 @@ class prevpane(QScrollArea):
         self.label1.hide()
 
         darkPalette = QPalette()
-        darkPalette.setColor(QPalette.Base, QColor(29, 31, 33));
+        darkPalette.setColor(QPalette.Base, QColor(40, 42, 54));
         darkPalette.setColor(QPalette.Text, QColor(200, 200, 200));
         # darkPalette.setColor(QPalette.Base, QColor(190, 190, 190));
         # darkPalette.setColor(QPalette.Text, Qt.black);

@@ -19,7 +19,10 @@ def copmove(qin):
 			print('finished', dest)
 		if job==2:
 			print('copy',src,dest)
-			shutil.copy2(src, dest)
+			if os.path.isdir(src):
+				shutil.copytree(src, dest)
+			else:
+				shutil.copy2(src, dest)
 			print('finished', dest)
 
 class mover(QObject):

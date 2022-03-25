@@ -434,11 +434,15 @@ class mscene(QGraphicsScene):
                 name = os.path.split(i.path())[1]
                 target = os.path.join(dest, name)
                 if os.path.exists(target):
-                    fname, ext = os.path.splitext(name)
-                    fname = fname + ' Copy'
-                    name = fname + ext 
-                    target = os.path.join(dest, name)
-                    self.ncopy.emit(i.path(), target)
+                    if not os.path.isdir(target):
+                        fname, ext = os.path.splitext(name)
+                        fname = fname + ' Copy'
+                        name = fname + ext 
+                        target = os.path.join(dest, name)
+                        self.ncopy.emit(i.path(), target)
+                    else:
+                        target = os.path.join(dest, name) + ' Copy'
+                        self.ncopy.emit(i.path(), target)
                 else:
                     self.ncopy.emit(i.path(), dest)
 

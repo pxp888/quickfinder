@@ -192,6 +192,7 @@ class fscene(QGraphicsScene):
 
 ######################################################################################################################################################
 
+
 class fline(QLineEdit):
     blah = pyqtSignal(object)
     home = pyqtSignal()
@@ -235,8 +236,6 @@ class fline(QLineEdit):
                 self.back.emit()
                 self.clearsig.emit()
         super(fline, self).keyPressEvent(event)
-
-
 
 
 ######################################################################################################################################################

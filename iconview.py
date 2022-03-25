@@ -193,7 +193,6 @@ class mview(QGraphicsView):
         self.noPathAction = QAction("Ignore Path",self)
         self.addHomePathAction = QAction("Add Index Path",self)
 
-
         self.setAlignment(Qt.AlignTop | Qt.AlignLeft)
 
     def resizeEvent(self, event):
@@ -206,6 +205,7 @@ class mview(QGraphicsView):
             menu = QMenu(self)
             menu.addAction(self.copyAction)
             menu.addAction(self.pasteAction)
+            menu.addSeparator()
             menu.addAction(self.addHomePathAction)
             menu.addAction(self.noIndexAction)
             menu.addAction(self.noNameAction)

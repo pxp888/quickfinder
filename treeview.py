@@ -399,7 +399,6 @@ class treeviewer(QWidget):
                 else:
                     os.remove(i)
             
-
     def rename(self):
         cur = self.selectedPaths()
         self.namer = mover.renameClass()

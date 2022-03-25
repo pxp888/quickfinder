@@ -5,6 +5,7 @@ from PyQt5.QtGui import *
 import os
 import sys
 import time
+import zipfile 
 
 import multiprocessing as mp
 from queue import Queue
@@ -12,6 +13,12 @@ import threading
 import resources
 from PIL import Image, ImageOps
 
+def humanSize(s):
+    if s > 1073741824: return str(round(s/1073741824,2))+'  G  '
+    if s > 1048576: return str(int(round(s/1048576,0)))+'  m  '
+    if s > 1024: return str(int(round(s/1024,0)))+'  k  '
+    if s < 10: return '  '
+    return str(s)+'  b  '
 
 
 class prevpane(QScrollArea):
@@ -27,11 +34,19 @@ class prevpane(QScrollArea):
 
         self.text = QTextEdit()
         self.label1 = QLabel()
+        self.extractbutton = QPushButton('Extract Zip File')
+        self.zipbutton = QPushButton('Create Zip File')
 
         layout.addWidget(self.text)
         layout.addWidget(self.label1)
+        layout.addWidget(self.extractbutton)
+        layout.addWidget(self.zipbutton)
         self.text.hide()
         self.label1.hide()
+        self.extractbutton.hide()
+        self.zipbutton.hide()
+
+        self.extractbutton.clicked.connect(self.unzip)
 
         darkPalette = QPalette()
         darkPalette.setColor(QPalette.Base, QColor(40, 42, 54));
@@ -44,11 +59,17 @@ class prevpane(QScrollArea):
         # self.text.setFont(QFont("Arial",13))
         self.setFocusPolicy(Qt.NoFocus)
         self.text.setFocusPolicy(Qt.NoFocus)
+        self.extractbutton.setFocusPolicy(Qt.NoFocus)
+        self.zipbutton.setFocusPolicy(Qt.NoFocus)
+
+        self.zfile = None 
+        self.lastpaths = []
 
     def preview(self, paths):
         if self.width() < 100: return
         txtfiles = ['py','txt','bat','json','ini','log','sh','h','cpp','conf','csv']
         images = ['jpg','png','bmp','jpeg','webp']
+        zipfiles = ['zip']
 
         if len(paths)==1:
             path = paths[0]
@@ -58,15 +79,24 @@ class prevpane(QScrollArea):
             if path.split('.')[-1].lower() in images:
                 self.showimage(path)
                 return
+            if path.split('.')[-1].lower() in zipfiles:
+                self.showzip(path)
+                return
+        if len(paths)>1: self.showmany(paths)
         self.clear()
+        
 
     def clear(self):
         self.text.hide()
         self.label1.hide()
+        self.extractbutton.hide()
+        self.zipbutton.hide()
 
     def showtext(self, path):
         self.label1.hide()
         self.text.show()
+        self.extractbutton.hide()
+        self.zipbutton.hide()
         try:
             fin = open(path,'r')
             self.text.setPlainText(fin.read(10000))
@@ -77,6 +107,8 @@ class prevpane(QScrollArea):
     def showimage(self,path):
         self.label1.show()
         self.text.hide()
+        self.extractbutton.hide()
+        self.zipbutton.hide()
 
         im = Image.open(path)
         im = ImageOps.exif_transpose(im)
@@ -96,17 +128,49 @@ class prevpane(QScrollArea):
 
         self.label1.setPixmap(pic)
 
-class prevwin(QDialog):
-    def __init__(self, core=None, parent=None):
-        super(prevwin, self).__init__(parent)
-        self.setWindowTitle('Preview')
-        # frame = QFrame()
-        # self.setCentralWidget(frame)
-        layout = QVBoxLayout()
-        self.setLayout(layout)
-        layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSpacing(0)
-        # self.resize(1200,900)
+    def showzip(self, path):
+        self.label1.hide()
+        self.text.show()
+        self.extractbutton.show()
+        self.zipbutton.hide()
 
-        self.prev = prevpane()
-        layout.addWidget(self.prev)
+        t = ''
+        with zipfile.ZipFile(path, 'r') as zipper:
+            list = zipper.infolist()
+            for i in list:
+                t += i.filename + '\t\t' + humanSize(i.file_size) + '\n'
+            self.text.setPlainText(t)
+        self.zfile = path 
+
+    def unzip(self):
+        outpath = os.path.split(self.zfile)[0]
+        with zipfile.ZipFile(self.zfile, 'r') as zipper:
+            zipper.extractall(os.path.splitext(self.zfile)[0])
+
+
+    def showmany(self, paths):
+        self.label1.hide()
+        self.text.show()
+        self.extractbutton.hide()
+        self.zipbutton.show()
+
+        self.lastpaths = paths
+        t = '' 
+        t += str(len(paths)) + ' files'
+        self.text.setPlainText(t)
+
+
+# class prevwin(QDialog):
+#     def __init__(self, core=None, parent=None):
+#         super(prevwin, self).__init__(parent)
+#         self.setWindowTitle('Preview')
+#         # frame = QFrame()
+#         # self.setCentralWidget(frame)
+#         layout = QVBoxLayout()
+#         self.setLayout(layout)
+#         layout.setContentsMargins(0, 0, 0, 0)
+#         layout.setSpacing(0)
+#         # self.resize(1200,900)
+
+#         self.prev = prevpane()
+#         layout.addWidget(self.prev)

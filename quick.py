@@ -303,7 +303,7 @@ class primo(QWidget):
             if x==53: self.timescan()
             if x==54: self.toggleprev()
             if x==78: self.segundo()
-            if x==67: self.copyToClip()
+            # if x==67: self.copyToClip()
             if x==86: self.pasteFromClip()
             if x==84:
                 path = self.core.n.fpath()
@@ -315,7 +315,6 @@ class primo(QWidget):
                 if path=='': path = os.path.expanduser("~")
                 os.chdir(path)
                 subprocess.run('start wsl',shell=True)
-                
             return
         if x==16777249:
             self.ctrlkey=True
@@ -359,20 +358,6 @@ class primo(QWidget):
         w = mainwin()
         w.show()
         self.bros.append(w)
-
-
-    def copyToClip(self):
-        cid = self.view.view.selectedIndexes()
-        if not cid: return 
-        cur = []
-        for i in cid:
-            cur.append( self.view.mod.data(i,257).fpath() )
-        urls = []
-        for i in cur:
-            urls.append(QUrl().fromLocalFile(i))
-        mimedata = QMimeData()
-        mimedata.setUrls(urls)
-        QGuiApplication.clipboard().setMimeData(mimedata)
 
     def pasteFromClip(self):
         mimedata = QGuiApplication.clipboard().mimeData()

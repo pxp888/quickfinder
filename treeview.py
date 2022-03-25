@@ -180,7 +180,6 @@ class treeviewer(QWidget):
         self.set = setter.setter('quickfinder1')
 
         self.core = core
-
         self.reset = False
 
         self.mod = TreeModel(core)
@@ -188,6 +187,8 @@ class treeviewer(QWidget):
 
         self.view = tview()
         self.view.back.connect(self.back)
+
+        self.ctrlkey = False
 
         self.view.setModel(self.mod)
         self.view.setSortingEnabled(True)
@@ -200,8 +201,6 @@ class treeviewer(QWidget):
         
         self.layout.addWidget(self.view)
 
-        # self.view.selectionModel().currentChanged.connect(self.hop)
-        # self.view.selectionModel().selectionChanged.connect(self.selupdate)
         self.view.selectionModel().currentChanged.connect(self.selupdate)
         self.view.header().sortIndicatorChanged.connect(self.sortclicked)
 
@@ -212,6 +211,7 @@ class treeviewer(QWidget):
         self.noPathAction = QAction("Ignore Path",self)
         self.addHomePathAction = QAction("Add Index Path",self)
 
+        self.copyAction.triggered.connect(self.copyToClip)
         self.noIndexAction.triggered.connect(self.noIndexFunc)
         self.noNameAction.triggered.connect(self.noNameFunc)
         self.noPathAction.triggered.connect(self.noPathFunc)
@@ -283,6 +283,9 @@ class treeviewer(QWidget):
     def keyPressEvent(self, event):
         x = event.key()
         # print('tv',x)
+        if self.ctrlkey:
+            if x==67: self.copyToClip()
+        if x==16777249: self.ctrlkey=True 
         if x==16777220:  #''' Enter '''
             self.entered()
             return
@@ -302,6 +305,11 @@ class treeviewer(QWidget):
             return
         if x==16777265: self.rename()
         super(treeviewer, self).keyPressEvent(event)
+
+    def keyReleaseEvent(self, event):
+        x = event.key()
+        if x==16777249: self.ctrlkey=False
+        super(treeviewer,self).keyReleaseEvent(event)
 
     def entered(self):
         cur = self.view.selectedIndexes()
@@ -325,6 +333,7 @@ class treeviewer(QWidget):
     def contextMenuEvent(self, event):
         menu = QMenu(self)
         menu.setPalette(self.palette())
+        menu.addAction(self.copyAction)
         menu.addAction(self.addHomePathAction)
         menu.addAction(self.noIndexAction)
         menu.addAction(self.noNameAction)
@@ -390,6 +399,16 @@ class treeviewer(QWidget):
         self.namer = mover.renameClass()
         self.namer.populate(cur)
         self.namer.show()
+
+    def copyToClip(self):
+        cur = self.selectedPaths()
+        if not cur: return 
+        urls = []
+        for i in cur: urls.append(QUrl().fromLocalFile(i))
+        mimedata = QMimeData()
+        mimedata.setUrls(urls)
+        QGuiApplication.clipboard().setMimeData(mimedata)
+
 
 ######################################################################################################################################################
 

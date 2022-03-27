@@ -155,7 +155,6 @@ class fileitem(QGraphicsItem):
             outrect = self.boundingRect()
             painter.drawRect(outrect)
 
-
         pen = QPen(Qt.white,1)
         painter.setPen(pen)
         painter.setFont(QFont("Arial",8))
@@ -284,6 +283,8 @@ class mscene(QGraphicsScene):
         self.cursB = -1
 
         self.clickbuffer = False
+        self.iconwidth = 120
+        self.iconheight = 120
 
     def geticon(self, path, pic):
         if path in self.paths:
@@ -320,20 +321,17 @@ class mscene(QGraphicsScene):
     def reflow(self, wide=0):
         if wide==0: wide=self.wide
         self.wide = wide
-        cols = max((int(wide / 150)),1)
+        cols = max((int(wide / self.iconwidth)),1)
         self.cols = cols
-        # itemw = int((wide-10) / cols)
-        itemw = 150 
+        itemw = self.iconwidth 
         n = 0
-        mxrow = 150
         for i in self.its:
             i.w = itemw
+            i.h = self.iconheight
             row = int(n / cols) * i.h
             col = (n % cols ) * itemw
             i.setPos(col,row)
             n+=1
-            mxrow = max(mxrow, row)
-        mxrow += 150
         self.setSceneRect(self.itemsBoundingRect())
 
     def select(self, path):
@@ -455,9 +453,18 @@ class mscene(QGraphicsScene):
                     os.startfile(it.path)
         super(mscene, self).mouseDoubleClickEvent(event)
 
-    def wheelEvent(self, event):
-        pass
-        super(mscene, self).wheelEvent(event)
+    # def wheelEvent(self, event):
+    #     if self.ctrlkey:
+    #         if event.delta() > 0:
+    #             self.iconwidth += 8
+    #             self.iconheight += 4
+    #         else:
+    #             self.iconwidth -= 8
+    #             self.iconheight -= 4 
+    #         self.reflow()
+    #         # self.update()
+    #         return
+    #     super(mscene, self).wheelEvent(event)
 
     def keyPressEvent(self, event):
         x = event.key()
@@ -661,6 +668,19 @@ class iconview(QWidget):
         self.zen.reflow(self.width())
 
         super(iconview,self).resizeEvent(event)
+
+    def wheelEvent(self, event):
+        if self.zen.ctrlkey:
+            if event.angleDelta().y() > 0:
+                self.zen.iconwidth += 8
+                self.zen.iconheight += 4
+            else:
+                self.zen.iconwidth -= 8
+                self.zen.iconheight -= 4 
+            self.zen.reflow()
+            self.zen.update()
+            return
+        super(iconview, self).wheelEvent(event)
 
     def noIndexFunc(self):
         for i in self.zen.selected():

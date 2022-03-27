@@ -11,5 +11,8 @@
         <file alias="word.png">word.png</file>
         <file alias="pdf.png">pdf.png</file>
         <file alias="drive.png">drive.png</file>
+        <file alias="iconview.png">iconview.png</file>
+        <file alias="treeview.png">treeview.png</file>
+        <file alias="colview.png">colview.png</file>
     </qresource>
 </RCC>

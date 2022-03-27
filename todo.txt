@@ -1,11 +1,4 @@
-mover object threading - currently not threaded. 
-
-new window launching
-
-rename functionality
-clipboard - copy paste
 recycle bin?  
 
 homepage drop targets
 
-zooming icons?  

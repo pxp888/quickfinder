@@ -126,19 +126,22 @@ class primo(QWidget):
         self.setupStatButtons()
 
     def setupStatButtons(self):
-        icbut = QPushButton('Icon View')
+        icbut = QPushButton('')
+        icbut.setIcon(QIcon(':/icons/iconview.png'))
         self.stat.addPermanentWidget(icbut)
         icbut.clicked.connect(self.showIconView)
         icbut.setFocusPolicy(Qt.NoFocus)
         icbut.setToolTip('Ctrl + 1')
 
-        colbut = QPushButton('Column View')
+        colbut = QPushButton('')
+        colbut.setIcon(QIcon(':/icons/colview.png'))
         self.stat.addPermanentWidget(colbut)
         colbut.clicked.connect(self.showColumnView)
         colbut.setFocusPolicy(Qt.NoFocus)
         colbut.setToolTip('Ctrl + 2')
 
-        treebut = QPushButton('Tree View')
+        treebut = QPushButton('')
+        treebut.setIcon(QIcon(':/icons/treeview.png'))
         self.stat.addPermanentWidget(treebut)
         treebut.clicked.connect(self.showTreeView)
         treebut.setFocusPolicy(Qt.NoFocus)

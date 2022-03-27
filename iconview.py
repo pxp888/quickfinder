@@ -30,8 +30,6 @@ def remove_readonly(func, path, exc_info):
     os.chmod(path, stat.S_IWRITE)
     func(path)
 
-
-
 def fash(path, tim=0):
     m = hashlib.md5()
     m.update(str(path).encode('utf-8'))
@@ -493,8 +491,8 @@ class mscene(QGraphicsScene):
                 os.chdir(path)
                 subprocess.run('start wsl',shell=True)
                 self.ctrlkey = False
-
             return
+
         if x==16777248: self.shiftkey=True
         if x==16777249: self.ctrlkey=True
         if x==16777265: self.rename()

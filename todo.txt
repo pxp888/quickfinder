@@ -2,3 +2,7 @@ recycle bin?
 
 homepage drop targets
 
+persistent size and views
+
+custom commands
+

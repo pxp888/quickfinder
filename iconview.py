@@ -17,9 +17,20 @@ import hashlib
 import shutil 
 import subprocess 
 import stat 
+import zipfile 
+
 import node
 import setter
 import mover 
+
+
+def remove_readonly(func, path, exc_info):
+    if func not in (os.unlink, os.rmdir) or exc_info[1].winerror != 5:
+        raise exc_info[1]
+    os.chmod(path, stat.S_IWRITE)
+    func(path)
+
+
 
 def fash(path, tim=0):
     m = hashlib.md5()
@@ -187,6 +198,7 @@ class mview(QGraphicsView):
         
         self.copyAction = QAction("Copy",self)
         self.pasteAction = QAction("Paste",self)
+        self.zipAction = QAction("ZIP Selection",self)
         self.noIndexAction = QAction("No Index",self)
         self.noNameAction = QAction("Ignore Name",self)
         self.noPathAction = QAction("Ignore Path",self)
@@ -204,6 +216,7 @@ class mview(QGraphicsView):
             menu = QMenu(self)
             menu.addAction(self.copyAction)
             menu.addAction(self.pasteAction)
+            menu.addAction(self.zipAction)
             menu.addSeparator()
             menu.addAction(self.addHomePathAction)
             menu.addAction(self.noIndexAction)
@@ -237,7 +250,6 @@ class mview(QGraphicsView):
 
         for i in e.mimeData().urls(): 
             self.nmove.emit(i.path(), dest)
-
 
 
 ######################################################################################################################################################
@@ -432,7 +444,6 @@ class mscene(QGraphicsScene):
             for i in urls:
                 self.ncopy.emit(i.path(), dest)
 
-
     def mouseDoubleClickEvent(self, event):
         self.clickbuffer = True
         if event.button()==1:
@@ -564,14 +575,20 @@ class mscene(QGraphicsScene):
         if retval==1024:
             for i in cur:
                 if os.path.isdir(i):
-                    for root, dirs, files in os.walk(i, topdown=False):
-                        for name in files:
-                            os.remove(os.path.join(root, name))
-                        for name in dirs:
-                            os.rmdir(os.path.join(root, name))
-                    os.rmdir(i)
+                    shutil.rmtree(i,onerror=remove_readonly)
                 else:
                     os.remove(i)
+
+            # for i in cur:
+            #     if os.path.isdir(i):
+            #         for root, dirs, files in os.walk(i, topdown=False):
+            #             for name in files:
+            #                 os.remove(os.path.join(root, name))
+            #             for name in dirs:
+            #                 os.rmdir(os.path.join(root, name))
+            #         os.rmdir(i)
+            #     else:
+            #         os.remove(i)
 
     def rename(self):
         cur = self.selected()
@@ -623,6 +640,7 @@ class iconview(QWidget):
         self.view.noNameAction.triggered.connect(self.noNameFunc)
         self.view.noPathAction.triggered.connect(self.noPathFunc)
         self.view.addHomePathAction.triggered.connect(self.addHomePathFunc)
+        self.view.zipAction.triggered.connect(self.zipFunc)
 
         layout.addWidget(self.view)
         self.zen.reflow(self.width())
@@ -669,6 +687,13 @@ class iconview(QWidget):
     def addHomePathFunc(self):
         for i in self.zen.selected():
             self.core.addHomePath(i)
+
+    def zipFunc(self):
+        src = self.zen.selected()
+        name = src[0]+'.zip'
+        with zipfile.ZipFile(name, 'w') as zipper:
+            for i in src:
+                zipper.write(os.path.relpath(i))
 
     def home(self):
         # self.npath.emit(os.path.expanduser("~"))

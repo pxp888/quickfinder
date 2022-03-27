@@ -5,6 +5,9 @@ from PyQt5.QtGui import *
 import os
 import sys
 import time
+import stat 
+import shutil 
+
 
 from queue import Queue
 import threading
@@ -25,6 +28,12 @@ def humanSize(s):
     if s > 1024: return str(int(round(s/1024,0)))+'  k  '
     if s < 10: return '  '
     return str(s)+'  b  '
+
+def remove_readonly(func, path, exc_info):
+    if func not in (os.unlink, os.rmdir) or exc_info[1].winerror != 5:
+        raise exc_info[1]
+    os.chmod(path, stat.S_IWRITE)
+    func(path)
 
 
 ######################################################################################################################################################
@@ -271,6 +280,8 @@ class treeviewer(QWidget):
 
     def selupdate(self, a, b):
         out = self.selectedPaths()
+        p = self.mod.data(a,257).fpath()
+        if not p in out: out.append(p)
         self.preview.emit(out)
         if len(out)>0:
             self.hopPath.emit(out[-1])
@@ -390,14 +401,11 @@ class treeviewer(QWidget):
         if retval==1024:
             for i in cur:
                 if os.path.isdir(i):
-                    for root, dirs, files in os.walk(i, topdown=False):
-                        for name in files:
-                            os.remove(os.path.join(root, name))
-                        for name in dirs:
-                            os.rmdir(os.path.join(root, name))
-                    os.rmdir(i)
+                    shutil.rmtree(i,onerror=remove_readonly)
                 else:
                     os.remove(i)
+
+
             
     def rename(self):
         cur = self.selectedPaths()

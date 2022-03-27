@@ -286,8 +286,9 @@ class finderview(QWidget):
         self.reflow()
 
     def reflow(self):
-        cols = int(self.width() / 700)
-        if cols==0: cols=1
+        cols = int(self.width() / 500)
+        cols = max(cols,1)
+        cols = min(cols,4)
         self.zen.cols = cols
         itemw = int(self.width() / cols)
         n = 0
@@ -319,11 +320,6 @@ class finderview(QWidget):
 
     def lookup(self):
         t = str(self.line.text())
-        # if len(t)>0:
-        #     if not t[0].lower()==self.core.n.fpath().lower()[0]:
-        #         if os.path.exists(t):
-        #             self.npath.emit(t)
-        #             return
         if len(t) > 1:
             self.zen.target=t
             self.zen.tree = btree.tree()

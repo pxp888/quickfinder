@@ -440,7 +440,20 @@ class mscene(QGraphicsScene):
             dest = self.core.n.fpath()
             urls = mimedata.urls()
             for i in urls:
-                self.ncopy.emit(i.path(), dest)
+                name = os.path.split(i.path())[1]
+                target = os.path.join(dest, name)
+                if os.path.exists(target):
+                    if not os.path.isdir(target):
+                        fname, ext = os.path.splitext(name)
+                        fname = fname + ' Copy'
+                        name = fname + ext 
+                        target = os.path.join(dest, name)
+                        self.ncopy.emit(i.path(), dest)
+                    else:
+                        target = os.path.join(dest, name) + ' Copy'
+                        self.ncopy.emit(i.path(), dest)
+                else:
+                    self.ncopy.emit(i.path(), dest)
 
     def mouseDoubleClickEvent(self, event):
         self.clickbuffer = True
@@ -452,19 +465,6 @@ class mscene(QGraphicsScene):
                 else:
                     os.startfile(it.path)
         super(mscene, self).mouseDoubleClickEvent(event)
-
-    # def wheelEvent(self, event):
-    #     if self.ctrlkey:
-    #         if event.delta() > 0:
-    #             self.iconwidth += 8
-    #             self.iconheight += 4
-    #         else:
-    #             self.iconwidth -= 8
-    #             self.iconheight -= 4 
-    #         self.reflow()
-    #         # self.update()
-    #         return
-    #     super(mscene, self).wheelEvent(event)
 
     def keyPressEvent(self, event):
         x = event.key()

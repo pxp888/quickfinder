@@ -135,6 +135,16 @@ class mscene(QGraphicsScene):
 		super(mscene, self).keyPressEvent(event)
 
 
+def drivecheck(qoo):
+	drvlet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+	for i in drvlet:
+		path = str(i)+':'+os.path.sep 
+		if os.path.exists(path):
+			it = fileitem(path)
+			total, used, free = shutil.disk_usage(path)
+			entry = (path, total, used)
+			qoo.put(entry)
+	qoo.put((0,0,0))
 
 class homeClass(QWidget):
 	npath = pyqtSignal(object)
@@ -178,12 +188,14 @@ class homeClass(QWidget):
 
 		self.view1.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
 		self.view2.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
+		self.view1.setMinimumHeight(180)
+		self.view2.setMinimumHeight(180)
 
 		self.zen1.npath.connect(self.npath)
 		self.zen2.npath.connect(self.npath)
 		self.zen1.kevin.connect(self.kevin)
 
-		self.driveset()
+		# self.driveset()
 		self.setup()
 		self.setFocusPolicy(Qt.NoFocus)
 
@@ -191,7 +203,33 @@ class homeClass(QWidget):
 		verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
 		self.layout.addItem(verticalSpacer)
 
-		
+		self.qoo = Queue()
+		self.dthread = threading.Thread(target=drivecheck, args=(self.qoo,),daemon=True)
+		self.dthread.start()
+		self.dim = QTimer()
+		self.dim.setInterval(100)
+		self.dim.timeout.connect(self.drivecheck)
+		self.dim.start()
+
+	def drivecheck(self):
+		while 1:
+			try:
+				path, total, used = self.qoo.get(False)
+				if path==0: 
+					self.dim.stop()
+					return
+			except:
+				return
+			it = fileitem(path)
+			it.total = total 
+			it.used = used 
+			it.setpic(self.icmaker.icon(QFileInfo(path)).pixmap(256,256))
+			self.zen2.addItem(it)
+			self.drv.append(it)
+			it.setPos(len(self.drv)*200,0)
+			it.update()
+
+		# self.reflow()
 
 	def setup(self, path=''):
 		self.core.sniffer = node.node()
@@ -204,22 +242,19 @@ class homeClass(QWidget):
 
 		for i in self.homepaths:
 			it = fileitem(i)
-			# it.dpath = i.split(os.path.sep)[-1]
 			base, name = os.path.split(i)
 			if name=='': 
 				it.dpath=base
 			else:
 				it.dpath=name 
 
-			# it.setpic(QPixmap(':/icons/folder.png'),True)
 			it.setpic(self.icmaker.icon(QFileInfo(i)).pixmap(256,256))
 			self.zen1.addItem(it)
 			self.its.append(it)
 
 		self.reflow()
 
-
-	def driveset(self):
+	def driveset(self):   # NOT USED
 		if len(self.drv)==0:
 			drvlet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 			for i in drvlet:
@@ -230,7 +265,6 @@ class homeClass(QWidget):
 					it.setpic(self.icmaker.icon(QFileInfo(path)).pixmap(256,256))
 					self.zen2.addItem(it)
 					self.drv.append(it)
-
 
 	def reflow(self):
 		cols = max((self.width() / 200)-1 ,1)
@@ -250,7 +284,9 @@ class homeClass(QWidget):
 			col = 0
 			row = 200*n 
 			i.setPos(row,col)
+			i.update()
 			n+=1
+		self.zen2.setSceneRect(self.zen2.itemsBoundingRect())
 
 	def resizeEvent(self, event):
 		self.reflow()

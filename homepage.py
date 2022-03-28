@@ -188,8 +188,8 @@ class homeClass(QWidget):
 
 		self.view1.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
 		self.view2.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
-		self.view1.setMinimumHeight(180)
-		self.view2.setMinimumHeight(180)
+		self.view1.setMinimumHeight(150)
+		self.view2.setMinimumHeight(150)
 
 		self.zen1.npath.connect(self.npath)
 		self.zen2.npath.connect(self.npath)

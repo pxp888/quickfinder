@@ -286,7 +286,7 @@ class finderview(QWidget):
         self.reflow()
 
     def reflow(self):
-        cols = int(self.width() / 500)
+        cols = int(self.width() / 600)
         cols = max(cols,1)
         cols = min(cols,4)
         self.zen.cols = cols

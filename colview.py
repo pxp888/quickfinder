@@ -81,7 +81,7 @@ class TreeModel(QAbstractItemModel):
             if index.column()==1:
                 return Qt.AlignRight
             return Qt.AlignLeft
-        if role == Qt.SizeHintRole and index.column()==0: return QSize(200,20)
+        # if role == Qt.SizeHintRole and index.column()==0: return QSize(200,20)
         return None
 
     def flags(self, index):

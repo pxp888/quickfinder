@@ -5,6 +5,7 @@ from queue import Queue
 import threading
 import pickle
 import shutil
+from PIL import Image, ImageOps
 
 from fuzzywuzzy import fuzz
 import setter
@@ -19,6 +20,14 @@ def chain(path):
         out.insert(0,name)
     out.insert(0,path)
     return out
+
+def fash(path, tim=0):
+    m = hashlib.md5()
+    m.update(str(path).encode('utf-8'))
+    m.update(str(tim).encode('utf-8'))
+    b = base64.b32encode(m.digest())
+    # b = m.digest()
+    return str(b)[:-4]
 
 
 ######################################################################################################################################################
@@ -168,6 +177,7 @@ def threadwork(qin, ff, foo):
         if job==2: find1(detail, qin, foo)
         if job==3: find2(detail, foo)
         if job==4: drivecheck(detail)
+        if job==5: thumbnail(detail)
     
 def scan1(detail, qin, ff):
     n, rec = detail 
@@ -213,6 +223,27 @@ def drivecheck(detail):
             qoo.put(entry)
     qoo.put((0,0,0))
 
+def thumbnail(detail):
+    path, mtime, qoo = detail
+    if not path.split('.')[-1].lower() in ['jpg','png','webp','gif','jpeg']: return 
+
+    try:
+        tpath = os.path.join(thumbroot,fash(path, mtime))
+        if os.path.exists(tpath):
+            im = Image.open(tpath)
+            qoo.put((path,im))
+        else:
+            im = Image.open(path)
+            im = ImageOps.exif_transpose(im)
+            im.thumbnail((200,200))
+            qoo.put((path, im))
+            im.save(tpath,"JPEG")
+    except:
+        if os.path.exists(path):
+            im = Image.open(path)
+            im = ImageOps.exif_transpose(im)
+            im.thumbnail((200,200))
+            qoo.put((path, im))
 
 ######################################################################################################################################################
 

@@ -97,14 +97,16 @@ class thumbmaker(QObject):
         self.thread.finished.connect(self.thread.deleteLater)
         self.thread.start()
 
-        self.pro = mp.Process(target=thumbnailpro, args=(self.qin, self.qoo),daemon=True)
-        self.pro.start()
+        # self.pro = mp.Process(target=thumbnailpro, args=(self.qin, self.qoo),daemon=True)
+        # self.pro.start()
 
     def cleanup(self):
         self.qoo.put((0,0))
         self.thread.exit()
-        self.pro.terminate()
+        # self.pro.terminate()
 
+    def getthumb(self, path, mtime):
+        self.qin.put((5,(path, mtime,self.qoo)))
 
 ######################################################################################################################################################
 
@@ -269,6 +271,7 @@ class mscene(QGraphicsScene):
 
         self.thunder = thumbmaker()
         self.thunder.result.connect(self.geticon)
+        self.thunder.qin = self.core.qin
 
         self.its = []
         self.paths = []
@@ -308,9 +311,9 @@ class mscene(QGraphicsScene):
 
         for n in list(self.core.n.kids.values()):
             path = n.fpath()
-            self.thunder.qin.put((path, n.mtime))
+            # self.thunder.qin.put((path, n.mtime))
+            self.thunder.getthumb(path, n.mtime)
             it = fileitem(path, n.dir)
-            # it.setpic(self.maker.pic(n.name,n.dir))
             it.setpic(self.icmaker.icon(QFileInfo(path)).pixmap(256,256))
             self.addItem(it)
             self.its.append(it)

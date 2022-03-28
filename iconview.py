@@ -588,10 +588,21 @@ class mscene(QGraphicsScene):
         retval = msg.exec_()
         if retval==1024:
             for i in cur:
-                if os.path.isdir(i):
-                    shutil.rmtree(i,onerror=remove_readonly)
-                else:
-                    os.remove(i)
+                try:
+                    if os.path.isdir(i):
+                        shutil.rmtree(i,onerror=remove_readonly)
+                    else:
+                        os.remove(i)
+                except:
+                    msg = QMessageBox()
+                    msg.setIcon(QMessageBox.Information)
+                    msg.setText("Delete Failed (it may be busy)")
+                    msg.setInformativeText(str(i))
+                    msg.setWindowTitle("Delete failed")
+                    msg.setStandardButtons(QMessageBox.Ok)
+                    msg.setEscapeButton(QMessageBox.Ok)
+                    retval = msg.exec_()
+
 
             # for i in cur:
             #     if os.path.isdir(i):

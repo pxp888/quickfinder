@@ -86,8 +86,8 @@ class thumbmaker(QObject):
     result = pyqtSignal(object, object)
     def __init__(self, parent=None):
         super(thumbmaker, self).__init__(parent)
-        self.qin = mp.Queue()
-        self.qoo = mp.Queue()
+        self.qin = Queue()
+        self.qoo = Queue()
 
         self.thread = QThread()
         self.worker = thumbworker(self.qoo)
@@ -97,14 +97,22 @@ class thumbmaker(QObject):
         self.thread.finished.connect(self.thread.deleteLater)
         self.thread.start()
 
-        self.pro = mp.Process(target=thumbnailpro, args=(self.qin, self.qoo),daemon=True)
-        self.pro.start()
+        # self.pro = mp.Process(target=thumbnailpro, args=(self.qin, self.qoo),daemon=True)
+        # self.pro.start()
+
+        paths = AppDataPaths('quickfinder1')
+        paths.setup()
+        self.thumbroot = paths.logs_path
 
     def cleanup(self):
-        self.qoo.put((0,0))
-        self.thread.exit()
-        self.pro.terminate()
+        pass 
+        # self.qoo.put((0,0))
+        # self.thread.exit()
+        # self.pro.terminate()
 
+    def getThumb(self, path, mtime):
+        # self.qin.put((path,mtime))
+        self.qin.put((5,(self.thumbroot, path, mtime, self.qoo)))
 
 ######################################################################################################################################################
 
@@ -269,6 +277,7 @@ class mscene(QGraphicsScene):
 
         self.thunder = thumbmaker()
         self.thunder.result.connect(self.geticon)
+        self.thunder.qin = self.core.qin 
 
         self.its = []
         self.paths = []
@@ -308,9 +317,9 @@ class mscene(QGraphicsScene):
 
         for n in list(self.core.n.kids.values()):
             path = n.fpath()
-            self.thunder.qin.put((path, n.mtime))
+            # self.thunder.qin.put((path, n.mtime))
+            self.thunder.getThumb(path, n.mtime)
             it = fileitem(path, n.dir)
-            # it.setpic(self.maker.pic(n.name,n.dir))
             it.setpic(self.icmaker.icon(QFileInfo(path)).pixmap(256,256))
             self.addItem(it)
             self.its.append(it)

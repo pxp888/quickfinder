@@ -6,6 +6,8 @@ import threading
 import pickle
 import shutil
 from PIL import Image, ImageOps
+import hashlib
+import base64
 
 from fuzzywuzzy import fuzz
 import setter
@@ -224,7 +226,7 @@ def drivecheck(detail):
     qoo.put((0,0,0))
 
 def thumbnail(detail):
-    path, mtime, qoo = detail
+    thumbroot, path, mtime, qoo = detail
     if not path.split('.')[-1].lower() in ['jpg','png','webp','gif','jpeg']: return 
 
     try:
@@ -244,6 +246,7 @@ def thumbnail(detail):
             im = ImageOps.exif_transpose(im)
             im.thumbnail((200,200))
             qoo.put((path, im))
+
 
 ######################################################################################################################################################
 

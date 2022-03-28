@@ -309,15 +309,15 @@ class mscene(QGraphicsScene):
         self.ctrlkey = False
         self.cols = 1
 
-        # while 1:
-        #     try:
-        #         self.thunder.qin.get(False)
-        #     except:
-        #         break
+        while 1:
+            try:
+                job, detail = self.thunder.qin.get(False)
+                if not job==5: self.thunder.qit.put((job,detail))
+            except:
+                break
 
         for n in list(self.core.n.kids.values()):
             path = n.fpath()
-            # self.thunder.qin.put((path, n.mtime))
             self.thunder.getThumb(path, n.mtime)
             it = fileitem(path, n.dir)
             it.setpic(self.icmaker.icon(QFileInfo(path)).pixmap(256,256))

@@ -717,10 +717,16 @@ class iconview(QWidget):
 
     def zipFunc(self):
         src = self.zen.selected()
-        name = src[0]+'.zip'
-        with zipfile.ZipFile(name, 'w') as zipper:
+        zname = src[0]+'.zip'
+        os.chdir(self.core.n.fpath())
+        with zipfile.ZipFile(zname, 'w') as zipper:
             for i in src:
-                zipper.write(os.path.relpath(i))
+                if os.path.isdir(i):
+                    for root, dirs, files in os.walk(i, topdown=False):
+                        for name in files:
+                            zipper.write(os.path.relpath(os.path.join(root, name)))
+                else:
+                    zipper.write(os.path.relpath(i))
 
     def home(self):
         # self.npath.emit(os.path.expanduser("~"))

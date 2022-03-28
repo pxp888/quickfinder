@@ -1,3 +1,5 @@
+zip functionality is currently broken
+
 recycle bin?  
 
 homepage drop targets
@@ -5,5 +7,3 @@ homepage drop targets
 persistent size and views
 
 custom commands
-
-threaded drivesetup on homepage

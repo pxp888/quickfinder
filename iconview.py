@@ -106,8 +106,8 @@ class thumbmaker(QObject):
 
     def cleanup(self):
         pass 
-        # self.qoo.put((0,0))
-        # self.thread.exit()
+        self.qoo.put((0,0))
+        self.thread.exit()
         # self.pro.terminate()
 
     def getThumb(self, path, mtime):

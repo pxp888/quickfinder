@@ -5,12 +5,16 @@ from PyQt5.QtGui import *
 import os
 import sys
 import time
+import stat 
+import shutil 
+
 
 from queue import Queue
 import threading
 
 import node
 import setter
+import mover 
 
 def humanTime(t):
     lt = time.localtime(t)
@@ -25,6 +29,12 @@ def humanSize(s):
     if s < 10: return '  '
     return str(s)+'  b  '
 
+def remove_readonly(func, path, exc_info):
+    if func not in (os.unlink, os.rmdir) or exc_info[1].winerror != 5:
+        raise exc_info[1]
+    os.chmod(path, stat.S_IWRITE)
+    func(path)
+
 
 ######################################################################################################################################################
 
@@ -35,9 +45,8 @@ class TreeModel(QAbstractItemModel):
     def __init__(self, core, parent=None):
         super(TreeModel, self).__init__(parent)
 
-        self.icon = setter.iconMaker()
+        # self.icon = setter.iconMaker()
         self.icmaker = QFileIconProvider()
-
         self.core = core
         self.base = core.n
 
@@ -66,21 +75,21 @@ class TreeModel(QAbstractItemModel):
         if role == Qt.DecorationRole:
             if index.column()==0:
                 item = index.internalPointer()
-                # return QVariant(self.icon.icon(item.name, item.dir))
                 return QVariant(self.icmaker.icon(QFileInfo(index.internalPointer().fpath())))
             return None
         if role == Qt.TextAlignmentRole:
             if index.column()==1:
                 return Qt.AlignRight
             return Qt.AlignLeft
+        if role == Qt.SizeHintRole and index.column()==0: return QSize(200,20)
         return None
 
     def flags(self, index):
         if not index.isValid():
             return Qt.NoItemFlags
         if index.internalPointer().dir:
-            return Qt.ItemIsEnabled | Qt.ItemIsSelectable | Qt.ItemIsDragEnabled | Qt.ItemIsDropEnabled
-        return Qt.ItemIsEnabled | Qt.ItemIsSelectable | Qt.ItemIsDragEnabled
+            return Qt.ItemIsEnabled | Qt.ItemIsSelectable | Qt.ItemIsDragEnabled | Qt.ItemIsDropEnabled 
+        return Qt.ItemIsEnabled | Qt.ItemIsSelectable | Qt.ItemIsDragEnabled 
 
     def headerData(self, section, orientation, role):
         if orientation == Qt.Horizontal and role == Qt.DisplayRole:
@@ -151,6 +160,17 @@ class TreeModel(QAbstractItemModel):
 ######################################################################################################################################################
 
 
+class tview(QColumnView):
+    back = pyqtSignal()
+    def mousePressEvent(self, event):
+        if event.button()==8:
+            self.back.emit()
+        super(tview, self).mousePressEvent(event)
+
+
+######################################################################################################################################################
+
+
 class colviewer(QWidget):
     npath = pyqtSignal(object)
     preview = pyqtSignal(object)
@@ -160,35 +180,50 @@ class colviewer(QWidget):
         super(colviewer, self).__init__(parent)
         layout = QHBoxLayout()
         self.setLayout(layout)
-        layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSpacing(0)
+        # layout.setContentsMargins(0, 0, 0, 0)
+        # layout.setSpacing(0)
         # self.setFont(QFont("Arial",10))
+        # self.setFont(QFont("MS Shell Dlg 2",10))
         self.layout = layout
         self.set = setter.setter('quickfinder1')
-        
-        self.core = core
 
-        self.reset = False 
+        self.core = core
+        self.reset = False
 
         self.mod = TreeModel(core)
-        self.view = QColumnView()
-        self.view.setModel(self.mod)
-        self.view.setSelectionMode(3)
+        self.mod.nmove.connect(self.nmove)
 
+        self.view = tview()
+        self.view.back.connect(self.back)
+
+        self.ctrlkey = False
+
+        self.view.setModel(self.mod)
+        # self.view.setSortingEnabled(True)
+        self.view.setSelectionMode(3)
+        # self.view.header().setStretchLastSection(False)
+        # self.view.header().setSectionResizeMode(0,1)
+        # self.view.header().setSectionResizeMode(1,3)
+        # self.view.header().setSectionResizeMode(2,3)
+        self.view.setVerticalScrollMode(1)
+        
         self.layout.addWidget(self.view)
 
-        # self.view.selectionModel().currentChanged.connect(self.hop)
-        # self.view.selectionModel().selectionChanged.connect(self.selupdate)
         self.view.selectionModel().currentChanged.connect(self.selupdate)
+        # self.view.header().sortIndicatorChanged.connect(self.sortclicked)
 
-        self.addHomePathAction = QAction("Add Index Path",self)
+        self.copyAction = QAction("Copy",self)
+        self.pasteAction = QAction("Paste",self)
         self.noIndexAction = QAction("No Index",self)
         self.noNameAction = QAction("Ignore Name",self)
         self.noPathAction = QAction("Ignore Path",self)
-        self.addHomePathAction.triggered.connect(self.addHomePathFunc)
+        self.addHomePathAction = QAction("Add Index Path",self)
+
+        self.copyAction.triggered.connect(self.copyToClip)
         self.noIndexAction.triggered.connect(self.noIndexFunc)
         self.noNameAction.triggered.connect(self.noNameFunc)
         self.noPathAction.triggered.connect(self.noPathFunc)
+        self.addHomePathAction.triggered.connect(self.addHomePathFunc)
 
         self.setAcceptDrops(True)
         self.view.setAcceptDrops(True)
@@ -233,19 +268,34 @@ class colviewer(QWidget):
         else:
             self.mod.layoutChanged.emit()
 
-    def selupdate(self, a, b):
+    def selectedPaths(self):
         cur = self.view.selectedIndexes()
         out = []
         for i in cur:
-            n = self.mod.data(i,257)
-            out.append(n.fpath())
+            if i.column()==0:
+                n = self.mod.data(i,257)
+                out.append(n.fpath())
+        return out 
+
+    def selupdate(self, a, b):
+        out = self.selectedPaths()
+        p = self.mod.data(a,257).fpath()
+        if not p in out: out.append(p)
         self.preview.emit(out)
         if len(out)>0:
             self.hopPath.emit(out[-1])
 
+    def sortclicked(self, i, order):
+        self.mod.layoutAboutToBeChanged.emit()
+        self.core.n.sort(i,order)
+        self.mod.layoutChanged.emit()
+
     def keyPressEvent(self, event):
         x = event.key()
-        # print('cv',x)
+        # print('tv',x)
+        if self.ctrlkey:
+            if x==67: self.copyToClip()
+        if x==16777249: self.ctrlkey=True 
         if x==16777220:  #''' Enter '''
             self.entered()
             return
@@ -257,18 +307,28 @@ class colviewer(QWidget):
                 # self.npath.emit(os.path.expanduser("~"))
                 self.npath.emit('home')
             return
-        if x==16777219:  # backspace
-            path = self.core.back()
-            self.npath.emit(path)
+        if x==16777223:  # DELETE
+            self.deleteFiles()
             return
+        if x==16777219:  # backspace
+            self.back()
+            return
+        if x==16777265: self.rename()
         super(colviewer, self).keyPressEvent(event)
+
+    def keyReleaseEvent(self, event):
+        x = event.key()
+        if x==16777249: self.ctrlkey=False
+        super(colviewer,self).keyReleaseEvent(event)
 
     def entered(self):
         cur = self.view.selectedIndexes()
         out = []
         for i in cur:
-            n = self.mod.data(i,257)
-            out.append(n)
+            if i.column()==0:
+                n = self.mod.data(i,257)
+                out.append(n)
+                print(n.fpath())
         if len(out)==0:
             os.startfile(self.core.n.fpath())
         if len(out)==1:
@@ -283,6 +343,7 @@ class colviewer(QWidget):
     def contextMenuEvent(self, event):
         menu = QMenu(self)
         menu.setPalette(self.palette())
+        menu.addAction(self.copyAction)
         menu.addAction(self.addHomePathAction)
         menu.addAction(self.noIndexAction)
         menu.addAction(self.noNameAction)
@@ -320,7 +381,53 @@ class colviewer(QWidget):
                 n = self.mod.data(it,257)
                 self.mod.core.addHomePath(n.fpath())
                 self.set.set('ff',self.mod.core.ff)
+        
+    def back(self):
+        path = self.core.back()
+        self.npath.emit(path)
 
+    def deleteFiles(self):
+        cur = self.selectedPaths()
+        if not cur: return 
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Information)
+        msg.setText("Are you sure?")
+        msg.setInformativeText("This cannot be undone.")
+        msg.setWindowTitle("Confirm Delete")
+        msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+        msg.setEscapeButton(QMessageBox.Cancel)
+        retval = msg.exec_()
+        if retval==1024:
+            for i in cur:
+                try:
+                    if os.path.isdir(i):
+                        shutil.rmtree(i,onerror=remove_readonly)
+                    else:
+                        os.remove(i)
+                except:
+                    msg = QMessageBox()
+                    msg.setIcon(QMessageBox.Information)
+                    msg.setText("Delete Failed (it may be busy)")
+                    msg.setInformativeText(str(i))
+                    msg.setWindowTitle("Delete failed")
+                    msg.setStandardButtons(QMessageBox.Ok)
+                    msg.setEscapeButton(QMessageBox.Ok)
+                    retval = msg.exec_()
+            
+    def rename(self):
+        cur = self.selectedPaths()
+        self.namer = mover.renameClass()
+        self.namer.populate(cur)
+        self.namer.show()
+
+    def copyToClip(self):
+        cur = self.selectedPaths()
+        if not cur: return 
+        urls = []
+        for i in cur: urls.append(QUrl().fromLocalFile(i))
+        mimedata = QMimeData()
+        mimedata.setUrls(urls)
+        QGuiApplication.clipboard().setMimeData(mimedata)
 
 
 ######################################################################################################################################################

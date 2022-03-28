@@ -135,16 +135,16 @@ class mscene(QGraphicsScene):
 		super(mscene, self).keyPressEvent(event)
 
 
-def drivecheck(qoo):
-	drvlet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-	for i in drvlet:
-		path = str(i)+':'+os.path.sep 
-		if os.path.exists(path):
-			it = fileitem(path)
-			total, used, free = shutil.disk_usage(path)
-			entry = (path, total, used)
-			qoo.put(entry)
-	qoo.put((0,0,0))
+# def drivecheck(qoo):
+# 	drvlet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+# 	for i in drvlet:
+# 		path = str(i)+':'+os.path.sep 
+# 		if os.path.exists(path):
+# 			it = fileitem(path)
+# 			total, used, free = shutil.disk_usage(path)
+# 			entry = (path, total, used)
+# 			qoo.put(entry)
+# 	qoo.put((0,0,0))
 
 class homeClass(QWidget):
 	npath = pyqtSignal(object)
@@ -204,10 +204,13 @@ class homeClass(QWidget):
 		self.layout.addItem(verticalSpacer)
 
 		self.qoo = Queue()
-		self.dthread = threading.Thread(target=drivecheck, args=(self.qoo,),daemon=True)
-		self.dthread.start()
+		# self.dthread = threading.Thread(target=drivecheck, args=(self.qoo,),daemon=True)
+		# self.dthread.start()
+		en = (4,(self.qoo))
+		self.core.qin.put(en)
+
 		self.dim = QTimer()
-		self.dim.setInterval(100)
+		self.dim.setInterval(250)
 		self.dim.timeout.connect(self.drivecheck)
 		self.dim.start()
 

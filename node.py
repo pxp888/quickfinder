@@ -4,10 +4,12 @@ import time
 from queue import Queue
 import threading
 import pickle
+import shutil
 
 from fuzzywuzzy import fuzz
 import setter
 import btree
+
 
 def chain(path):
     out = []
@@ -159,6 +161,62 @@ class node():
 ######################################################################################################################################################
 
 
+def threadwork(qin, ff, foo):
+    while 1:
+        job, detail = qin.get(True)
+        if job==1: scan1(detail, qin, ff)
+        if job==2: find1(detail, qin, foo)
+        if job==3: find2(detail, foo)
+        if job==4: drivecheck(detail)
+    
+def scan1(detail, qin, ff):
+    n, rec = detail 
+    nxt = n.scan(ff)
+    if not rec==0:
+        for i in nxt:
+            en = (1,(i,rec-1))
+            qin.put(en)
+
+def find1(detail, qin, foo):
+    tar, n, rec = detail
+    if len(n.name) >= len(tar):
+        if tar.lower() in n.name.lower():
+            if tar.lower()==n.name.lower()[:len(tar)]:
+                score = 110 - rec 
+                entry = (tar, score, n.fpath(), n.dir)
+                foo.put(entry)
+            else:
+                qin.put((3,(tar,n)))
+    for i in list(n.kids.values()):
+        en = (2,(tar, i, rec+1))
+        qin.put(en)
+
+def find2(detail, foo):
+    tar, i = detail 
+    if len(tar)==1: return 
+    # score = fuzz.ratio(tar.lower(), k.name.lower())
+    # score = fuzz.partial_ratio(tar.lower(), k.name.lower())
+    # score = fuzz.token_sort_ratio(tar.lower(), k.name.lower())
+    score = fuzz.token_set_ratio(tar.lower(), i.name.lower())
+    if score > 50:
+        entry = (tar, score, i.fpath(), i.dir)
+        foo.put(entry)
+
+def drivecheck(detail):
+    qoo = detail 
+    drvlet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    for i in drvlet:
+        path = str(i)+':'+os.path.sep 
+        if os.path.exists(path):
+            total, used, free = shutil.disk_usage(path)
+            entry = (path, total, used)
+            qoo.put(entry)
+    qoo.put((0,0,0))
+
+
+######################################################################################################################################################
+
+
 class coreClass():
     def __init__(self):
         self.set = setter.setter('quickfinder1')
@@ -173,22 +231,6 @@ class coreClass():
             self.ff.addName('desktop.ini')
             self.ff.addName('ntuser.ini')
 
-        self.lock = threading.Lock()
-
-        self.qin = Queue()
-        self.grower = threading.Thread(target=self.scan1, args=(self.qin, ), daemon=True)
-        self.grower.start()
-        self.grower2 = threading.Thread(target=self.scan1, args=(self.qin, ), daemon=True)
-        self.grower2.start()
-
-        self.fin = Queue()
-        self.fiz = Queue()
-        self.foo = Queue()
-        self.findthread1 = threading.Thread(target=self.find1, args=(self.fin, self.fiz, self.foo), daemon=True)
-        self.findthread2 = threading.Thread(target=self.find2, args=(self.fiz, self.foo), daemon=True)
-        self.findthread1.start()
-        self.findthread2.start()
-
         self.sniffer = node()
 
         self.homepaths = self.set.get('homepaths',[])
@@ -201,6 +243,14 @@ class coreClass():
             self.homepaths.append(os.path.join(os.path.expanduser("~"),'Videos'))
             self.homepaths.append(os.path.join(os.path.expanduser("~"),'Music'))
             self.set.set('homepaths',self.homepaths)
+
+        self.qin = Queue()
+        self.foo = Queue()
+        self.pros = []
+        for i in range(4):
+            t = threading.Thread(target=threadwork, args=(self.qin, self.ff, self.foo),daemon=True)
+            self.pros.append(t)
+            t.start()
 
     def addHomePath(self, path):
         self.homepaths.append(path)
@@ -260,7 +310,7 @@ class coreClass():
         self.scan()
         return self.n
 
-    def scan(self, n=None, rec=5):
+    def scan(self, n=None, rec=4):
         if n==None: n=self.n
         check = [n]
         nc = []
@@ -268,7 +318,21 @@ class coreClass():
             for j in check: nc += j.scan(self.ff)
             check = nc
             nc = []
-        for j in check: self.qin.put((j, rec))
+        for j in check: 
+            en = (1,(j, rec))
+            self.qin.put(en)
+
+    def find(self, tar, n=None):
+        if n==None: n = self.n 
+        en = (2,(tar,n,0))
+        self.qin.put(en)
+
+    def back(self):
+        if self.n==self.sniffer:
+            return list(self.n.kids.values())[0].fpath()
+        if not self.n.up.name=='':
+            return self.n.up.fpath()
+        return self.n.fpath()
 
     def fullscan(self, n=None):
         if n==None: n=self.n
@@ -280,71 +344,6 @@ class coreClass():
             nc = []
             if len(check)==0: break
 
-    def back(self):
-        if self.n==self.sniffer:
-            return list(self.n.kids.values())[0].fpath()
-        if not self.n.up.name=='':
-            return self.n.up.fpath()
-        return self.n.fpath()
-
-    def find(self, tar, n=None):
-        if n==None: n = self.n
-        while 1:
-            try:
-                self.fin.get(False)
-            except:
-                break
-        self.fin.put((tar,n))
-
-    def scan1(self, qin):
-        while 1:
-            n, rec = qin.get(True)
-            next = n.scan(self.ff)
-            if rec==0: continue
-            for i in next:
-                qin.put((i,rec-1))
-
-    def find1(self, fin, fiz, foo):
-        wait = True
-        rec = 0
-        while 1:
-            try:
-                tar, n = fin.get(wait)
-                check = [n]
-                nc = []
-                wait=False
-                rec = 0
-            except:
-                pass
-
-            for n in check:
-                if len(n.name) >= len(tar):
-                    if tar.lower() in n.name.lower():
-                        if tar.lower()==n.name.lower()[:len(tar)]:
-                            score = 110-rec
-                            entry = (tar, score, n.fpath(), n.dir)
-                            foo.put(entry)
-                        else:
-                            fiz.put((tar, n))
-                nc += list(n.kids.values())
-            check = nc
-            nc = []
-            rec+=1
-            if len(check)==0: wait = True
-
-    def find2(self, fiz, foo):
-        while 1:
-            tar, i = fiz.get(True)
-            if len(tar)==1: continue
-            # score = fuzz.ratio(tar.lower(), k.name.lower())
-            # score = fuzz.partial_ratio(tar.lower(), k.name.lower())
-            # score = fuzz.token_sort_ratio(tar.lower(), k.name.lower())
-            score = fuzz.token_set_ratio(tar.lower(), i.name.lower())
-            if score > 50:
-                entry = (tar, score, i.fpath(), i.dir)
-                foo.put(entry)
-
-
 ######################################################################################################################################################
 
 
@@ -355,7 +354,7 @@ if __name__ == "__main__":
     core.scan()
     time.sleep(1)
 
-    target = 'pass'
+    target = 'looking'
     core.find(target)
     while 1:
         try:
@@ -363,8 +362,6 @@ if __name__ == "__main__":
             print(res)
         except:
             break
-
-
 
 
 

@@ -28,6 +28,8 @@ class fileitem(QGraphicsItem):
 		self.frame = False
 		self.w = int(width)
 		self.h = int(width*.75)
+		self.total = 0 
+		self.used = 0
 
 		self.setAcceptHoverEvents(True)
 		self.hlite = False
@@ -54,10 +56,13 @@ class fileitem(QGraphicsItem):
 				painter.fillPath(path,QColor(50,50,50))
 				painter.drawRect(outrect)
 
-		if self.hlite:
-			pen = QPen(Qt.gray,1)
+		if self.used > 0:
+			pen = QPen(QColor(50,50,50),1)
 			painter.setPen(pen)
-			outrect = self.boundingRect()
+			outrect = self.boundingRect().adjusted(2,self.h-(self.used/self.total)*self.h,-2,1)
+			path = QPainterPath()
+			path.addRect(outrect)	
+			painter.fillPath(path,QColor(50,50,50))
 			painter.drawRect(outrect)
 
 		pen = QPen(Qt.white,1)
@@ -65,6 +70,14 @@ class fileitem(QGraphicsItem):
 		painter.setFont(QFont("Arial",8))
 		trect = self.boundingRect().adjusted(5,self.h-40,-5,-2)
 		painter.drawText(trect,Qt.TextWordWrap | Qt.AlignHCenter ,self.dpath)
+
+		if self.used > 0:
+			pen = QPen(Qt.white,1)
+			painter.setPen(pen)
+			painter.setFont(QFont("Arial",8))
+			trect = self.boundingRect().adjusted(5,self.h-20,-5,-2)
+			stext = str(self.used//2**30) + ' GB  / ' + str(self.total//2**30)+' GB'
+			painter.drawText(trect,Qt.TextWordWrap | Qt.AlignHCenter ,stext)
 
 		if not self.pic==None:
 			s = self.pic.size()
@@ -179,7 +192,6 @@ class homeClass(QWidget):
 		self.layout.addItem(verticalSpacer)
 
 		
-	
 
 	def setup(self, path=''):
 		self.core.sniffer = node.node()
@@ -214,7 +226,7 @@ class homeClass(QWidget):
 				path = str(i)+':'+os.path.sep 
 				if os.path.exists(path):
 					it = fileitem(path)
-					# it.setpic(QPixmap(':/icons/drive.png'),True)
+					it.total, it.used, free = shutil.disk_usage(path)
 					it.setpic(self.icmaker.icon(QFileInfo(path)).pixmap(256,256))
 					self.zen2.addItem(it)
 					self.drv.append(it)

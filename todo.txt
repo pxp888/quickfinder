@@ -6,3 +6,4 @@ persistent size and views
 
 custom commands
 
+threaded drivesetup on homepage

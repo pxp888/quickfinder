@@ -183,7 +183,7 @@ class setwin(QDialog):
         self.pathlist.update()
         self.indexlist.update()
         
-        self.homelist = listthing(title='Homepaths')
+        self.homelist = listthing(title='Index paths')
         self.homelist.save.connect(self.savehomes)
         self.homelist.data = self.core.homepaths
         layout.addWidget(self.homelist,1,0)

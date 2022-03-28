@@ -108,6 +108,37 @@ class fileitem(QGraphicsItem):
 ######################################################################################################################################################
 
 
+class mview(QGraphicsView):
+	nmove = pyqtSignal(object, object)
+	def __init__(self, parent=None):
+		super(mview, self).__init__(parent)
+		self.setAcceptDrops(True)
+	
+	def dragEnterEvent(self, e):
+		# print('view enter', e)
+		if e.mimeData().hasUrls():
+			e.setAccepted(True)
+		else:
+			e.setAccepted(False)
+
+	def dragMoveEvent(self, e):
+		if e.mimeData().hasUrls():
+			e.setAccepted(True)
+		else:
+			e.setAccepted(False)
+
+	def dropEvent(self, e):
+		it = self.itemAt(e.pos())
+		if not it==None:
+			dest = it.path
+			for i in e.mimeData().urls(): 
+				self.nmove.emit(i.path(), dest)
+				print('move',i.path(), dest)
+		
+
+######################################################################################################################################################
+
+
 class mscene(QGraphicsScene):
 	npath=pyqtSignal(object)
 	kevin = pyqtSignal(object)
@@ -135,20 +166,10 @@ class mscene(QGraphicsScene):
 		super(mscene, self).keyPressEvent(event)
 
 
-# def drivecheck(qoo):
-# 	drvlet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-# 	for i in drvlet:
-# 		path = str(i)+':'+os.path.sep 
-# 		if os.path.exists(path):
-# 			it = fileitem(path)
-# 			total, used, free = shutil.disk_usage(path)
-# 			entry = (path, total, used)
-# 			qoo.put(entry)
-# 	qoo.put((0,0,0))
-
 class homeClass(QWidget):
 	npath = pyqtSignal(object)
 	kevin = pyqtSignal(object)
+	nmove = pyqtSignal(object, object)
 	def __init__(self, core, parent=None):
 		super(homeClass, self).__init__(parent)
 		layout = QVBoxLayout()
@@ -169,8 +190,8 @@ class homeClass(QWidget):
 
 		self.zen1 = mscene()
 		self.zen2 = mscene()
-		self.view1 = QGraphicsView()
-		self.view2 = QGraphicsView()
+		self.view1 = mview()
+		self.view2 = mview()
 		self.view1.setScene(self.zen1)
 		self.view2.setScene(self.zen2)
 		self.view1.setAlignment(Qt.AlignTop | Qt.AlignLeft)
@@ -194,6 +215,7 @@ class homeClass(QWidget):
 		self.zen1.npath.connect(self.npath)
 		self.zen2.npath.connect(self.npath)
 		self.zen1.kevin.connect(self.kevin)
+		self.view1.nmove.connect(self.nmove)
 
 		# self.driveset()
 		self.setup()

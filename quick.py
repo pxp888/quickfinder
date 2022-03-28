@@ -96,6 +96,7 @@ class primo(QWidget):
         self.fin.searching.connect(self.searching)
         self.homepage.npath.connect(self.setPath)
         self.homepage.kevin.connect(self.kevin)
+        self.homepage.nmove.connect(self.mover.move)
 
         self.fin.line.returnPressed.connect(self.view.view.setFocus)
         self.npath.connect(self.view.setPath)

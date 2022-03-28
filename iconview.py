@@ -211,10 +211,10 @@ class mview(QGraphicsView):
 
         self.setAlignment(Qt.AlignTop | Qt.AlignLeft)
 
-    def resizeEvent(self, event):
-        # print(self.mapToScene(0,0))
-        # self.setAlignment(Qt.AlignTop | Qt.AlignLeft)
-        super(mview, self).resizeEvent(event)
+    # def resizeEvent(self, event):
+    #     # print(self.mapToScene(0,0))
+    #     # self.setAlignment(Qt.AlignTop | Qt.AlignLeft)
+    #     super(mview, self).resizeEvent(event)
 
     def contextMenuEvent(self, event):
         if self.scene().selected():

@@ -30,40 +30,40 @@ def remove_readonly(func, path, exc_info):
     os.chmod(path, stat.S_IWRITE)
     func(path)
 
-def fash(path, tim=0):
-    m = hashlib.md5()
-    m.update(str(path).encode('utf-8'))
-    m.update(str(tim).encode('utf-8'))
-    b = base64.b32encode(m.digest())
-    # b = m.digest()
-    return str(b)[:-4]
+# def fash(path, tim=0):
+#     m = hashlib.md5()
+#     m.update(str(path).encode('utf-8'))
+#     m.update(str(tim).encode('utf-8'))
+#     b = base64.b32encode(m.digest())
+#     # b = m.digest()
+#     return str(b)[:-4]
 
-def thumbnailpro(qin, qoo):
-    paths = AppDataPaths('quickfinder1')
-    paths.setup()
-    thumbroot = paths.logs_path
+# def thumbnailpro(qin, qoo):
+#     paths = AppDataPaths('quickfinder1')
+#     paths.setup()
+#     thumbroot = paths.logs_path
 
-    while 1:
-        path, mtime = qin.get(True)
-        if not path.split('.')[-1].lower() in ['jpg','png','webp','gif','jpeg']: continue
+#     while 1:
+#         path, mtime = qin.get(True)
+#         if not path.split('.')[-1].lower() in ['jpg','png','webp','gif','jpeg']: continue
 
-        try:
-            tpath = os.path.join(thumbroot,fash(path, mtime))
-            if os.path.exists(tpath):
-                im = Image.open(tpath)
-                qoo.put((path,im))
-            else:
-                im = Image.open(path)
-                im = ImageOps.exif_transpose(im)
-                im.thumbnail((200,200))
-                qoo.put((path, im))
-                im.save(tpath,"JPEG")
-        except:
-            if os.path.exists(path):
-                im = Image.open(path)
-                im = ImageOps.exif_transpose(im)
-                im.thumbnail((200,200))
-                qoo.put((path, im))
+#         try:
+#             tpath = os.path.join(thumbroot,fash(path, mtime))
+#             if os.path.exists(tpath):
+#                 im = Image.open(tpath)
+#                 qoo.put((path,im))
+#             else:
+#                 im = Image.open(path)
+#                 im = ImageOps.exif_transpose(im)
+#                 im.thumbnail((200,200))
+#                 qoo.put((path, im))
+#                 im.save(tpath,"JPEG")
+#         except:
+#             if os.path.exists(path):
+#                 im = Image.open(path)
+#                 im = ImageOps.exif_transpose(im)
+#                 im.thumbnail((200,200))
+#                 qoo.put((path, im))
 
 class thumbworker(QObject):
     result = pyqtSignal(object,object)
@@ -309,11 +309,11 @@ class mscene(QGraphicsScene):
         self.ctrlkey = False
         self.cols = 1
 
-        while 1:
-            try:
-                self.thunder.qin.get(False)
-            except:
-                break
+        # while 1:
+        #     try:
+        #         self.thunder.qin.get(False)
+        #     except:
+        #         break
 
         for n in list(self.core.n.kids.values()):
             path = n.fpath()

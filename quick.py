@@ -181,9 +181,7 @@ class primo(QWidget):
         self.view.deepscan()
 
     def timescan(self):
-        self.view.refresh1()
-        self.core.n.sort(2,0)
-        self.view.refresh2()
+        self.view.timescan()
 
     def showColumnView(self):
         if self.core.n==self.core.sniffer: self.setPath(os.path.expanduser("~"))

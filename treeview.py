@@ -14,6 +14,7 @@ import threading
 
 import node
 import setter
+import mover 
 
 def humanTime(t):
     lt = time.localtime(t)
@@ -73,7 +74,7 @@ class treeviewer(QWidget):
 
         self.view.setSortingEnabled(True)
         self.view.setSelectionMode(3)
-        self.view.setEditTriggers(QAbstractItemView.EditKeyPressed)
+        self.view.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.view.header().setStretchLastSection(False)
         self.view.header().setSectionResizeMode(0,1)
         self.view.header().setSectionResizeMode(1,3)
@@ -132,6 +133,7 @@ class treeviewer(QWidget):
         if x==16777219: self.back()
         if x==16777223: self.deleteFiles()
         if x==16777216: self.escaped()
+        if x==16777265: self.rename()
         super(treeviewer, self).keyPressEvent(event)
 
     def keyReleaseEvent(self, event):
@@ -281,6 +283,13 @@ class treeviewer(QWidget):
                     msg.setEscapeButton(QMessageBox.Ok)
                     retval = msg.exec_()
 
+    def rename(self):
+        cur = self.selectedPaths()
+        if not cur: return 
+        self.namer = mover.renameClass()
+        self.namer.populate(cur)
+        self.namer.show()
+
     def zipFunc(self):
         src = self.selectedPaths()
         zname = src[0]+'.zip'
@@ -333,7 +342,9 @@ class treeviewer(QWidget):
     def cleanup(self):
         pass 
     def deepscan(self):
-        pass 
+        self.view.header().setSortIndicator(1,1)
+    def timescan(self):
+        self.view.header().setSortIndicator(3,1)
 
 ######################################################################################################################################################
 

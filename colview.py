@@ -66,7 +66,7 @@ class colviewer(treeview.treeviewer):
 
         # self.view.setSortingEnabled(True)
         self.view.setSelectionMode(3)
-        self.view.setEditTriggers(QAbstractItemView.EditKeyPressed)
+        self.view.setEditTriggers(QAbstractItemView.NoEditTriggers)
         # self.view.header().setStretchLastSection(False)
         # self.view.header().setSectionResizeMode(0,1)
         # self.view.header().setSectionResizeMode(1,3)

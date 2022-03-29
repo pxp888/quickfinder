@@ -71,27 +71,30 @@ class prevpane(QScrollArea):
         self.lastpaths = []
 
     def preview(self, paths):
-        if self.width() < 100: return
-        txtfiles = ['py','txt','bat','json','ini','log','sh','h','cpp','conf','csv']
-        images = ['jpg','png','bmp','jpeg','webp']
-        zipfiles = ['zip']
+        try:
+            if self.width() < 100: return
+            txtfiles = ['py','txt','bat','json','ini','log','sh','h','cpp','conf','csv']
+            images = ['jpg','png','bmp','jpeg','webp']
+            zipfiles = ['zip']
 
-        if len(paths)==1:
-            path = paths[0]
-            if path.split('.')[-1].lower() in txtfiles:
-                self.showtext(path)
-                return
-            if path.split('.')[-1].lower() in images:
-                self.showimage(path)
-                return
-            if path.split('.')[-1].lower() in zipfiles:
-                self.showzip(path)
-                return
-        if len(paths)>1: 
-            self.showmany(paths)
-            return 
-        self.clear()
-        
+            if len(paths)==1:
+                path = paths[0]
+                if path.split('.')[-1].lower() in txtfiles:
+                    self.showtext(path)
+                    return
+                if path.split('.')[-1].lower() in images:
+                    self.showimage(path)
+                    return
+                if path.split('.')[-1].lower() in zipfiles:
+                    self.showzip(path)
+                    return
+            if len(paths)>1: 
+                self.showmany(paths)
+                return 
+            
+            self.clear()
+        except:
+            self.clear()
 
     def clear(self):
         self.text.hide()

@@ -269,7 +269,7 @@ class mscene(QGraphicsScene):
             path = n.fpath()
             self.thunder.getThumb(path, n.mtime)
             it = fileitem(path, n.dir)
-            it.setpic(self.icmaker.icon(QFileInfo(path)).pixmap(128,128))
+            it.setpic(self.icmaker.icon(QFileInfo(path)).pixmap(256,256))
             it.size = n.size 
             it.msize = 0 
             self.addItem(it)
@@ -628,6 +628,7 @@ class iconview(QWidget):
         self.zen.reflow(self.width())
 
     def changes(self):
+        print('change', self.core.n.fpath())
         self.core.scan()
         self.refresh2()
 
@@ -712,6 +713,10 @@ class iconview(QWidget):
         self.core.n.sort(1,0)
         self.refresh2()
         self.zen.showsizes()
+
+    def timescan(self):
+        self.core.n.sort(2,0)
+        self.refresh2()
 
 ######################################################################################################################################################
 

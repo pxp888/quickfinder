@@ -387,7 +387,7 @@ class mscene(QGraphicsScene):
         drag.exec(Qt.MoveAction | Qt.CopyAction)
 
     def copyToClip(self):
-        print('icon copy')
+        # print('icon copy')
         cur = self.selected()
         if not cur: return 
         urls = []
@@ -399,7 +399,7 @@ class mscene(QGraphicsScene):
         QGuiApplication.clipboard().setMimeData(mimedata)
 
     def pasteFromClip(self):
-        print('icon paste')
+        # print('icon paste')
         mimedata = QGuiApplication.clipboard().mimeData()
         if mimedata.hasUrls():
             dest = self.core.n.fpath()
@@ -463,7 +463,7 @@ class mscene(QGraphicsScene):
         if x==16777248: self.shiftkey=True
         if x==16777249: self.ctrlkey=True
         if x==16777265: self.rename()
-
+        if x==16777268: self.changes()
         if x==16777223:  # DELETE
             self.deleteFiles()
             return
@@ -628,7 +628,7 @@ class iconview(QWidget):
         self.zen.reflow(self.width())
 
     def changes(self):
-        print('change', self.core.n.fpath())
+        # print('change', self.core.n.fpath())    
         self.core.scan()
         self.refresh2()
 

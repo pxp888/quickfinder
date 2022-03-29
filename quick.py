@@ -240,6 +240,7 @@ class primo(QWidget):
         self.newview.preview.connect(self.preview)
         self.newview.preview.connect(self.prev.preview)
         self.newview.nmove.connect(self.mover.move)
+        self.newview.ncopy.connect(self.mover.copy)
         self.view.deleteLater()
         self.view = self.newview
 
@@ -315,7 +316,7 @@ class primo(QWidget):
             if x==54: self.toggleprev()
             if x==78: self.segundo()
             # if x==67: self.copyToClip()
-            if x==86: self.pasteFromClip()
+            # if x==86: self.pasteFromClip()
             if x==84:
                 path = self.core.n.fpath()
                 if path=='': path = os.path.expanduser("~")
@@ -370,26 +371,26 @@ class primo(QWidget):
         w.show()
         self.bros.append(w)
 
-    def pasteFromClip(self):
-        mimedata = QGuiApplication.clipboard().mimeData()
-        if mimedata.hasUrls():
-            dest = self.core.n.fpath()
-            urls = mimedata.urls()
-            for i in urls:
-                name = os.path.split(i.path())[1]
-                target = os.path.join(dest, name)
-                if os.path.exists(target):
-                    if not os.path.isdir(target):
-                        fname, ext = os.path.splitext(name)
-                        fname = fname + ' Copy'
-                        name = fname + ext 
-                        target = os.path.join(dest, name)
-                        self.mover.copy(i.path(), target)
-                    else:
-                        target = os.path.join(dest, name) + ' Copy'
-                        self.mover.copy(i.path(), target)
-                else:
-                    self.mover.copy(i.path(), dest)
+    # def pasteFromClip(self):
+    #     mimedata = QGuiApplication.clipboard().mimeData()
+    #     if mimedata.hasUrls():
+    #         dest = self.core.n.fpath()
+    #         urls = mimedata.urls()
+    #         for i in urls:
+    #             name = os.path.split(i.path())[1]
+    #             target = os.path.join(dest, name)
+    #             if os.path.exists(target):
+    #                 if not os.path.isdir(target):
+    #                     fname, ext = os.path.splitext(name)
+    #                     fname = fname + ' Copy'
+    #                     name = fname + ext 
+    #                     target = os.path.join(dest, name)
+    #                     self.mover.copy(i.path(), target)
+    #                 else:
+    #                     target = os.path.join(dest, name) + ' Copy'
+    #                     self.mover.copy(i.path(), target)
+    #             else:
+    #                 self.mover.copy(i.path(), dest)
 
 
 ######################################################################################################################################################

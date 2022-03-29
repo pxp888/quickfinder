@@ -14,7 +14,6 @@ import threading
 
 import node
 import setter
-import mover 
 
 def humanTime(t):
     lt = time.localtime(t)
@@ -50,6 +49,7 @@ class treeviewer(QWidget):
     preview = pyqtSignal(object)
     hopPath = pyqtSignal(object)
     nmove = pyqtSignal(object, object)
+    ncopy = pyqtSignal(object, object)
     def __init__(self, core, parent=None):
         super(treeviewer, self).__init__(parent)
         layout = QHBoxLayout()
@@ -60,13 +60,16 @@ class treeviewer(QWidget):
         # self.setFont(QFont("MS Shell Dlg 2",10))
         self.layout = layout
 
+        self.ctrlkey = False
+
         self.core = core 
 
         self.mod = QFileSystemModel()
         self.view = tview()
         self.view.setModel(self.mod)
         self.mod.setRootPath(os.path.expanduser("~"))
-        self.view.setRootIndex(self.mod.index(os.path.expanduser("~")))
+        # self.view.setRootIndex(self.mod.index(os.path.expanduser("~")))
+        self.view.setRootIndex(self.mod.index(self.core.n.fpath()))
         self.mod.setReadOnly(False)
 
         self.view.setSortingEnabled(True)
@@ -95,15 +98,47 @@ class treeviewer(QWidget):
         self.addHomePathAction = QAction("Add Index Path",self)
 
         self.deleteAction.triggered.connect(self.deleteFiles)
+        self.copyAction.triggered.connect(self.copyToClip)
+        self.zipAction.triggered.connect(self.zipFunc)
+        self.deleteAction.triggered.connect(self.deleteFiles)
+        self.noIndexAction.triggered.connect(self.noIndexFunc)
+        self.noNameAction.triggered.connect(self.noNameFunc)
+        self.noPathAction.triggered.connect(self.noPathFunc)
+        self.addHomePathAction.triggered.connect(self.addHomePathFunc)
+
+        self.setAcceptDrops(True)
+        self.view.setAcceptDrops(True)
+        self.view.setDragEnabled(True)
+        self.view.setDragDropMode(4)
+
+    def dragEnterEvent(self, e):
+        if e.mimeData().hasUrls():
+            e.accept()
+        else:
+            e.ignore()
+
+    def dropEvent(self, e):
+        dest = self.core.n.fpath()
+        for i in e.mimeData().urls():
+            self.nmove.emit(i.path(), dest)
 
     def keyPressEvent(self, event):
         x = event.key()
         # print(x)
+        if self.ctrlkey:
+            if x==67: self.copyToClip()
+            if x==86: self.pasteFromClip()
+        if x==16777249: self.ctrlkey=True
         if x==16777220: self.entered()
         if x==16777219: self.back()
         if x==16777223: self.deleteFiles()
         if x==16777216: self.escaped()
         super(treeviewer, self).keyPressEvent(event)
+
+    def keyReleaseEvent(self, event):
+        x = event.key()
+        if x==16777249: self.ctrlkey=False
+        super(treeviewer,self).keyReleaseEvent(event)
 
     def escaped(self):
         cur = self.view.selectedIndexes()
@@ -153,18 +188,57 @@ class treeviewer(QWidget):
         if os.path.isdir(path): self.npath.emit(path)
 
     def contextMenuEvent(self, event):
-        menu = QMenu(self)
-        menu.setPalette(self.palette())
-        menu.addAction(self.copyAction)
-        menu.addAction(self.pasteAction)
-        menu.addAction(self.zipAction)
-        menu.addAction(self.deleteAction)
-        menu.addAction(self.addHomePathAction)
-        menu.addAction(self.noIndexAction)
-        menu.addAction(self.noNameAction)
-        menu.addAction(self.noPathAction)
-        menu.exec(event.globalPos())
+        cur = self.selectedPaths()
+        if len(cur)>0:
+            menu = QMenu(self)
+            menu.setPalette(self.palette())
+            menu.addAction(self.copyAction)
+            menu.addAction(self.pasteAction)
+            menu.addAction(self.zipAction)
+            menu.addAction(self.deleteAction)
+            menu.addAction(self.addHomePathAction)
+            menu.addAction(self.noIndexAction)
+            menu.addAction(self.noNameAction)
+            menu.addAction(self.noPathAction)
+            menu.exec(event.globalPos())
+        else:
+            menu = QMenu(self)
+            menu.setPalette(self.palette())
+            menu.addAction(self.pasteAction)
+            menu.exec(event.globalPos())
     
+    def copyToClip(self):
+        print('tree copy')
+        cur = self.selectedPaths()
+        if not cur: return 
+        urls = []
+        for i in cur: urls.append(QUrl().fromLocalFile(i))
+        mimedata = QMimeData()
+        mimedata.setUrls(urls)
+        QGuiApplication.clipboard().setMimeData(mimedata)
+
+    def pasteFromClip(self):
+        print('tree paste')
+        mimedata = QGuiApplication.clipboard().mimeData()
+        if mimedata.hasUrls():
+            dest = self.core.n.fpath()
+            urls = mimedata.urls()
+            for i in urls:
+                name = os.path.split(i.path())[1]
+                target = os.path.join(dest, name)
+                if os.path.exists(target):
+                    if not os.path.isdir(target):
+                        fname, ext = os.path.splitext(name)
+                        fname = fname + ' Copy'
+                        name = fname + ext 
+                        target = os.path.join(dest, name)
+                        self.ncopy.emit(i.path(), target)
+                    else:
+                        target = os.path.join(dest, name) + ' Copy'
+                        self.ncopy.emit(i.path(), target)
+                else:
+                    self.ncopy.emit(i.path(), target)
+
     def updatepreview(self):
         cur = self.selectedPaths()
         self.preview.emit(cur)
@@ -197,11 +271,58 @@ class treeviewer(QWidget):
                     msg.setEscapeButton(QMessageBox.Ok)
                     retval = msg.exec_()
 
+    def zipFunc(self):
+        src = self.selectedPaths()
+        zname = src[0]+'.zip'
+        os.chdir(self.core.n.fpath())
+        with zipfile.ZipFile(zname, 'w') as zipper:
+            for i in src:
+                if os.path.isdir(i):
+                    for root, dirs, files in os.walk(i, topdown=False):
+                        for name in files:
+                            zipper.write(os.path.relpath(os.path.join(root, name)))
+                else:
+                    zipper.write(os.path.relpath(i))
+
+    def noIndexFunc(self, event):
+        cur = self.view.selectedIndexes()
+        for it in cur:
+            if it.column()==0:
+                n = self.mod.data(it,257)
+                self.mod.core.ff.addNoIndex(n.fpath())
+                self.set.set('ff',self.mod.core.ff)
+
+    def noNameFunc(self, event):
+        cur = self.view.selectedIndexes()
+        for it in cur:
+            if it.column()==0:
+                n = self.mod.data(it,257)
+                self.mod.core.ff.addName(n.name)
+                self.set.set('ff',self.mod.core.ff)
+
+    def noPathFunc(self, event):
+        cur = self.view.selectedIndexes()
+        for it in cur:
+            if it.column()==0:
+                n = self.mod.data(it,257)
+                self.mod.core.ff.addPath(n.fpath())
+                self.set.set('ff',self.mod.core.ff)
+
+    def addHomePathFunc(self):
+        cur = self.view.selectedIndexes()
+        for it in cur:
+            if it.column()==0:
+                n = self.mod.data(it,257)
+                self.mod.core.addHomePath(n.fpath())
+                self.set.set('ff',self.mod.core.ff)
 
     def refresh1(self):
         pass 
     def refresh2(self):
         pass 
+    def cleanup(self):
+        pass 
+
 
 ######################################################################################################################################################
 

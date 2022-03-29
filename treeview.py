@@ -94,20 +94,23 @@ class treeviewer(QWidget):
         self.noPathAction = QAction("Ignore Path",self)
         self.addHomePathAction = QAction("Add Index Path",self)
 
+        self.deleteAction.triggered.connect(self.deleteFiles)
+
     def keyPressEvent(self, event):
         x = event.key()
         # print(x)
         if x==16777220: self.entered()
         if x==16777219: self.back()
         if x==16777223: self.deleteFiles()
-        if x==16777216:  #''' ESC key '''
-            cur = self.view.selectedIndexes()
-            if len(cur) > 0:
-                self.view.clearSelection()
-            else:
-                self.npath.emit('home')
-            return
+        if x==16777216: self.escaped()
         super(treeviewer, self).keyPressEvent(event)
+
+    def escaped(self):
+        cur = self.view.selectedIndexes()
+        if len(cur) > 0:
+            self.view.clearSelection()
+        else:
+            self.npath.emit('home')
 
     def selectedPaths(self):
         idx = self.view.selectedIndexes()
@@ -142,8 +145,7 @@ class treeviewer(QWidget):
             self.view.selectionModel().setCurrentIndex(target,QItemSelectionModel.Select)
 
     def back(self):
-        cur = self.mod.fileInfo(self.view.rootIndex()).filePath()
-        path = os.path.split(cur)[0]
+        path = self.core.back()
         self.npath.emit(path)
 
     def doubleClicked(self, idx):

@@ -705,6 +705,14 @@ class iconview(QWidget):
     def cleanup(self):
         self.zen.thunder.cleanup()
 
+    def deepscan(self):
+        self.core.fullscan()
+        # self.view.refresh1()
+        self.core.n.getsize()
+        self.core.n.sort(1,0)
+        self.refresh2()
+        self.zen.showsizes()
+
 ######################################################################################################################################################
 
 

@@ -178,12 +178,7 @@ class primo(QWidget):
             self.prev.show()
 
     def deepscan(self):
-        self.core.fullscan()
-        self.view.refresh1()
-        self.core.n.getsize()
-        self.core.n.sort(1,0)
-        self.view.refresh2()
-        self.view.zen.showsizes()
+        self.view.deepscan()
 
     def timescan(self):
         self.view.refresh1()
@@ -240,14 +235,6 @@ class primo(QWidget):
         self.newview.ncopy.connect(self.mover.copy)
         self.view.deleteLater()
         self.view = self.newview
-
-    def changes(self, path):
-        while not os.path.exists: path, name = os.path.split(path)
-        n = self.core.locate(path)
-        if not n.up==None: n = n.up
-        self.view.refresh1()
-        self.core.scan(n)
-        self.view.refresh2()
 
     def kevin(self, event):
         self.fin.line.setFocus()
@@ -346,27 +333,6 @@ class primo(QWidget):
         w = mainwin()
         w.show()
         self.bros.append(w)
-
-    # def pasteFromClip(self):
-    #     mimedata = QGuiApplication.clipboard().mimeData()
-    #     if mimedata.hasUrls():
-    #         dest = self.core.n.fpath()
-    #         urls = mimedata.urls()
-    #         for i in urls:
-    #             name = os.path.split(i.path())[1]
-    #             target = os.path.join(dest, name)
-    #             if os.path.exists(target):
-    #                 if not os.path.isdir(target):
-    #                     fname, ext = os.path.splitext(name)
-    #                     fname = fname + ' Copy'
-    #                     name = fname + ext 
-    #                     target = os.path.join(dest, name)
-    #                     self.mover.copy(i.path(), target)
-    #                 else:
-    #                     target = os.path.join(dest, name) + ' Copy'
-    #                     self.mover.copy(i.path(), target)
-    #             else:
-    #                 self.mover.copy(i.path(), dest)
 
 
 ######################################################################################################################################################

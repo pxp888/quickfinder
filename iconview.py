@@ -446,27 +446,19 @@ class mscene(QGraphicsScene):
             if x==67: self.copyToClip() # C
             if x==86: self.pasteFromClip() # V 
             if x==78: self.segundo.emit()
-            if x==84:  # T  
-                path = self.core.n.fpath()
-                if path=='': path = os.path.expanduser("~")
-                os.chdir(path)
-                subprocess.run('start cmd',shell=True)
-                self.ctrlkey = False
-            if x==76:  # L
-                path = self.core.n.fpath()
-                if path=='': path = os.path.expanduser("~")
-                os.chdir(path)
-                subprocess.run('start wsl',shell=True)
-                self.ctrlkey = False
+            if x==84: self.terminal1() # T  
+            if x==76: self.terminal2() # L
             return
 
         if x==16777248: self.shiftkey=True
         if x==16777249: self.ctrlkey=True
         if x==16777265: self.rename()
         if x==16777268: self.changes()
-        if x==16777223:  # DELETE
-            self.deleteFiles()
-            return
+        if x==16777223: self.deleteFiles()
+        if x==16777220: self.entered()
+        if x==16777216: self.escaped()
+        if x==16777219: self.back()
+
         if x==16777234:  # LEFT
             self.cursA = (self.cursA -1 )%len(self.its)
             self.select(self.paths[self.cursA])
@@ -485,29 +477,7 @@ class mscene(QGraphicsScene):
                 self.cursA = (self.cursA + self.cols )%len(self.its)
                 self.select(self.paths[self.cursA])
             return
-        if x==16777220:  #''' Enter '''
-            cur = self.selected()
-            if len(cur)==0: os.startfile(self.core.n.fpath())
-            if len(cur)==1:
-                if os.path.isdir(cur[0]):
-                    self.npath.emit(cur[0])
-                else:
-                    os.startfile(cur[0])
-                return
-            for i in cur: os.startfile(i)
-            return
-        if x==16777219:  # backspace
-            path = self.core.back()
-            self.npath.emit(path)
-            return
-        if x==16777216:  #''' ESC key '''
-            cur = self.selected()
-            if len(cur)==0:
-                self.home.emit()
-                return
-            else:
-                self.select('')
-                return
+
         if x < 93: self.kevin.emit(event)
         super(mscene,self).keyPressEvent(event)
 
@@ -520,6 +490,43 @@ class mscene(QGraphicsScene):
             self.ctrlkey=False
             # return
         super(mscene,self).keyReleaseEvent(event)
+
+    def terminal1(self):
+        path = self.core.n.fpath()
+        if path=='': path = os.path.expanduser("~")
+        os.chdir(path)
+        subprocess.run('start cmd',shell=True)
+        self.ctrlkey = False
+
+    def terminal2(self):
+        path = self.core.n.fpath()
+        if path=='': path = os.path.expanduser("~")
+        os.chdir(path)
+        subprocess.run('start wsl',shell=True)
+        self.ctrlkey = False
+
+    def back(self):
+        path = self.core.back()
+        self.npath.emit(path)
+
+    def entered(self):
+        cur = self.selected()
+        if len(cur)==0: os.startfile(self.core.n.fpath())
+        if len(cur)==1:
+            if os.path.isdir(cur[0]):
+                self.npath.emit(cur[0])
+            else:
+                os.startfile(cur[0])
+            return
+        for i in cur: os.startfile(i)
+
+    def escaped(self):
+        cur = self.selected()
+        if len(cur)==0:
+            self.npath.emit('home')
+            return
+        else:
+            self.select('')
 
     def selectAll(self):
         for i in self.its:

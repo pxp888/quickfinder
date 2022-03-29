@@ -56,7 +56,7 @@ class treeviewer(QWidget):
         self.setLayout(layout)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
-        # self.setFont(QFont("Arial",12))
+        self.setFont(QFont("Arial",11))
         # self.setFont(QFont("MS Shell Dlg 2",10))
         self.layout = layout
 

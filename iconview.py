@@ -204,6 +204,7 @@ class mview(QGraphicsView):
         self.copyAction = QAction("Copy",self)
         self.pasteAction = QAction("Paste",self)
         self.zipAction = QAction("ZIP Selection",self)
+        self.deleteAction = QAction("Delete Selection",self)
         self.noIndexAction = QAction("No Index",self)
         self.noNameAction = QAction("Ignore Name",self)
         self.noPathAction = QAction("Ignore Path",self)
@@ -222,6 +223,7 @@ class mview(QGraphicsView):
             menu.addAction(self.copyAction)
             menu.addAction(self.pasteAction)
             menu.addAction(self.zipAction)
+            menu.addAction(self.deleteAction)
             menu.addSeparator()
             menu.addAction(self.addHomePathAction)
             menu.addAction(self.noIndexAction)
@@ -661,6 +663,7 @@ class iconview(QWidget):
 
         self.view.copyAction.triggered.connect(self.zen.copyToClip)
         self.view.pasteAction.triggered.connect(self.zen.pasteFromClip)
+        self.view.deleteAction.triggered.connect(self.zen.deleteFiles)
         self.view.noIndexAction.triggered.connect(self.noIndexFunc)
         self.view.noNameAction.triggered.connect(self.noNameFunc)
         self.view.noPathAction.triggered.connect(self.noPathFunc)

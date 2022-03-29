@@ -7,7 +7,7 @@ import sys
 import time
 import stat 
 import shutil 
-
+import zipfile 
 
 from queue import Queue
 import threading
@@ -45,7 +45,7 @@ class TreeModel(QAbstractItemModel):
     def __init__(self, core, parent=None):
         super(TreeModel, self).__init__(parent)
 
-        # self.icon = setter.iconMaker()
+        self.icon = setter.iconMaker()
         self.icmaker = QFileIconProvider()
         self.core = core
         self.base = core.n
@@ -75,6 +75,7 @@ class TreeModel(QAbstractItemModel):
         if role == Qt.DecorationRole:
             if index.column()==0:
                 item = index.internalPointer()
+                # return QVariant(self.icon.icon(item.name, item.dir))
                 return QVariant(self.icmaker.icon(QFileInfo(index.internalPointer().fpath())))
             return None
         if role == Qt.TextAlignmentRole:
@@ -180,8 +181,8 @@ class colviewer(QWidget):
         super(colviewer, self).__init__(parent)
         layout = QHBoxLayout()
         self.setLayout(layout)
-        # layout.setContentsMargins(0, 0, 0, 0)
-        # layout.setSpacing(0)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(0)
         # self.setFont(QFont("Arial",10))
         # self.setFont(QFont("MS Shell Dlg 2",10))
         self.layout = layout
@@ -214,6 +215,8 @@ class colviewer(QWidget):
 
         self.copyAction = QAction("Copy",self)
         self.pasteAction = QAction("Paste",self)
+        self.zipAction = QAction("ZIP Selection",self)
+        self.deleteAction = QAction("Delete Selection",self)
         self.noIndexAction = QAction("No Index",self)
         self.noNameAction = QAction("Ignore Name",self)
         self.noPathAction = QAction("Ignore Path",self)
@@ -224,6 +227,8 @@ class colviewer(QWidget):
         self.noNameAction.triggered.connect(self.noNameFunc)
         self.noPathAction.triggered.connect(self.noPathFunc)
         self.addHomePathAction.triggered.connect(self.addHomePathFunc)
+        self.deleteAction.triggered.connect(self.deleteFiles)
+        self.zipAction.triggered.connect(self.zipFunc)
 
         self.setAcceptDrops(True)
         self.view.setAcceptDrops(True)
@@ -344,6 +349,9 @@ class colviewer(QWidget):
         menu = QMenu(self)
         menu.setPalette(self.palette())
         menu.addAction(self.copyAction)
+        menu.addAction(self.pasteAction)
+        menu.addAction(self.zipAction)
+        menu.addAction(self.deleteAction)
         menu.addAction(self.addHomePathAction)
         menu.addAction(self.noIndexAction)
         menu.addAction(self.noNameAction)
@@ -428,6 +436,20 @@ class colviewer(QWidget):
         mimedata = QMimeData()
         mimedata.setUrls(urls)
         QGuiApplication.clipboard().setMimeData(mimedata)
+
+    def zipFunc(self):
+        src = self.selectedPaths()
+        zname = src[0]+'.zip'
+        os.chdir(self.core.n.fpath())
+        with zipfile.ZipFile(zname, 'w') as zipper:
+            for i in src:
+                if os.path.isdir(i):
+                    for root, dirs, files in os.walk(i, topdown=False):
+                        for name in files:
+                            zipper.write(os.path.relpath(os.path.join(root, name)))
+                else:
+                    zipper.write(os.path.relpath(i))
+
 
 
 ######################################################################################################################################################

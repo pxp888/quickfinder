@@ -27,6 +27,7 @@ import mover
 
 class blabel(QWidget):
     clicked = pyqtSignal()
+    npath = pyqtSignal(object)
     def __init__(self, parent=None):
         super(blabel, self).__init__(parent)
         layout = QHBoxLayout()
@@ -50,6 +51,11 @@ class blabel(QWidget):
         if not os.path.isdir(path):
             path, file = os.path.split(path)
         self.label.setText(path)
+
+    def mousePressEvent(self, event):
+        self.npath.emit('home')
+        super(blabel, self).mousePressEvent(event)
+
 
 
 ######################################################################################################################################################
@@ -91,6 +97,7 @@ class primo(QWidget):
 
         self.eye.directoryChanged.connect(self.changes)
         self.label.clicked.connect(self.setwin)
+        self.label.npath.connect(self.setPath)
         self.npath.connect(self.label.setPath)
         self.fin.npath.connect(self.setPath)
         self.fin.searching.connect(self.searching)

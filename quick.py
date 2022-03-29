@@ -79,7 +79,6 @@ class primo(QWidget):
         self.core = node.coreClass()
         self.core.setPath(home)
 
-        self.eye = QFileSystemWatcher()
         self.ctrlkey = False
 
         self.bros = []
@@ -95,7 +94,6 @@ class primo(QWidget):
 
         self.prev.setFocusPolicy(Qt.NoFocus)
 
-        self.eye.directoryChanged.connect(self.changes)
         self.label.clicked.connect(self.setwin)
         self.label.npath.connect(self.setPath)
         self.npath.connect(self.label.setPath)
@@ -202,7 +200,6 @@ class primo(QWidget):
         self.fin.line.returnPressed.connect(self.view.view.setFocus)
         self.npath.connect(self.view.setPath)
         self.view.npath.connect(self.setPath)
-        self.view.hopPath.connect(self.hopPath)
         self.view.preview.connect(self.preview)
         self.view.preview.connect(self.prev.preview)
         self.view.nmove.connect(self.mover.move)
@@ -237,7 +234,6 @@ class primo(QWidget):
         self.fin.line.returnPressed.connect(self.newview.view.setFocus)
         self.npath.connect(self.newview.setPath)
         self.newview.npath.connect(self.setPath)
-        self.newview.hopPath.connect(self.hopPath)
         self.newview.preview.connect(self.preview)
         self.newview.preview.connect(self.prev.preview)
         self.newview.nmove.connect(self.mover.move)
@@ -273,27 +269,6 @@ class primo(QWidget):
 
         self.core.setPath(path)
         self.npath.emit(path)
-        dirs = self.eye.directories()
-        if len(dirs)==0:
-            self.eye.addPath(path)
-        else:
-            if not path in dirs:
-                self.eye.removePaths(dirs)
-                self.eye.addPath(path)
-
-    def hopPath(self, path):
-        n = self.core.locate(path)
-        self.view.refresh1()
-        self.core.scan(n)
-        self.view.refresh2()
-        dirs = self.eye.directories()
-        cpath = self.core.n.fpath()
-        for i in dirs:
-            if not i==cpath: self.eye.removePath(i)
-        while 1:
-            self.eye.addPath(path)
-            path, name = os.path.split(path)
-            if path==cpath: break
 
     def searching(self, n):
         if n==1:

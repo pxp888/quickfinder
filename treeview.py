@@ -47,7 +47,6 @@ class tview(QTreeView):
 class treeviewer(QWidget):
     npath = pyqtSignal(object)
     preview = pyqtSignal(object)
-    hopPath = pyqtSignal(object)
     nmove = pyqtSignal(object, object)
     ncopy = pyqtSignal(object, object)
     def __init__(self, core, parent=None):

@@ -592,6 +592,9 @@ class iconview(QWidget):
 
         self.core = core
 
+        self.eye = QFileSystemWatcher()
+        self.eye.directoryChanged.connect(self.changes)
+
         self.zen = mscene(core)
         self.view = mview(self.zen)
         self.view.setBackgroundBrush(QBrush(QColor(40,40,40)))
@@ -624,10 +627,19 @@ class iconview(QWidget):
         self.zen.refresh()
         self.zen.reflow(self.width())
 
+    def changes(self):
+        self.core.scan()
+        self.refresh2()
+
     def setPath(self, path):
+        eyedirs = self.eye.directories()
+        if eyedirs: self.eye.removePaths(self.eye.directories())
+
         self.refresh2()
         if not os.path.isdir(path):
             self.zen.select(path)
+            path = os.path.split(path)[0]
+        self.eye.addPath(path)
 
     def resizeEvent(self, event):
         self.zen.reflow(self.width())

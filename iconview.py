@@ -30,41 +30,6 @@ def remove_readonly(func, path, exc_info):
     os.chmod(path, stat.S_IWRITE)
     func(path)
 
-# def fash(path, tim=0):
-#     m = hashlib.md5()
-#     m.update(str(path).encode('utf-8'))
-#     m.update(str(tim).encode('utf-8'))
-#     b = base64.b32encode(m.digest())
-#     # b = m.digest()
-#     return str(b)[:-4]
-
-# def thumbnailpro(qin, qoo):
-#     paths = AppDataPaths('quickfinder1')
-#     paths.setup()
-#     thumbroot = paths.logs_path
-
-#     while 1:
-#         path, mtime = qin.get(True)
-#         if not path.split('.')[-1].lower() in ['jpg','png','webp','gif','jpeg']: continue
-
-#         try:
-#             tpath = os.path.join(thumbroot,fash(path, mtime))
-#             if os.path.exists(tpath):
-#                 im = Image.open(tpath)
-#                 qoo.put((path,im))
-#             else:
-#                 im = Image.open(path)
-#                 im = ImageOps.exif_transpose(im)
-#                 im.thumbnail((200,200))
-#                 qoo.put((path, im))
-#                 im.save(tpath,"JPEG")
-#         except:
-#             if os.path.exists(path):
-#                 im = Image.open(path)
-#                 im = ImageOps.exif_transpose(im)
-#                 im.thumbnail((200,200))
-#                 qoo.put((path, im))
-
 class thumbworker(QObject):
     result = pyqtSignal(object,object)
     def __init__(self, qoo, parent=None):
@@ -128,15 +93,25 @@ class fileitem(QGraphicsItem):
         self.w = int(width)
         self.h = int(width*.75)
         self.dir = dir 
+        self.size = 0 
+        self.msize = 0 
 
         self.setAcceptHoverEvents(True)
-        self.hlite = False
         if self.dir: self.setAcceptDrops(True)
 
     def boundingRect(self):
         return QRectF(0,0,self.w, self.h)
 
     def paint(self, painter, option, widget):
+        if self.msize > 0:
+            pen = QPen(QColor(50,50,50),1)
+            painter.setPen(pen)
+            outrect = self.boundingRect().adjusted(2,self.h-(self.size/self.msize)*self.h,-2,1)
+            path = QPainterPath()
+            path.addRect(outrect)   
+            painter.fillPath(path,QColor(110,110,110))
+            painter.drawRect(outrect)
+
         if self.sel:
             pen = QPen(QColor(42, 130, 130),1)
             painter.setPen(pen)
@@ -144,21 +119,6 @@ class fileitem(QGraphicsItem):
             path = QPainterPath()
             path.addRect(outrect)
             painter.fillPath(path,QColor(42, 130, 130))
-            painter.drawRect(outrect)
-        else:
-            if self.frame:
-                pen = QPen(Qt.black,0)
-                painter.setPen(pen)
-                outrect = self.boundingRect()
-                path = QPainterPath()
-                path.addRect(outrect)
-                painter.fillPath(path,QColor(50,50,50))
-                painter.drawRect(outrect)
-
-        if self.hlite:
-            pen = QPen(Qt.gray,1)
-            painter.setPen(pen)
-            outrect = self.boundingRect()
             painter.drawRect(outrect)
 
         pen = QPen(Qt.white,1)
@@ -172,9 +132,8 @@ class fileitem(QGraphicsItem):
             s.scale(self.w-20, self.h-50, Qt.KeepAspectRatio)
             painter.drawPixmap( int((self.w-s.width())/2) , 10 ,  s.width(), s.height(), self.pic)
 
-    def setpic(self, pic, frame=False):
+    def setpic(self, pic):
         self.pic = pic
-        self.frame = frame
         self.update()
 
     def toggle(self):
@@ -184,13 +143,6 @@ class fileitem(QGraphicsItem):
             self.sel = True
         self.update()
 
-    def hoverEnterEvent(self, event):
-        self.hlite=True
-        self.update()
-
-    def hoverLeaveEvent(self, event):
-        self.hlite=False
-        self.update()
 
 
 ######################################################################################################################################################
@@ -211,11 +163,6 @@ class mview(QGraphicsView):
         self.addHomePathAction = QAction("Add Index Path",self)
 
         self.setAlignment(Qt.AlignTop | Qt.AlignLeft)
-
-    # def resizeEvent(self, event):
-    #     # print(self.mapToScene(0,0))
-    #     # self.setAlignment(Qt.AlignTop | Qt.AlignLeft)
-    #     super(mview, self).resizeEvent(event)
 
     def contextMenuEvent(self, event):
         if self.scene().selected():
@@ -278,7 +225,7 @@ class mscene(QGraphicsScene):
         self.icmaker = QFileIconProvider()
 
         self.thunder = thumbmaker()
-        self.thunder.result.connect(self.geticon)
+        self.thunder.result.connect(self.seticonslot)
         self.thunder.qin = self.core.qin 
 
         self.its = []
@@ -295,7 +242,7 @@ class mscene(QGraphicsScene):
         self.iconwidth = 120
         self.iconheight = 120
 
-    def geticon(self, path, pic):
+    def seticonslot(self, path, pic):
         if path in self.paths:
             i = self.paths.index(path)
             self.its[i].setpic(pic)
@@ -322,10 +269,19 @@ class mscene(QGraphicsScene):
             path = n.fpath()
             self.thunder.getThumb(path, n.mtime)
             it = fileitem(path, n.dir)
-            it.setpic(self.icmaker.icon(QFileInfo(path)).pixmap(256,256))
+            it.setpic(self.icmaker.icon(QFileInfo(path)).pixmap(128,128))
+            it.size = n.size 
+            it.msize = 0 
             self.addItem(it)
             self.its.append(it)
             self.paths.append(path)
+
+    def showsizes(self):
+        msize = 0 
+        for n in list(self.core.n.kids.values()): msize = max(msize, n.size)
+        for i in self.its:
+            i.msize = msize
+            i.update()
 
     def reflow(self, wide=0):
         if wide==0: wide=self.wide
@@ -604,18 +560,6 @@ class mscene(QGraphicsScene):
                     msg.setStandardButtons(QMessageBox.Ok)
                     msg.setEscapeButton(QMessageBox.Ok)
                     retval = msg.exec_()
-
-
-            # for i in cur:
-            #     if os.path.isdir(i):
-            #         for root, dirs, files in os.walk(i, topdown=False):
-            #             for name in files:
-            #                 os.remove(os.path.join(root, name))
-            #             for name in dirs:
-            #                 os.rmdir(os.path.join(root, name))
-            #         os.rmdir(i)
-            #     else:
-            #         os.remove(i)
 
     def rename(self):
         cur = self.selected()

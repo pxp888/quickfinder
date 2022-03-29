@@ -185,6 +185,7 @@ class primo(QWidget):
         self.core.n.getsize()
         self.core.n.sort(1,0)
         self.view.refresh2()
+        self.view.zen.showsizes()
 
     def timescan(self):
         self.view.refresh1()

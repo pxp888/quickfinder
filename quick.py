@@ -20,6 +20,7 @@ import colview
 import treeview
 import homepage
 import mover
+import listview 
 
 
 ######################################################################################################################################################
@@ -184,18 +185,23 @@ class primo(QWidget):
 
     def showColumnView(self):
         if self.core.n==self.core.sniffer: self.setPath(os.path.expanduser("~"))
-        old = self.view
-        old.cleanup()
-        self.view = colview.colviewer(self.core)
-        self.sbs.replaceWidget(0,self.view)
+        self.view.cleanup()
+        self.newview = listview.listview(self.core)
+        self.sbs.replaceWidget(0,self.newview)
         self.sbs.setSizes([int(self.width()*(2/3)), int(self.width()*(1/3))])
-        self.fin.line.returnPressed.connect(self.view.view.setFocus)
-        self.npath.connect(self.view.setPath)
-        self.view.npath.connect(self.setPath)
-        self.view.preview.connect(self.preview)
-        self.view.preview.connect(self.prev.preview)
-        self.view.nmove.connect(self.mover.move)
-        old.deleteLater()
+        self.npath.connect(self.newview.setPath)
+        self.fin.line.returnPressed.connect(self.newview.view.setFocus)
+        self.newview.npath.connect(self.setPath)
+        self.newview.kevin.connect(self.kevin)
+        self.newview.preview.connect(self.preview)
+        self.newview.preview.connect(self.prev.preview)
+        self.newview.nmove.connect(self.mover.move)
+        self.newview.ncopy.connect(self.mover.copy)
+        self.newview.refresh2()
+        self.view.deleteLater()
+        self.view = self.newview
+        self.view.zen.shortcut.connect(self.shortcut)
+        self.view.segundo.connect(self.segundo)
 
     def showIconView(self):
         if self.core.n==self.core.sniffer: self.setPath(os.path.expanduser("~"))

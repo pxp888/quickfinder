@@ -62,7 +62,7 @@ class fileitem(QGraphicsItem):
 			outrect = self.boundingRect().adjusted(2,self.h-(self.used/self.total)*self.h,-2,1)
 			path = QPainterPath()
 			path.addRect(outrect)	
-			painter.fillPath(path,QColor(50,50,50))
+			painter.fillPath(path,QColor(110,110,110))
 			painter.drawRect(outrect)
 
 		pen = QPen(Qt.white,1)
@@ -192,6 +192,8 @@ class homeClass(QWidget):
 		self.zen2 = mscene()
 		self.view1 = mview()
 		self.view2 = mview()
+		self.view1.setBackgroundBrush(QBrush(QColor(40,40,40)))
+		self.view2.setBackgroundBrush(QBrush(QColor(40,40,40)))
 		self.view1.setScene(self.zen1)
 		self.view2.setScene(self.zen2)
 		self.view1.setAlignment(Qt.AlignTop | Qt.AlignLeft)

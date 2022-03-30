@@ -18,7 +18,7 @@ import setter
 import btree
 
 
-itemh = 50
+itemh = 40
 
 
 class reswatcher(QObject):
@@ -374,8 +374,7 @@ if __name__ == "__main__":
 
         def setPath(self, path):
             print(path)
-
-
+            
         # def setPath(self, path):
         #     self.core.setPath(path)
         #     self.thing.refresh()

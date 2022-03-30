@@ -22,7 +22,7 @@ import zipfile
 import node
 import setter
 import mover 
-
+import iconview
 
 def humanTime(t):
     lt = time.localtime(t)
@@ -37,69 +37,20 @@ def humanSize(s):
     if s < 10: return '  '
     return str(s)+'  b  '
 
-
 def remove_readonly(func, path, exc_info):
     if func not in (os.unlink, os.rmdir) or exc_info[1].winerror != 5:
         raise exc_info[1]
     os.chmod(path, stat.S_IWRITE)
     func(path)
 
-# class thumbworker(QObject):
-#     result = pyqtSignal(object,object)
-#     def __init__(self, qoo, parent=None):
-#         super(thumbworker, self).__init__(parent)
-#         self.qoo = qoo
-
-#     def run(self):
-#         while 1:
-#             path, im = self.qoo.get(True)
-#             if path==0: return
-#             im2 = im.convert("RGBA")
-#             data = im2.tobytes("raw", "BGRA")
-#             qim = QImage(data, im.width, im.height, QImage.Format_ARGB32)
-#             pm = QPixmap.fromImage(qim)
-#             self.result.emit(path, pm)
-#         # print('all done')
-
-# class thumbmaker(QObject):
-#     result = pyqtSignal(object, object)
-#     def __init__(self, parent=None):
-#         super(thumbmaker, self).__init__(parent)
-#         self.qin = Queue()
-#         self.qoo = Queue()
-
-#         self.thread = QThread()
-#         self.worker = thumbworker(self.qoo)
-#         self.worker.moveToThread(self.thread)
-#         self.worker.result.connect(self.result)
-#         self.thread.started.connect(self.worker.run)
-#         self.thread.finished.connect(self.thread.deleteLater)
-#         self.thread.start()
-
-#         # self.pro = mp.Process(target=thumbnailpro, args=(self.qin, self.qoo),daemon=True)
-#         # self.pro.start()
-
-#         paths = AppDataPaths('quickfinder1')
-#         paths.setup()
-#         self.thumbroot = paths.logs_path
-
-#     def cleanup(self):
-#         pass 
-#         self.qoo.put((0,0))
-#         self.thread.exit()
-#         # self.pro.terminate()
-
-#     def getThumb(self, path, mtime):
-#         # self.qin.put((path,mtime))
-#         self.qin.put((5,(self.thumbroot, path, mtime, self.qoo)))
 
 ######################################################################################################################################################
 
 
-class fileitem(QGraphicsItem):
+class listitem(QGraphicsItem):
     doublenpath = pyqtSignal(object)
     def __init__(self, path='', dir=True, width=200, parent=None):
-        super(fileitem, self).__init__(parent)
+        super(listitem, self).__init__(parent)
         self.path = path
         self.pic = None
         self.sel = False
@@ -137,20 +88,20 @@ class fileitem(QGraphicsItem):
 
         pen = QPen(Qt.white,1)
         painter.setPen(pen)
-        painter.setFont(QFont("Arial",11))
-        trect = self.boundingRect().adjusted(35,0,-250,0)
+        painter.setFont(QFont("Arial",int(self.h/2)+1))
+        trect = self.boundingRect().adjusted(self.h*2,0,-1*(self.h*12),0)
         painter.drawText(trect, Qt.AlignLeft | Qt.AlignVCenter ,os.path.split(self.path)[1])
 
-        srect = self.boundingRect().adjusted(self.w-250,0,-175,0)
-        painter.drawText(srect, Qt.AlignRight | Qt.AlignVCenter ,humanSize(self.size))        
+        srect = self.boundingRect().adjusted(self.w-(self.h*12),0,-1*(self.h*8),0)
+        painter.drawText(srect, Qt.AlignLeft | Qt.AlignVCenter ,humanSize(self.size))
 
-        drect = self.boundingRect().adjusted(self.w-150,0,0,0)
-        painter.drawText(drect, Qt.AlignRight | Qt.AlignVCenter ,humanTime(self.mtime))        
+        drect = self.boundingRect().adjusted(self.w-(self.h*7),0,0,0)
+        painter.drawText(drect, Qt.AlignLeft | Qt.AlignVCenter ,humanTime(self.mtime))
 
         if not self.pic==None:
             s = self.pic.size()
-            s.scale(22, 22, Qt.KeepAspectRatio)
-            painter.drawPixmap( 5, 2.5 ,  s.width(), s.height(), self.pic)
+            s.scale(self.h+2, self.h-2, Qt.KeepAspectRatio)
+            painter.drawPixmap( 10, 1 ,  s.width(), s.height(), self.pic)
 
     def setpic(self, pic):
         self.pic = pic
@@ -164,72 +115,10 @@ class fileitem(QGraphicsItem):
         self.update()
 
 
-
 ######################################################################################################################################################
 
 
-class mview(QGraphicsView):
-    nmove = pyqtSignal(object, object)
-    def __init__(self, parent=None):
-        super(mview, self).__init__(parent)
-        
-        self.copyAction = QAction("Copy",self)
-        self.pasteAction = QAction("Paste",self)
-        self.zipAction = QAction("ZIP Selection",self)
-        self.deleteAction = QAction("Delete Selection",self)
-        self.noIndexAction = QAction("No Index",self)
-        self.noNameAction = QAction("Ignore Name",self)
-        self.noPathAction = QAction("Ignore Path",self)
-        self.addHomePathAction = QAction("Add Index Path",self)
-
-        self.setAlignment(Qt.AlignTop | Qt.AlignLeft)
-
-    def contextMenuEvent(self, event):
-        if self.scene().selected():
-            menu = QMenu(self)
-            menu.addAction(self.copyAction)
-            menu.addAction(self.pasteAction)
-            menu.addAction(self.zipAction)
-            menu.addAction(self.deleteAction)
-            menu.addSeparator()
-            menu.addAction(self.addHomePathAction)
-            menu.addAction(self.noIndexAction)
-            menu.addAction(self.noNameAction)
-            menu.addAction(self.noPathAction)
-            menu.exec(event.globalPos())
-        else:
-            menu = QMenu(self)
-            menu.addAction(self.pasteAction)
-            menu.exec(event.globalPos())
-
-    def dragEnterEvent(self, e):
-        # print('view enter', e)
-        if e.mimeData().hasUrls():
-            e.setAccepted(True)
-        else:
-            e.setAccepted(False)
-
-    def dragMoveEvent(self, e):
-        if e.mimeData().hasUrls():
-            e.setAccepted(True)
-        else:
-            e.setAccepted(False)
-
-    def dropEvent(self, e):
-        it = self.itemAt(e.pos())
-        if not it==None:
-            dest = it.path
-        else:
-            dest = self.scene().core.n.fpath()
-
-        for i in e.mimeData().urls(): 
-            self.nmove.emit(i.path(), dest)
-
-
-######################################################################################################################################################
-
-
-class mscene(QGraphicsScene):
+class lscene(iconview.mscene):
     npath=pyqtSignal(object)
     kevin=pyqtSignal(object)
     home=pyqtSignal()
@@ -238,7 +127,7 @@ class mscene(QGraphicsScene):
     ncopy = pyqtSignal(object, object)
     segundo = pyqtSignal()
     def __init__(self, core, parent=None):
-        super(mscene, self).__init__(parent)
+        super(iconview.mscene, self).__init__(parent)
 
         self.core = core
         self.maker = setter.iconMaker()
@@ -260,12 +149,7 @@ class mscene(QGraphicsScene):
 
         self.clickbuffer = False
         self.iconwidth = 120
-        self.iconheight = 120
-
-    def seticonslot(self, path, pic):
-        if path in self.paths:
-            i = self.paths.index(path)
-            self.its[i].setpic(pic)
+        self.iconheight = 20
 
     def refresh(self):
         for i in self.its: self.removeItem(i)
@@ -288,7 +172,7 @@ class mscene(QGraphicsScene):
         for n in list(self.core.n.kids.values()):
             path = n.fpath()
             # self.thunder.getThumb(path, n.mtime)
-            it = fileitem(path, n.dir)
+            it = listitem(path, n.dir)
             it.setpic(self.icmaker.icon(QFileInfo(path)).pixmap(256,256))
             it.size = n.size 
             it.msize = 0 
@@ -296,13 +180,6 @@ class mscene(QGraphicsScene):
             self.addItem(it)
             self.its.append(it)
             self.paths.append(path)
-
-    def showsizes(self):
-        msize = 0 
-        for n in list(self.core.n.kids.values()): msize = max(msize, n.size)
-        for i in self.its:
-            i.msize = msize
-            i.update()
 
     def reflow(self, wide=0):
         if wide==0: wide=self.wide
@@ -313,301 +190,20 @@ class mscene(QGraphicsScene):
         n = 0
         for i in self.its:
             i.w = itemw
-            i.h = 25
+            i.h = self.iconheight
             row = int(n / cols) * i.h
             col = (n % cols ) * itemw
             i.setPos(col,row)
             n+=1
         self.setSceneRect(self.itemsBoundingRect())
 
-    def select(self, path):
-        if self.shiftkey:
-            if not path=='':
-                i = self.paths.index(path)
-                self.cursA = i
-                a = min(self.cursA, self.cursB)
-                b = max(self.cursA, self.cursB)
-                for i in range(len(self.its)):
-                    self.its[i].sel= i >=a and i <= b
-                    self.its[i].update()
-                self.its[self.cursA].ensureVisible(xMargin=0,yMargin=0)
-            self.preview.emit(self.selected())
-            return
-
-        if self.ctrlkey:
-            if not path=='':
-                i = self.paths.index(path)
-                self.cursA = i
-                self.cursB = i
-                self.its[i].toggle()
-                self.its[self.cursA].ensureVisible(xMargin=0,yMargin=0)
-            self.preview.emit(self.selected())
-            return
-
-        if path=='':
-            self.cursA = -1
-            self.cursB = -1
-            for i in range(len(self.its)):
-                self.its[i].sel = False
-                self.its[i].update()
-        else:
-            i = self.paths.index(path)
-            self.cursA = i
-            self.cursB = i
-            for i in range(len(self.its)):
-                self.its[i].sel = i==self.cursA
-                self.its[i].update()
-            self.its[self.cursA].ensureVisible(xMargin=0,yMargin=0)
-
-        self.preview.emit(self.selected())
-
-    def selected(self):
-        out = []
-        for i in range(len(self.its)):
-            if self.its[i].sel:
-                out.append(self.paths[i])
-        return out
-
-    def mousePressEvent(self, event):
-        if event.button()==8:
-            path = self.core.back()
-            self.npath.emit(path)
-        super(mscene, self).mousePressEvent(event)
-
-    def mouseReleaseEvent(self, event):
-        if self.clickbuffer:
-            self.clickbuffer=False
-            return
-        if event.button()==1:
-            it = self.itemAt(event.scenePos(),QTransform())
-            if not it==None:
-                self.select(it.path)
-            else:
-                self.select('')
-        super(mscene, self).mouseReleaseEvent(event)
-
-    def mouseMoveEvent(self, event):
-        if not event.buttons()&1: return 
-        dx = (event.buttonDownScenePos(1)-event.scenePos()).manhattanLength()
-        if dx < 60: return 
-
-        cur = self.selected()
-        if not cur:
-            # return 
-            it = self.itemAt(event.buttonDownScenePos(1),QTransform())
-            if it==None: return
-            cur = [it.path]
-
-        urls = []
-        for i in cur:
-            urls.append(QUrl().fromLocalFile(i))
-        mimedata = QMimeData()
-        mimedata.setUrls(urls)
-        drag = QDrag(self)
-        drag.setMimeData(mimedata)
-        drag.exec(Qt.MoveAction | Qt.CopyAction)
-
-    def copyToClip(self):
-        # print('icon copy')
-        cur = self.selected()
-        if not cur: return 
-        urls = []
-        for i in cur:
-            urls.append(QUrl().fromLocalFile(i))
-        mimedata = QMimeData()
-        mimedata.setUrls(urls)
-
-        QGuiApplication.clipboard().setMimeData(mimedata)
-
-    def pasteFromClip(self):
-        # print('icon paste')
-        mimedata = QGuiApplication.clipboard().mimeData()
-        if mimedata.hasUrls():
-            dest = self.core.n.fpath()
-            urls = mimedata.urls()
-            for i in urls:
-                name = os.path.split(i.path())[1]
-                target = os.path.join(dest, name)
-                if os.path.exists(target):
-                    if not os.path.isdir(target):
-                        fname, ext = os.path.splitext(name)
-                        fname = fname + ' Copy'
-                        name = fname + ext 
-                        target = os.path.join(dest, name)
-                        self.ncopy.emit(i.path(), dest)
-                    else:
-                        target = os.path.join(dest, name) + ' Copy'
-                        self.ncopy.emit(i.path(), dest)
-                else:
-                    self.ncopy.emit(i.path(), dest)
-
-    def mouseDoubleClickEvent(self, event):
-        self.clickbuffer = True
-        if event.button()==1:
-            it = self.itemAt(event.scenePos(),QTransform())
-            if not it==None:
-                if os.path.isdir(it.path):
-                    self.npath.emit(it.path)
-                else:
-                    os.startfile(it.path)
-        super(mscene, self).mouseDoubleClickEvent(event)
-
-    def keyPressEvent(self, event):
-        x = event.key()
-        # print('ic',x)
-        if self.ctrlkey:
-            if x==65: self.selectAll()
-            if x==73: self.selectInvert()
-            if x==49: self.shortcut.emit(0)
-            if x==50: self.shortcut.emit(1)
-            if x==51: self.shortcut.emit(2)
-            if x==52: self.shortcut.emit(3)
-            if x==53: self.shortcut.emit(4)
-            if x==54: self.shortcut.emit(5)
-            if x==67: self.copyToClip() # C
-            if x==86: self.pasteFromClip() # V 
-            if x==78: self.segundo.emit()
-            if x==84: self.terminal1() # T  
-            if x==76: self.terminal2() # L
-            return
-
-        if x==16777248: self.shiftkey=True
-        if x==16777249: self.ctrlkey=True
-        if x==16777265: self.rename()
-        if x==16777223: self.deleteFiles()
-        if x==16777220: self.entered()
-        if x==16777216: self.escaped()
-        if x==16777219: self.back()
-
-        if x==16777234:  # LEFT
-            self.cursA = (self.cursA -1 )%len(self.its)
-            self.select(self.paths[self.cursA])
-            return
-        if x==16777235:  # UP
-            if self.cursA >= self.cols:
-                self.cursA = (self.cursA - self.cols )%len(self.its)
-                self.select(self.paths[self.cursA])
-            return
-        if x==16777236:  # RIGHT
-            self.cursA = (self.cursA + 1)%len(self.its)
-            self.select(self.paths[self.cursA])
-            return
-        if x==16777237:  # DOWN
-            if self.cursA < len(self.its)-self.cols:
-                self.cursA = (self.cursA + self.cols )%len(self.its)
-                self.select(self.paths[self.cursA])
-            return
-
-        if x < 93: self.kevin.emit(event)
-        super(mscene,self).keyPressEvent(event)
-
-    def keyReleaseEvent(self, event):
-        x = event.key()
-        if x==16777248:
-            self.shiftkey=False
-            # return
-        if x==16777249:
-            self.ctrlkey=False
-            # return
-        super(mscene,self).keyReleaseEvent(event)
-
-    def terminal1(self):
-        path = self.core.n.fpath()
-        if path=='': path = os.path.expanduser("~")
-        os.chdir(path)
-        subprocess.run('start cmd',shell=True)
-        self.ctrlkey = False
-
-    def terminal2(self):
-        path = self.core.n.fpath()
-        if path=='': path = os.path.expanduser("~")
-        os.chdir(path)
-        subprocess.run('start wsl',shell=True)
-        self.ctrlkey = False
-
-    def back(self):
-        path = self.core.back()
-        self.npath.emit(path)
-
-    def entered(self):
-        cur = self.selected()
-        if len(cur)==0: os.startfile(self.core.n.fpath())
-        if len(cur)==1:
-            if os.path.isdir(cur[0]):
-                self.npath.emit(cur[0])
-            else:
-                os.startfile(cur[0])
-            return
-        for i in cur: os.startfile(i)
-
-    def escaped(self):
-        cur = self.selected()
-        if len(cur)==0:
-            self.npath.emit('home')
-            return
-        else:
-            self.select('')
-
-    def selectAll(self):
-        for i in self.its:
-            i.sel = True
-            i.update()
-        self.preview.emit(self.selected())
-
-    def selectInvert(self):
-        for i in self.its:
-            i.sel = not i.sel
-            i.update()
-        self.preview.emit(self.selected())
-
-    def deleteFiles(self):
-        cur = self.selected()
-        if not cur: return 
-        msg = QMessageBox()
-        msg.setIcon(QMessageBox.Information)
-        msg.setText("Are you sure?")
-        msg.setInformativeText("This cannot be undone.")
-        msg.setWindowTitle("Confirm Delete")
-        msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
-        msg.setEscapeButton(QMessageBox.Cancel)
-        retval = msg.exec_()
-        if retval==1024:
-            for i in cur:
-                try:
-                    if os.path.isdir(i):
-                        shutil.rmtree(i,onerror=remove_readonly)
-                    else:
-                        os.remove(i)
-                except:
-                    msg = QMessageBox()
-                    msg.setIcon(QMessageBox.Information)
-                    msg.setText("Delete Failed (it may be busy)")
-                    msg.setInformativeText(str(i))
-                    msg.setWindowTitle("Delete failed")
-                    msg.setStandardButtons(QMessageBox.Ok)
-                    msg.setEscapeButton(QMessageBox.Ok)
-                    retval = msg.exec_()
-
-    def rename(self):
-        cur = self.selected()
-        if not cur: return 
-        self.namer = mover.renameClass()
-        self.namer.populate(cur)
-        self.namer.show()
-
 
 ######################################################################################################################################################
 
 
-class listview(QWidget):
-    npath = pyqtSignal(object)
-    preview = pyqtSignal(object)
-    kevin = pyqtSignal(object)
-    nmove = pyqtSignal(object, object)
-    ncopy = pyqtSignal(object, object)
-    segundo = pyqtSignal()
+class listview(iconview.iconview):
     def __init__(self, core, parent=None):
-        super(listview, self).__init__(parent)
+        super(iconview.iconview, self).__init__(parent)
         layout = QGridLayout()
         self.setLayout(layout)
         layout.setContentsMargins(0, 0, 0, 0)
@@ -622,8 +218,8 @@ class listview(QWidget):
         self.eye = QFileSystemWatcher()
         self.eye.directoryChanged.connect(self.changes)
 
-        self.zen = mscene(core)
-        self.view = mview(self.zen)
+        self.zen = lscene(core)
+        self.view = iconview.mview(self.zen)
         self.view.setBackgroundBrush(QBrush(QColor(20,20,20)))
         self.view.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.view.nmove.connect(self.nmove)
@@ -647,104 +243,24 @@ class listview(QWidget):
         layout.addWidget(self.view)
         self.zen.reflow(self.width())
 
-    def refresh1(self, path=''):
-        pass
-
-    def refresh2(self, path=''):
-        self.zen.refresh()
-        self.zen.reflow(self.width())
-
-    def changes(self):
-        # print('change', self.core.n.fpath())    
-        self.core.scan()
-        self.refresh2()
-
-    def setPath(self, path):
-        eyedirs = self.eye.directories()
-        if eyedirs: self.eye.removePaths(self.eye.directories())
-
-        self.refresh2()
-        if not os.path.isdir(path):
-            self.zen.select(path)
-            path = os.path.split(path)[0]
-        self.eye.addPath(path)
-
-    def resizeEvent(self, event):
-        self.zen.reflow(self.width())
-
-        super(listview,self).resizeEvent(event)
-
     def wheelEvent(self, event):
         if self.zen.ctrlkey:
             if event.angleDelta().y() > 0:
-                self.zen.iconwidth += 8
-                self.zen.iconheight += 4
+                # self.zen.iconwidth += 8
+                self.zen.iconheight += 1
             else:
-                self.zen.iconwidth -= 8
-                self.zen.iconheight -= 4 
+                # self.zen.iconwidth -= 8
+                self.zen.iconheight -= 1 
             self.zen.reflow()
             self.zen.update()
             return
-        super(listview, self).wheelEvent(event)
+        super(iconview.iconview, self).wheelEvent(event)
 
-    def noIndexFunc(self):
-        for i in self.zen.selected():
-            self.core.ff.addNoIndex(i)
-            self.set.set('ff',self.core.ff)
-            self.core.scan()
-            self.refresh2()
 
-    def noNameFunc(self):
-        for i in self.zen.selected():
-            path, name = os.path.split(i)
-            self.core.ff.addName(name)
-            self.set.set('ff',self.core.ff)
-            self.core.scan()
-            self.refresh2()
-
-    def noPathFunc(self):
-        for i in self.zen.selected():
-            self.core.ff.addPath(i)
-            self.set.set('ff',self.core.ff)
-            self.core.scan()
-            self.refresh2()
-
-    def addHomePathFunc(self):
-        for i in self.zen.selected():
-            self.core.addHomePath(i)
-
-    def zipFunc(self):
-        src = self.zen.selected()
-        zname = src[0]+'.zip'
-        os.chdir(self.core.n.fpath())
-        with zipfile.ZipFile(zname, 'w') as zipper:
-            for i in src:
-                if os.path.isdir(i):
-                    for root, dirs, files in os.walk(i, topdown=False):
-                        for name in files:
-                            zipper.write(os.path.relpath(os.path.join(root, name)))
-                else:
-                    zipper.write(os.path.relpath(i))
-
-    def home(self):
-        # self.npath.emit(os.path.expanduser("~"))
-        self.npath.emit('home')
 
     def cleanup(self):
-        # self.zen.thunder.cleanup()
+    #     # self.zen.thunder.cleanup()
         pass 
-
-    def deepscan(self):
-        self.core.fullscan()
-        # self.view.refresh1()
-        self.core.n.getsize()
-        self.core.n.sort(1,0)
-        self.refresh2()
-        self.zen.showsizes()
-
-    def timescan(self):
-        self.core.n.sort(2,0)
-        self.refresh2()
 
 
 ######################################################################################################################################################

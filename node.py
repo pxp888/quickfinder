@@ -327,6 +327,8 @@ class coreClass():
         if not os.path.isdir(path):
             path, name = os.path.split(path)
 
+        self.clear()
+        
         c = chain(path)
         n = self.base
         for i in c:
@@ -376,6 +378,21 @@ class coreClass():
             check = nc
             nc = []
             if len(check)==0: break
+
+    def clear(self, n=0):
+        qsize = self.qin.qsize()
+        jobs = []
+        for i in range(qsize):
+            try:
+                job, detail = self.qin.get(False)
+                if not job==n:
+                    jobs.append((job,detail))
+            except:
+                continue
+        if n==0: return
+        for i in jobs:
+            if not i[0]==n:
+                self.qin.put(i)
 
 
 ######################################################################################################################################################

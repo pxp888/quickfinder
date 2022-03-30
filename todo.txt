@@ -7,3 +7,7 @@ homepage drop targets
 persistent size and views
 
 custom commands
+
+threaded zip operations?  
+
+move and copy progress reporting

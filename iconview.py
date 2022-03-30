@@ -79,6 +79,7 @@ class thumbmaker(QObject):
         # self.qin.put((path,mtime))
         self.qin.put((5,(self.thumbroot, path, mtime, self.qoo)))
 
+
 ######################################################################################################################################################
 
 
@@ -141,7 +142,6 @@ class fileitem(QGraphicsItem):
         else:
             self.sel = True
         self.update()
-
 
 
 ######################################################################################################################################################
@@ -213,7 +213,6 @@ class mscene(QGraphicsScene):
     kevin=pyqtSignal(object)
     home=pyqtSignal()
     preview = pyqtSignal(object)
-    shortcut = pyqtSignal(object)
     ncopy = pyqtSignal(object, object)
     segundo = pyqtSignal()
     def __init__(self, core, parent=None):
@@ -436,18 +435,8 @@ class mscene(QGraphicsScene):
         if self.ctrlkey:
             if x==65: self.selectAll()
             if x==73: self.selectInvert()
-            if x==49: self.shortcut.emit(0)
-            if x==50: self.shortcut.emit(1)
-            if x==51: self.shortcut.emit(2)
-            if x==52: self.shortcut.emit(3)
-            if x==53: self.shortcut.emit(4)
-            if x==54: self.shortcut.emit(5)
             if x==67: self.copyToClip() # C
             if x==86: self.pasteFromClip() # V 
-            if x==78: self.segundo.emit()
-            if x==84: self.terminal1() # T  
-            if x==76: self.terminal2() # L
-            return
 
         if x==16777248: self.shiftkey=True
         if x==16777249: self.ctrlkey=True
@@ -625,23 +614,20 @@ class iconview(QWidget):
         layout.addWidget(self.view)
         self.zen.reflow(self.width())
 
-    def refresh1(self, path=''):
-        pass
-
-    def refresh2(self, path=''):
+    def refresh(self, path=''):
         self.zen.refresh()
         self.zen.reflow(self.width())
 
     def changes(self):
         # print('change', self.core.n.fpath())    
         self.core.scan()
-        self.refresh2()
+        self.refresh()
 
     def setPath(self, path):
         eyedirs = self.eye.directories()
         if eyedirs: self.eye.removePaths(self.eye.directories())
 
-        self.refresh2()
+        self.refresh()
         if not os.path.isdir(path):
             self.zen.select(path)
             path = os.path.split(path)[0]
@@ -670,7 +656,7 @@ class iconview(QWidget):
             self.core.ff.addNoIndex(i)
             self.set.set('ff',self.core.ff)
             self.core.scan()
-            self.refresh2()
+            self.refresh()
 
     def noNameFunc(self):
         for i in self.zen.selected():
@@ -678,14 +664,14 @@ class iconview(QWidget):
             self.core.ff.addName(name)
             self.set.set('ff',self.core.ff)
             self.core.scan()
-            self.refresh2()
+            self.refresh()
 
     def noPathFunc(self):
         for i in self.zen.selected():
             self.core.ff.addPath(i)
             self.set.set('ff',self.core.ff)
             self.core.scan()
-            self.refresh2()
+            self.refresh()
 
     def addHomePathFunc(self):
         for i in self.zen.selected():
@@ -716,16 +702,16 @@ class iconview(QWidget):
         # self.view.refresh1()
         self.core.n.getsize()
         self.core.n.sort(1,0)
-        self.refresh2()
+        self.refresh()
         self.zen.showsizes()
 
     def timescan(self):
         self.core.n.sort(2,0)
-        self.refresh2()
+        self.refresh()
 
     def namescan(self):
         self.core.n.sort(0,1)
-        self.refresh2()
+        self.refresh()
 
 
 ######################################################################################################################################################
@@ -755,11 +741,11 @@ if __name__ == "__main__":
 
             self.thing.npath.connect(self.setPath)
 
-            self.thing.refresh2()
+            self.thing.refresh()
 
         def setPath(self, path):
             self.core.setPath(path)
-            self.thing.refresh2()
+            self.thing.refresh()
 
     app = QApplication(sys.argv)
     # app.setStyle(QStyleFactory.create("Plastique"))

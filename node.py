@@ -227,8 +227,7 @@ def drivecheck(detail):
 
 def thumbnail(detail):
     thumbroot, path, mtime, qoo = detail
-    if not path.split('.')[-1].lower() in ['jpg','png','webp','gif','jpeg']: return 
-
+    if not path.split('.')[-1].lower() in ['jpg','png','webp','gif','jpeg']: return
     try:
         tpath = os.path.join(thumbroot,fash(path, mtime))
         if os.path.exists(tpath):
@@ -377,6 +376,7 @@ class coreClass():
             check = nc
             nc = []
             if len(check)==0: break
+
 
 ######################################################################################################################################################
 

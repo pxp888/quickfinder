@@ -108,7 +108,6 @@ class primo(QWidget):
         self.view.kevin.connect(self.kevin)
         self.view.preview.connect(self.preview)
         self.view.preview.connect(self.prev.preview)
-        self.view.zen.shortcut.connect(self.shortcut)
         self.view.nmove.connect(self.mover.move)
         self.view.ncopy.connect(self.mover.copy)
         self.view.segundo.connect(self.segundo)
@@ -129,6 +128,8 @@ class primo(QWidget):
         self.front='home'
 
         self.setupStatButtons()
+
+        self.prev.setVisible(self.set.get('previewvisible',True))
 
     def setupStatButtons(self):
         icbut = QPushButton('')
@@ -170,12 +171,13 @@ class primo(QWidget):
         timebut.setFocusPolicy(Qt.NoFocus)
         timebut.setToolTip('Ctrl + 6')
 
-
     def toggleprev(self):
         if self.prev.isVisible():
             self.prev.hide()
+            self.set.set('previewvisible',False)
         else:
             self.prev.show()
+            self.set.set('previewvisible',True)
 
     def namescan(self):
         self.view.namescan()
@@ -200,10 +202,9 @@ class primo(QWidget):
         self.newview.preview.connect(self.prev.preview)
         self.newview.nmove.connect(self.mover.move)
         self.newview.ncopy.connect(self.mover.copy)
-        self.newview.refresh2()
+        self.newview.refresh()
         self.view.deleteLater()
         self.view = self.newview
-        self.view.zen.shortcut.connect(self.shortcut)
         self.view.segundo.connect(self.segundo)
 
     def showIconView(self):
@@ -220,10 +221,9 @@ class primo(QWidget):
         self.newview.preview.connect(self.prev.preview)
         self.newview.nmove.connect(self.mover.move)
         self.newview.ncopy.connect(self.mover.copy)
-        self.newview.refresh2()
+        self.newview.refresh()
         self.view.deleteLater()
         self.view = self.newview
-        self.view.zen.shortcut.connect(self.shortcut)
         self.view.segundo.connect(self.segundo)
 
     def kevin(self, event):
@@ -310,14 +310,6 @@ class primo(QWidget):
             size+=n.size
         msg = str(len(paths)) + ' Selected, '+ str(listview.humanSize(size))
         self.stat.showMessage(msg)
-
-    def shortcut(self, n):
-        if n==0: self.showIconView()
-        if n==1: self.showTreeView()
-        if n==2: self.toggleprev()
-        if n==3: self.namescan()
-        if n==4: self.deepscan()
-        if n==5: self.timescan()
 
     def segundo(self):
         w = mainwin()

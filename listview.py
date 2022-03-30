@@ -119,13 +119,6 @@ class listitem(QGraphicsItem):
 
 
 class lscene(iconview.mscene):
-    npath=pyqtSignal(object)
-    kevin=pyqtSignal(object)
-    home=pyqtSignal()
-    preview = pyqtSignal(object)
-    shortcut = pyqtSignal(object)
-    ncopy = pyqtSignal(object, object)
-    segundo = pyqtSignal()
     def __init__(self, core, parent=None):
         super(iconview.mscene, self).__init__(parent)
 

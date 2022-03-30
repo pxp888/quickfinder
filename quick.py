@@ -16,8 +16,7 @@ import setter
 import iconview
 import finder
 import preview
-import colview
-import treeview
+# import treeview
 import homepage
 import mover
 import listview 
@@ -139,37 +138,38 @@ class primo(QWidget):
         icbut.setFocusPolicy(Qt.NoFocus)
         icbut.setToolTip('Ctrl + 1')
 
-        colbut = QPushButton('')
-        colbut.setIcon(QIcon(':/icons/colview.png'))
-        self.stat.addPermanentWidget(colbut)
-        colbut.clicked.connect(self.showColumnView)
-        colbut.setFocusPolicy(Qt.NoFocus)
-        colbut.setToolTip('Ctrl + 2')
-
         treebut = QPushButton('')
         treebut.setIcon(QIcon(':/icons/treeview.png'))
         self.stat.addPermanentWidget(treebut)
         treebut.clicked.connect(self.showTreeView)
         treebut.setFocusPolicy(Qt.NoFocus)
-        treebut.setToolTip('Ctrl + 3')
+        treebut.setToolTip('Ctrl + 2')
 
-        deepbut = QPushButton('Size Scan')
+        prevbut = QPushButton('')
+        prevbut.setIcon(QIcon(':/icons/colview.png'))
+        self.stat.addPermanentWidget(prevbut)
+        prevbut.clicked.connect(self.toggleprev)
+        prevbut.setFocusPolicy(Qt.NoFocus)
+        prevbut.setToolTip('Ctrl + 3')
+
+        namebut = QPushButton('Name Sort')
+        self.stat.addPermanentWidget(namebut)
+        namebut.clicked.connect(self.namescan)
+        namebut.setFocusPolicy(Qt.NoFocus)
+        namebut.setToolTip('Ctrl + 4')
+
+        deepbut = QPushButton('Size Sort')
         self.stat.addPermanentWidget(deepbut)
         deepbut.clicked.connect(self.deepscan)
         deepbut.setFocusPolicy(Qt.NoFocus)
-        deepbut.setToolTip('Ctrl + 4')
+        deepbut.setToolTip('Ctrl + 5')
 
         timebut = QPushButton('Sort Latest')
         self.stat.addPermanentWidget(timebut)
         timebut.clicked.connect(self.timescan)
         timebut.setFocusPolicy(Qt.NoFocus)
-        timebut.setToolTip('Ctrl + 5')
+        timebut.setToolTip('Ctrl + 6')
 
-        prevbut = QPushButton('Preview')
-        self.stat.addPermanentWidget(prevbut)
-        prevbut.clicked.connect(self.toggleprev)
-        prevbut.setFocusPolicy(Qt.NoFocus)
-        prevbut.setToolTip('Ctrl + 6')
 
     def toggleprev(self):
         if self.prev.isVisible():
@@ -177,13 +177,16 @@ class primo(QWidget):
         else:
             self.prev.show()
 
+    def namescan(self):
+        self.view.namescan()
+
     def deepscan(self):
         self.view.deepscan()
 
     def timescan(self):
         self.view.timescan()
 
-    def showColumnView(self):
+    def showTreeView(self):
         if self.core.n==self.core.sniffer: self.setPath(os.path.expanduser("~"))
         self.view.cleanup()
         self.newview = listview.listview(self.core)
@@ -223,22 +226,6 @@ class primo(QWidget):
         self.view.zen.shortcut.connect(self.shortcut)
         self.view.segundo.connect(self.segundo)
 
-    def showTreeView(self):
-        if self.core.n==self.core.sniffer: self.setPath(os.path.expanduser("~"))
-        self.view.cleanup()
-        self.newview = treeview.treeviewer(self.core)
-        self.sbs.replaceWidget(0,self.newview)
-        self.sbs.setSizes([int(self.width()*(2/3)), int(self.width()*(1/3))])
-        self.fin.line.returnPressed.connect(self.newview.view.setFocus)
-        self.npath.connect(self.newview.setPath)
-        self.newview.npath.connect(self.setPath)
-        self.newview.preview.connect(self.preview)
-        self.newview.preview.connect(self.prev.preview)
-        self.newview.nmove.connect(self.mover.move)
-        self.newview.ncopy.connect(self.mover.copy)
-        self.view.deleteLater()
-        self.view = self.newview
-
     def kevin(self, event):
         self.fin.line.setFocus()
         self.fin.line.keyPressEvent(event)
@@ -275,11 +262,11 @@ class primo(QWidget):
         # print('primo',x)
         if self.ctrlkey:
             if x==49: self.showIconView()
-            if x==50: self.showColumnView()
-            if x==51: self.showTreeView()
-            if x==52: self.deepscan()
-            if x==53: self.timescan()
-            if x==54: self.toggleprev()
+            if x==50: self.showTreeView()
+            if x==51: self.toggleprev()
+            if x==52: self.namescan()
+            if x==53: self.deepscan()
+            if x==54: self.timescan()
             if x==78: self.segundo()
             if x==84: self.terminal1()                
             if x==76: self.terminal2()
@@ -314,23 +301,23 @@ class primo(QWidget):
         if len(paths)==1:
             path = paths[0]
             n = self.core.locate(path)
-            msg = '1 Selected,  ' + str(colview.humanSize(n.size)) + '   Modified : ' + str(colview.humanTime(n.mtime))
+            msg = '1 Selected,  ' + str(listview.humanSize(n.size)) + '   Modified : ' + str(listview.humanTime(n.mtime))
             self.stat.showMessage(msg)
             return
         size = 0
         for i in paths:
             n = self.core.locate(i)
             size+=n.size
-        msg = str(len(paths)) + ' Selected, '+ str(colview.humanSize(size))
+        msg = str(len(paths)) + ' Selected, '+ str(listview.humanSize(size))
         self.stat.showMessage(msg)
 
     def shortcut(self, n):
         if n==0: self.showIconView()
-        if n==1: self.showColumnView()
-        if n==2: self.showTreeView()
-        if n==3: self.deepscan()
-        if n==4: self.timescan()
-        if n==5: self.toggleprev()
+        if n==1: self.showTreeView()
+        if n==2: self.toggleprev()
+        if n==3: self.namescan()
+        if n==4: self.deepscan()
+        if n==5: self.timescan()
 
     def segundo(self):
         w = mainwin()

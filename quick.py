@@ -57,7 +57,6 @@ class blabel(QWidget):
         super(blabel, self).mousePressEvent(event)
 
 
-
 ######################################################################################################################################################
 
 
@@ -276,23 +275,23 @@ class primo(QWidget):
             if x==53: self.timescan()
             if x==54: self.toggleprev()
             if x==78: self.segundo()
-            # if x==67: self.copyToClip()
-            # if x==86: self.pasteFromClip()
-            if x==84:
-                path = self.core.n.fpath()
-                if path=='': path = os.path.expanduser("~")
-                os.chdir(path)
-                subprocess.run('start cmd',shell=True)
-            if x==76:  # L
-                path = self.core.n.fpath()
-                if path=='': path = os.path.expanduser("~")
-                os.chdir(path)
-                subprocess.run('start wsl',shell=True)
+            if x==84: self.terminal1()                
+            if x==76: self.terminal2()
             return
-        if x==16777249:
-            self.ctrlkey=True
-            # return
+        if x==16777249: self.ctrlkey=True
         super(primo,self).keyPressEvent(event)
+
+    def terminal1(self):
+        path = self.core.n.fpath()
+        if path=='': path = os.path.expanduser("~")
+        os.chdir(path)
+        subprocess.run('start cmd',shell=True)
+
+    def terminal2(self):
+        path = self.core.n.fpath()
+        if path=='': path = os.path.expanduser("~")
+        os.chdir(path)
+        subprocess.run('start wsl',shell=True)
 
     def keyReleaseEvent(self, event):
         x = event.key()

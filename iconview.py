@@ -89,7 +89,6 @@ class fileitem(QGraphicsItem):
         self.path = path
         self.pic = None
         self.sel = False
-        self.frame = False
         self.w = int(width)
         self.h = int(width*.75)
         self.dir = dir 
@@ -724,6 +723,7 @@ class iconview(QWidget):
     def timescan(self):
         self.core.n.sort(2,0)
         self.refresh2()
+
 
 ######################################################################################################################################################
 

@@ -689,7 +689,7 @@ class iconview(QWidget):
         src = self.zen.selected()
         zname = src[0]+'.zip'
         os.chdir(self.core.n.fpath())
-        with zipfile.ZipFile(zname, 'w') as zipper:
+        with zipfile.ZipFile(zname, 'w', compression=zipfile.ZIP_DEFLATED, compresslevel=4) as zipper:
             for i in src:
                 if os.path.isdir(i):
                     for root, dirs, files in os.walk(i, topdown=False):

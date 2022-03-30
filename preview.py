@@ -187,7 +187,7 @@ class prevpane(QScrollArea):
     def makezip(self):
         zname = self.zipname.text()
         os.chdir(os.path.split(self.lastpaths[0])[0])
-        with zipfile.ZipFile(zname, 'w') as zipper:
+        with zipfile.ZipFile(zname, 'w', compression=zipfile.ZIP_DEFLATED, compresslevel=4) as zipper:
             for i in self.lastpaths:
                 if os.path.isdir(i):
                     for root, dirs, files in os.walk(i, topdown=False):

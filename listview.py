@@ -31,9 +31,9 @@ def humanTime(t):
     return str(n)
 
 def humanSize(s):
-    if s > 1073741824: return str(round(s/1073741824,2))+'  G  '
-    if s > 1048576: return str(int(round(s/1048576,0)))+'  m  '
-    if s > 1024: return str(int(round(s/1024,0)))+'  k  '
+    if s > 1073741824: return str(round(s/1073741824,2))+'  Gb  '
+    if s > 1048576: return str(int(round(s/1048576,0)))+'  Mb  '
+    if s > 1024: return str(int(round(s/1024,0)))+'  Kb  '
     if s < 10: return '  '
     return str(s)+'  b  '
 
@@ -56,13 +56,14 @@ class listitem(QGraphicsItem):
         self.sel = False
         self.w = int(width)
         self.h = int(30)
-        self.dir = dir 
+        # self.dir = dir 
         self.size = 0 
         self.msize = 0 
-        self.mtime = 0 
+        self.mtime = 0
+        self.fsize = 9
 
-        self.setAcceptHoverEvents(True)
-        if self.dir: self.setAcceptDrops(True)
+        # self.setAcceptHoverEvents(True)
+        # if self.dir: self.setAcceptDrops(True)
 
     def boundingRect(self):
         return QRectF(0,0,self.w, self.h)
@@ -71,7 +72,7 @@ class listitem(QGraphicsItem):
         if self.msize > 0:
             pen = QPen(QColor(50,50,50),1)
             painter.setPen(pen)
-            outrect = self.boundingRect().adjusted(2,1,-1*(self.w-(self.size / self.msize)*self.w),0)
+            outrect = self.boundingRect().adjusted(2,0,-1*(self.w-(self.size / self.msize)*self.w),-1)
             path = QPainterPath()
             path.addRect(outrect)   
             painter.fillPath(path,QColor(80,80,80))
@@ -80,27 +81,36 @@ class listitem(QGraphicsItem):
         if self.sel:
             pen = QPen(QColor(42, 130, 130),1)
             painter.setPen(pen)
-            outrect = self.boundingRect().adjusted(1,1,-1,0)
+            outrect = self.boundingRect().adjusted(1,0,-1,0)
             path = QPainterPath()
             path.addRect(outrect)
             painter.fillPath(path,QColor(42, 130, 130))
-            painter.drawRect(outrect)
+            # painter.drawRect(outrect)
 
         pen = QPen(Qt.white,1)
         painter.setPen(pen)
-        painter.setFont(QFont("Arial",int(self.h/2)+0))
-        trect = self.boundingRect().adjusted(self.h*2,0,-1*(self.h*12),0)
+        font = QFont("Arial",self.fsize)
+        fm = QFontMetrics(font)
+
+        timetext = humanTime(self.mtime)
+        sizetext = humanSize(self.size)
+
+        timewidth = fm.boundingRect(timetext).width()+5
+        sizewidth = fm.boundingRect(sizetext).width()+25
+
+        painter.setFont(font)
+        trect = self.boundingRect().adjusted(self.h*2,0,-1*(timewidth + sizewidth),0)
         painter.drawText(trect, Qt.AlignLeft | Qt.AlignVCenter ,os.path.split(self.path)[1])
 
-        srect = self.boundingRect().adjusted(self.w-(self.h*12),0,-1*(self.h*8),0)
-        painter.drawText(srect, Qt.AlignLeft | Qt.AlignVCenter ,humanSize(self.size))
+        srect = self.boundingRect().adjusted(self.w - timewidth - sizewidth,0,0,0)
+        painter.drawText(srect, Qt.AlignLeft | Qt.AlignVCenter ,sizetext)
 
-        drect = self.boundingRect().adjusted(self.w-(self.h*7),0,0,0)
-        painter.drawText(drect, Qt.AlignLeft | Qt.AlignVCenter ,humanTime(self.mtime))
+        drect = self.boundingRect().adjusted(self.w - timewidth ,0,0,0)
+        painter.drawText(drect, Qt.AlignLeft | Qt.AlignVCenter ,timetext)
 
         if not self.pic==None:
             s = self.pic.size()
-            s.scale(self.h+2, self.h-2, Qt.KeepAspectRatio)
+            s.scale(round(self.h*1.5), self.h-1, Qt.KeepAspectRatio)
             painter.drawPixmap( 10, 1 ,  s.width(), s.height(), self.pic)
 
     def setpic(self, pic):
@@ -143,6 +153,7 @@ class lscene(iconview.mscene):
         self.clickbuffer = False
         self.iconwidth = 120
         self.iconheight = 20
+        self.fsize = 11
 
     def refresh(self):
         for i in self.its: self.removeItem(i)
@@ -175,6 +186,10 @@ class lscene(iconview.mscene):
             self.paths.append(path)
 
     def reflow(self, wide=0):
+        font = QFont("Arial",self.fsize)
+        fm = QFontMetrics(font)
+        ch = fm.capHeight()
+
         if wide==0: wide=self.wide
         self.wide = wide
         cols = 1 
@@ -183,7 +198,8 @@ class lscene(iconview.mscene):
         n = 0
         for i in self.its:
             i.w = itemw
-            i.h = self.iconheight
+            i.h = round(ch*1.6)
+            i.fsize = self.fsize
             row = int(n / cols) * i.h
             col = (n % cols ) * itemw
             i.setPos(col,row)
@@ -240,10 +256,10 @@ class listview(iconview.iconview):
         if self.zen.ctrlkey:
             if event.angleDelta().y() > 0:
                 # self.zen.iconwidth += 8
-                self.zen.iconheight += 1
+                self.zen.fsize += 1
             else:
                 # self.zen.iconwidth -= 8
-                self.zen.iconheight -= 1 
+                self.zen.fsize -= 1
             self.zen.reflow()
             self.zen.update()
             return

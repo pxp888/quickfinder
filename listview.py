@@ -88,7 +88,7 @@ class listitem(QGraphicsItem):
 
         pen = QPen(Qt.white,1)
         painter.setPen(pen)
-        painter.setFont(QFont("Arial",int(self.h/2)+1))
+        painter.setFont(QFont("Arial",int(self.h/2)+0))
         trect = self.boundingRect().adjusted(self.h*2,0,-1*(self.h*12),0)
         painter.drawText(trect, Qt.AlignLeft | Qt.AlignVCenter ,os.path.split(self.path)[1])
 

@@ -268,7 +268,7 @@ class primo(QWidget):
             if x==53: self.deepscan()
             if x==54: self.timescan()
             if x==78: self.segundo()
-            if x==84: self.terminal1()                
+            if x==84: self.terminal1()
             if x==76: self.terminal2()
             return
         if x==16777249: self.ctrlkey=True

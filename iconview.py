@@ -433,10 +433,18 @@ class mscene(QGraphicsScene):
         x = event.key()
         # print('ic',x)
         if self.ctrlkey:
-            if x==65: self.selectAll()
-            if x==73: self.selectInvert()
-            if x==67: self.copyToClip() # C
-            if x==86: self.pasteFromClip() # V 
+            if x==65: 
+                self.selectAll()
+                return
+            if x==73: 
+                self.selectInvert()
+                return
+            if x==67: 
+                self.copyToClip()
+                return
+            if x==86: 
+                self.pasteFromClip()
+                return
 
         if x==16777248: self.shiftkey=True
         if x==16777249: self.ctrlkey=True

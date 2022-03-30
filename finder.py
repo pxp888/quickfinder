@@ -199,15 +199,15 @@ class fline(QLineEdit):
     back = pyqtSignal()
     clearsig = pyqtSignal()
 
-    def __init__(self, parent=None):
-        super(fline, self).__init__(parent)
-        self.ctrlkey = False
+    # def __init__(self, parent=None):
+    #     super(fline, self).__init__(parent)
+        # self.ctrlkey = False
 
     def keyPressEvent(self, event):
         x = event.key()
         # print(x)
-        if x==16777249:
-            self.ctrlkey=True
+        # if x==16777249:
+        #     self.ctrlkey=True
             # return
         if x==16777234:
             self.blah.emit('L')

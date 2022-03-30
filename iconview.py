@@ -452,7 +452,6 @@ class mscene(QGraphicsScene):
         if x==16777248: self.shiftkey=True
         if x==16777249: self.ctrlkey=True
         if x==16777265: self.rename()
-        if x==16777268: self.changes()
         if x==16777223: self.deleteFiles()
         if x==16777220: self.entered()
         if x==16777216: self.escaped()

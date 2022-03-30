@@ -104,7 +104,10 @@ class colviewer(treeview.treeviewer):
         self.view.setDragDropMode(4)    
 
 
-
+    def deepscan(self):
+        pass 
+    def timescan(self):
+        pass 
 
 
 

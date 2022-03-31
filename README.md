@@ -10,11 +10,14 @@ There are also some other features:
 
 ```mermaid
 graph LR
-A[Downloads] --> D[my stuff]
+Z[Index Paths]--> A[Downloads]
+A --> D[my stuff]
 C[Documents] --> E[and yet more]
 A --> B[more stuff]
 B-->F[...]
 F-->G[WHAT I ACTUALLY WANT]
+Z --> C
+
 
 ```
 

@@ -7,7 +7,17 @@ There are also some other features:
 * Full drag and drop, copy-paste compatibility with explorer.  
 * File previews for images and text files. (More formats coming later.)
 
-**What it's not for:** It is very bad with remote folders.  The forward scanning requires a lot of bandwidth, so unless your server is **_very_** fast you are better off with a normal file explorer.  
+```mermaid
+graph LR
+A[Downloads] --> D[my stuff]
+C[Documents] --> E[and yet more]
+A --> B[more stuff]
+B-->F[...]
+F-->G[WHAT I ACTUALLY WANT]
+
+```
+
+**What it's not for:** It is very bad with remote folders.  The forward scanning requires a lot of bandwidth, so unless your server is **_very_** fast or in the same room, you are better off with a normal file explorer.  
 ## How to install?  
 Just extract the zip file into a folder and put it where you like.  It does create a data folder in your Documents folder called **"quickfinder1"** but otherwise it doesn't interfere with the operating system.  
 

@@ -1,7 +1,7 @@
 import os
 import sys
 import time
-from queue import Queue
+from queue import Queue, SimpleQueue
 import threading
 import pickle
 import shutil
@@ -277,10 +277,10 @@ class coreClass():
             self.homepaths.append(os.path.join(os.path.expanduser("~"),'Music'))
             self.set.set('homepaths',self.homepaths)
 
-        self.qin = Queue()
-        self.foo = Queue()
+        self.qin = SimpleQueue()
+        self.foo = SimpleQueue()
         self.pros = []
-        for i in range(8):
+        for i in range(4):
             t = threading.Thread(target=threadwork, args=(self.qin, self.ff, self.foo),daemon=True)
             self.pros.append(t)
             t.start()
@@ -359,6 +359,13 @@ class coreClass():
 
     def find(self, tar, n=None):
         if n==None: n = self.n 
+
+        # for i in range(self.qin.qsize()):
+        #     try:
+        #         self.qin.get(False)
+        #     except:
+        #         continue
+
         en = (2,(tar,n,0))
         self.qin.put(en)
 

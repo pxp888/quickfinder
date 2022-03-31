@@ -7,7 +7,7 @@ import sys
 import time
 
 import multiprocessing as mp
-from queue import Queue
+from queue import SimpleQueue
 import threading
 import resources
 from PIL import Image, ImageOps
@@ -51,8 +51,8 @@ class thumbmaker(QObject):
     result = pyqtSignal(object, object)
     def __init__(self, parent=None):
         super(thumbmaker, self).__init__(parent)
-        self.qin = Queue()
-        self.qoo = Queue()
+        self.qin = SimpleQueue()
+        self.qoo = SimpleQueue()
 
         self.thread = QThread()
         self.worker = thumbworker(self.qoo)

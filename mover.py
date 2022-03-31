@@ -2,7 +2,7 @@ from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 
-from queue import Queue
+from queue import SimpleQueue
 import threading
 
 import os
@@ -32,7 +32,7 @@ def copmove(qin):
 class mover(QObject):
 	def __init__(self, parent=None):
 		super(mover, self).__init__(parent)
-		self.qin = Queue()
+		self.qin = SimpleQueue()
 		self.tred = threading.Thread(target=copmove,args=(self.qin,),daemon=True)
 		self.tred.start()
 

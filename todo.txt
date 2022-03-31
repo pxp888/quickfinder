@@ -1,13 +1,9 @@
-zip functionality is currently broken
-
 recycle bin?  
 
-homepage drop targets
-
-persistent size and views
+persistent size and views - preview done, need font sizes and window size?  
 
 custom commands
 
-threaded zip operations?  
+threaded zip operations?
 
 move and copy progress reporting

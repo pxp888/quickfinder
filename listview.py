@@ -7,7 +7,6 @@ import sys
 import time
 
 import multiprocessing as mp
-from queue import Queue
 import threading
 import resources
 from PIL import Image, ImageOps

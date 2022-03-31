@@ -8,7 +8,7 @@ import time
 import shutil 
 
 import multiprocessing as mp
-from queue import Queue
+from queue import SimpleQueue
 import threading
 import resources
 from PIL import Image, ImageOps
@@ -209,7 +209,7 @@ class homeClass(QWidget):
 		self.setup()
 		self.setFocusPolicy(Qt.NoFocus)
 
-		self.qoo = Queue()
+		self.qoo = SimpleQueue()
 		en = (4,(self.qoo))
 		self.core.qin.put(en)
 

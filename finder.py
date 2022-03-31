@@ -103,7 +103,8 @@ class fscene(QGraphicsScene):
         super(fscene, self).__init__(parent)
 
         self.core = core
-        self.maker = setter.iconMaker()
+        # self.maker = setter.iconMaker()
+        self.icmaker = QFileIconProvider()
 
         self.its = []
         self.sel = -1
@@ -144,7 +145,8 @@ class fscene(QGraphicsScene):
         for i in range(len(out)):
             self.its[i].path = out[i][2]
             self.its[i].baselen = baselen
-            self.its[i].pic = self.maker.pic(out[i][2], out[i][3])
+            # self.its[i].pic = self.maker.pic(out[i][2], out[i][3])
+            self.its[i].pic = self.icmaker.icon(QFileInfo(out[i][2])).pixmap(256,256)
             self.its[i].setVisible(True)
             self.its[i].update()
         for j in range(len(self.its))[i+1:]:

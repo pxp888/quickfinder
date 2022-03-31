@@ -8,7 +8,6 @@ import time
 import zipfile 
 
 import multiprocessing as mp
-from queue import Queue
 import threading
 import resources
 from PIL import Image, ImageOps

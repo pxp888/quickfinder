@@ -17,8 +17,6 @@ A --> B[more stuff]
 B-->F[...]
 F-->G[WHAT I ACTUALLY WANT]
 Z --> C
-
-
 ```
 
 **What it's not for:** It is very bad with remote folders.  The forward scanning requires a lot of bandwidth, so unless your server is **_very_** fast or in the same room, you are better off with a normal file explorer.  

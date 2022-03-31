@@ -131,6 +131,11 @@ class primo(QWidget):
 
         self.prev.setVisible(self.set.get('previewvisible',True))
 
+    def focusOutEvent(self, event):
+        self.shiftkey = False
+        self.ctrlkey = False
+        super(primo, self).focusOutEvent(event)
+
     def setupStatButtons(self):
         icbut = QPushButton('')
         icbut.setIcon(QIcon(':/icons/iconview.png'))

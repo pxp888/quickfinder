@@ -240,6 +240,11 @@ class mscene(QGraphicsScene):
         self.iconwidth = 120
         self.iconheight = 120
 
+    def focusOutEvent(self, event):
+        self.shiftkey = False
+        self.ctrlkey = False
+        super(mscene, self).focusOutEvent(event)
+
     def seticonslot(self, path, pic):
         if path in self.paths:
             i = self.paths.index(path)

@@ -1,11 +1,12 @@
 # QuickFinder
 ## What is it? 
-This is a simple file explorer that looks ahead in the directory tree so you can instantly search and find what you're looking for.  
+This is a simple file explorer that looks ahead in the directory tree so you can **_instantly_** search and find what you're looking for.  
 No need to click your way through when you know where you're going.  
 There are also some other features: 
 * Sort by size, including directory sizes.  
 * Full drag and drop, copy-paste compatibility with explorer.  
 * File previews for images and text files. (More formats coming later.)
+* QuickFinder only searches filenames, so it is actually worse than using the normal file explorer, but it is **_much_** faster and starts searching as soon as you type.  It also employs fuzzy search so you can be a little wrong if you don't remember filenames exactly.  
 
 ```mermaid
 graph LR
@@ -18,6 +19,7 @@ F-->G[WHAT I ACTUALLY WANT]
 ```
 
 **What it's not for:** It is very bad with remote folders.  The forward scanning requires a lot of bandwidth, so unless your server is **_very_** fast or in the same room, you are better off with a normal file explorer.  
+
 ## How to install?  
 Just extract the zip file into a folder and put it where you like.  It does create a data folder in your Documents folder called **"quickfinder1"** but otherwise it doesn't interfere with the operating system.  
 

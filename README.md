@@ -8,16 +8,6 @@ There are also some other features:
 * File previews for images and text files. (More formats coming later.)
 * QuickFinder only searches filenames, so it is actually worse than using the normal file explorer, but it is **_much_** faster and starts searching as soon as you type.  It also employs fuzzy search so you can be a little wrong if you don't remember filenames exactly.  
 
-```mermaid
-graph LR
-Z[Index Paths]--> A[Downloads]
-A --> D[my stuff]
-C[Documents] --> E[and yet more]
-A --> B[more stuff]
-B-->F[...]
-F-->G[WHAT I ACTUALLY WANT]
-Z --> C
-```
 
 **What it's not for:** It is very bad with remote folders.  The forward scanning requires a lot of bandwidth, so unless your server is **_very_** fast or in the same room, you are better off with a normal file explorer.  
 

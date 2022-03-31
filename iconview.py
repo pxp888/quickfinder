@@ -160,6 +160,7 @@ class mview(QGraphicsView):
         self.noNameAction = QAction("Ignore Name",self)
         self.noPathAction = QAction("Ignore Path",self)
         self.addHomePathAction = QAction("Add Index Path",self)
+        self.newFolderAction = QAction("Create new Folder",self)
 
         self.setAlignment(Qt.AlignTop | Qt.AlignLeft)
 
@@ -169,16 +170,19 @@ class mview(QGraphicsView):
             menu.addAction(self.copyAction)
             menu.addAction(self.pasteAction)
             menu.addAction(self.zipAction)
+            menu.addAction(self.newFolderAction)
             menu.addAction(self.deleteAction)
             menu.addSeparator()
             menu.addAction(self.addHomePathAction)
             menu.addAction(self.noIndexAction)
             menu.addAction(self.noNameAction)
             menu.addAction(self.noPathAction)
+
             menu.exec(event.globalPos())
         else:
             menu = QMenu(self)
             menu.addAction(self.pasteAction)
+            menu.addAction(self.newFolderAction)
             menu.exec(event.globalPos())
 
     def dragEnterEvent(self, e):
@@ -443,6 +447,10 @@ class mscene(QGraphicsScene):
             if x==86: 
                 self.pasteFromClip()
                 return
+            if x==78:
+                if self.shiftkey:
+                    self.newFolderFunc()
+                    return
 
         if x==16777248: self.shiftkey=True
         if x==16777249: self.ctrlkey=True
@@ -568,6 +576,15 @@ class mscene(QGraphicsScene):
         self.namer.populate(cur)
         self.namer.show()
 
+    def newFolderFunc(self):
+        n = 1
+        prename = os.path.join(self.core.n.fpath(), 'New Folder ')
+        while 1:
+            name = prename+str(n)
+            if not os.path.exists(name): break
+            n+=1
+        os.mkdir(name)
+
 
 ######################################################################################################################################################
 
@@ -616,6 +633,7 @@ class iconview(QWidget):
         self.view.noPathAction.triggered.connect(self.noPathFunc)
         self.view.addHomePathAction.triggered.connect(self.addHomePathFunc)
         self.view.zipAction.triggered.connect(self.zipFunc)
+        self.view.newFolderAction.triggered.connect(self.zen.newFolderFunc)
 
         layout.addWidget(self.view)
         self.zen.reflow(self.width())

@@ -174,8 +174,8 @@ class homeClass(QWidget):
 		super(homeClass, self).__init__(parent)
 		layout = QVBoxLayout()
 		self.setLayout(layout)
-		# layout.setContentsMargins(0, 0, 0, 0)
-		# layout.setSpacing(0)
+		layout.setContentsMargins(0, 0, 0, 0)
+		layout.setSpacing(0)
 		# self.setFont(QFont("Arial",11))
 		self.layout = layout
 
@@ -189,47 +189,27 @@ class homeClass(QWidget):
 		self.drv = []
 
 		self.zen1 = mscene()
-		self.zen2 = mscene()
 		self.view1 = mview()
-		self.view2 = mview()
 		self.view1.setBackgroundBrush(QBrush(QColor(40,40,40)))
-		self.view2.setBackgroundBrush(QBrush(QColor(40,40,40)))
 		self.view1.setScene(self.zen1)
-		self.view2.setScene(self.zen2)
 		self.view1.setAlignment(Qt.AlignTop | Qt.AlignLeft)
-		self.view2.setAlignment(Qt.AlignTop | Qt.AlignLeft)
 		self.view1.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-		self.view2.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 		self.view1.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-		self.view2.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-
-		layout.addWidget(QLabel(''))
-		layout.addWidget(QLabel('Index Paths'))
 		layout.addWidget(self.view1)
-		layout.addWidget(QLabel('Drives'))
-		layout.addWidget(self.view2)
 
-		self.view1.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
-		self.view2.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
+		self.view1.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 		self.view1.setMinimumHeight(160)
-		self.view2.setMinimumHeight(160)
 
 		self.zen1.npath.connect(self.npath)
-		self.zen2.npath.connect(self.npath)
 		self.zen1.kevin.connect(self.kevin)
 		self.view1.nmove.connect(self.nmove)
 
-		# self.driveset()
+		self.label1 = self.zen1.addText('Index Paths')
+		self.label2 = self.zen1.addText('Drives')
 		self.setup()
 		self.setFocusPolicy(Qt.NoFocus)
 
-		self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-		verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
-		self.layout.addItem(verticalSpacer)
-
 		self.qoo = Queue()
-		# self.dthread = threading.Thread(target=drivecheck, args=(self.qoo,),daemon=True)
-		# self.dthread.start()
 		en = (4,(self.qoo))
 		self.core.qin.put(en)
 
@@ -237,26 +217,26 @@ class homeClass(QWidget):
 		self.dim.setInterval(250)
 		self.dim.timeout.connect(self.drivecheck)
 		self.dim.start()
-
+		
 	def drivecheck(self):
 		while 1:
 			try:
 				path, total, used = self.qoo.get(False)
 				if path==0: 
 					self.dim.stop()
+					self.reflow()
 					return
 			except:
+				self.reflow()
 				return
 			it = fileitem(path)
 			it.total = total 
 			it.used = used 
 			it.setpic(self.icmaker.icon(QFileInfo(path)).pixmap(256,256))
-			self.zen2.addItem(it)
+			self.zen1.addItem(it)
 			self.drv.append(it)
-			it.setPos(len(self.drv)*200,0)
 			it.update()
-
-		# self.reflow()
+		
 
 	def setup(self, path=''):
 		self.core.sniffer = node.node()
@@ -281,39 +261,27 @@ class homeClass(QWidget):
 
 		self.reflow()
 
-	def driveset(self):   # NOT USED
-		if len(self.drv)==0:
-			drvlet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-			for i in drvlet:
-				path = str(i)+':'+os.path.sep 
-				if os.path.exists(path):
-					it = fileitem(path)
-					it.total, it.used, free = shutil.disk_usage(path)
-					it.setpic(self.icmaker.icon(QFileInfo(path)).pixmap(256,256))
-					self.zen2.addItem(it)
-					self.drv.append(it)
-
 	def reflow(self):
-		cols = max((self.width() / 200)-1 ,1)
+		cols = max(int(self.width() / 200) ,1)
+		self.label1.setPos(0,0)
+		ycursor = self.label1.boundingRect().height()
 		n = 0 
 		for i in self.its:
-			# col = int(n/cols)*150
-			# row = int(n%cols)*200
-			col = 0
-			row = 200*n 
+			col = int(n/cols)*150 + ycursor
+			row = int(n%cols)*200
 			i.setPos(row,col)
 			n+=1
-
+		ycursor+= col+150
+		self.label2.setPos(0,ycursor)
+		ycursor+= self.label2.boundingRect().height()
 		n = 0 
 		for i in self.drv:
-			# col = int(n/cols)*150
-			# row = int(n%cols)*200
-			col = 0
-			row = 200*n 
+			col = int(n/cols)*150 + ycursor
+			row = int(n%cols)*200
 			i.setPos(row,col)
 			i.update()
 			n+=1
-		self.zen2.setSceneRect(self.zen2.itemsBoundingRect())
+		
 
 	def resizeEvent(self, event):
 		self.reflow()

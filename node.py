@@ -345,11 +345,11 @@ class coreClass():
         self.scan()
         return self.n
 
-    def scan(self, n=None, rec=4):
+    def scan(self, n=None, rec=8):
         if n==None: n=self.n
         check = [n]
         nc = []
-        for i in range(3):
+        for i in range(1):
             for j in check: nc += j.scan(self.ff)
             check = nc
             nc = []

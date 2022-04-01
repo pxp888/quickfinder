@@ -68,6 +68,7 @@ class thumbmaker(QObject):
         paths = AppDataPaths('quickfinder1')
         paths.setup()
         self.thumbroot = paths.logs_path
+        # self.qin.put((6,(self.thumbroot, 10000)))
 
     def cleanup(self):
         pass 
@@ -637,6 +638,9 @@ class iconview(QWidget):
 
         layout.addWidget(self.view)
         self.zen.reflow(self.width())
+
+
+        self.core.qin.put(  (6, ( 1000*(2**20) )  )  )
 
     def refresh(self, path=''):
         self.zen.refresh()

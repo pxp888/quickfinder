@@ -180,6 +180,7 @@ def threadwork(qin, ff, foo):
         if job==3: find2(detail, foo)
         if job==4: drivecheck(detail)
         if job==5: thumbnail(detail)
+        if job==6: clearold(detail)
     
 def scan1(detail, qin, ff):
     n, rec = detail 
@@ -245,6 +246,46 @@ def thumbnail(detail):
             im = ImageOps.exif_transpose(im)
             im.thumbnail((200,200))
             qoo.put((path, im))
+
+def clearold(detail):
+    maxsize = detail
+
+    paths = AppDataPaths('quickfinder1')
+    paths.setup()
+    thumbroot = paths.logs_path
+    path = thumbroot
+    
+    if not os.path.exists(path): return 
+    tree = btree.tree()
+
+    total = 0
+    with os.scandir(path) as it:
+        for entry in it:
+            fil = entry.path
+            tim = entry.stat(follow_symlinks=False).st_mtime
+            siz = entry.stat(follow_symlinks=False).st_size
+            tree.add(tim, (fil, siz))
+            total += siz 
+
+    fils = tree.walkup(2)
+    target = total - maxsize
+    if target < 0: return 
+    actual = 0 
+    for i in fils:
+        actual += i[1]
+        os.remove(i[0])
+        if actual > target: return
+
+    print('total ',total, target)
+
+
+
+
+
+
+
+
+
 
 
 ######################################################################################################################################################

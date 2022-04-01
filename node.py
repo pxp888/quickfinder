@@ -8,6 +8,7 @@ import shutil
 from PIL import Image, ImageOps
 import hashlib
 import base64
+from appdata import AppDataPaths
 
 from fuzzywuzzy import fuzz
 import setter

@@ -247,6 +247,8 @@ def thumbnail(detail):
             im.thumbnail((200,200))
             qoo.put((path, im))
 
+
+
 def clearold(detail):
     maxsize = detail
 
@@ -325,6 +327,8 @@ class coreClass():
             t = threading.Thread(target=threadwork, args=(self.qin, self.ff, self.foo),daemon=True)
             self.pros.append(t)
             t.start()
+
+        self.core.qin.put(  (6, ( 1000*(2**20) )  )  )  ### Trim thumbnail cache down to size
 
     def addHomePath(self, path):
         self.homepaths.append(path)

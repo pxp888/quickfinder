@@ -640,7 +640,7 @@ class iconview(QWidget):
         self.zen.reflow(self.width())
 
 
-        self.core.qin.put(  (6, ( 1000*(2**20) )  )  )
+
 
     def refresh(self, path=''):
         self.zen.refresh()

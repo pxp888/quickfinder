@@ -328,7 +328,7 @@ class coreClass():
             self.pros.append(t)
             t.start()
 
-        self.core.qin.put(  (6, ( 1000*(2**20) )  )  )  ### Trim thumbnail cache down to size
+        self.qin.put(  (6, ( 1000*(2**20) )  )  )  ### Trim thumbnail cache down to size
 
     def addHomePath(self, path):
         self.homepaths.append(path)

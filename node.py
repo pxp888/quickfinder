@@ -280,7 +280,7 @@ class coreClass():
         self.qin = SimpleQueue()
         self.foo = SimpleQueue()
         self.pros = []
-        for i in range(4):
+        for i in range(8):
             t = threading.Thread(target=threadwork, args=(self.qin, self.ff, self.foo),daemon=True)
             self.pros.append(t)
             t.start()

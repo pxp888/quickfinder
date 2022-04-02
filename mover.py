@@ -14,20 +14,21 @@ def copmove(qin):
 	while 1:
 		job, src, dest = qin.get(True)
 		if job==1:
-			print('move',src,dest)
 			shutil.move(src, dest)
-			print('finished', dest)
 		if job==2:
-			print('copy',src,dest)
 			if os.path.isdir(src):
 				target = os.path.join(dest, os.path.split(src)[1])
 				while os.path.exists(target):
 					target = target + ' Copy'
 				shutil.copytree(src, target)
-				# print('copytree',src,dest,dirs_exist_ok=True)
 			else:
-				shutil.copy2(src, dest)
-			print('finished', dest)
+				target = os.path.join(dest, os.path.split(src)[1])
+				while os.path.exists(target):
+					base, ext = os.path.splitext(target) 
+					base = base + ' copy'
+					target = base + ext 
+				shutil.copy2(src, target)
+			
 
 class mover(QObject):
 	def __init__(self, parent=None):

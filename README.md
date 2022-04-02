@@ -15,18 +15,20 @@ There are also some other features:
 
 ```mermaid
 graph LR
-Z[Index Paths]--> A[Downloads]
-A --> D[my stuff]
-C[Documents] --> E[and yet more]
-A --> B[more stuff]
-B-->F[...]
-F-->G[WHAT I ACTUALLY WANT]
+Z([Index Paths])--> A(Downloads)
+A --> D(my stuff)
+C(Documents) --> E(and yet more)
+A --> B(more stuff)
+B-->F(...)
+F-->G([WHAT I ACTUALLY WANT])
 Z --> C
 ```
 
 ![iconview](https://github.com/pxp888/quickfinder/blob/main/resources/qf4.png)
 ![iconview](https://github.com/pxp888/quickfinder/blob/main/resources/qf1.png)
 ![listview](https://github.com/pxp888/quickfinder/blob/main/resources/qf3.png)
+
+
 ***What it's not for:*** It is very bad with remote folders.  The forward scanning requires a lot of bandwidth, so unless your server is **_very_** fast or in the same room, you are better off with a normal file explorer.  
 
 ***This is not a replacement for file explorer.***  This is meant to work hand in hand with explorer, and offers features and navigation improvements.  Just pressing enter without a file selected will open an explorer window to that location.  

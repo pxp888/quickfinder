@@ -228,7 +228,7 @@ class listview(iconview.iconview):
 
         self.zen = lscene(core)
         self.view = iconview.mview(self.zen)
-        self.view.setBackgroundBrush(QBrush(QColor(20,20,20)))
+        self.view.setBackgroundBrush(QBrush(QColor(40,40,40)))
         self.view.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.view.nmove.connect(self.nmove)
 

@@ -157,6 +157,7 @@ class mview(QGraphicsView):
         self.pasteAction = QAction("Paste",self)
         self.renameAction = QAction("Rename",self)
         self.zipAction = QAction("ZIP Selection",self)
+        self.unzipAction = QAction("unZIP Selection",self)
         self.deleteAction = QAction("Delete Selection",self)
         self.noIndexAction = QAction("No Index",self)
         self.noNameAction = QAction("Ignore Name",self)
@@ -173,6 +174,7 @@ class mview(QGraphicsView):
             menu.addAction(self.pasteAction)
             menu.addAction(self.renameAction)
             menu.addAction(self.zipAction)
+            menu.addAction(self.unzipAction)
             menu.addAction(self.newFolderAction)
             menu.addAction(self.deleteAction)
             menu.addSeparator()
@@ -636,6 +638,7 @@ class iconview(QWidget):
         self.view.noPathAction.triggered.connect(self.noPathFunc)
         self.view.addHomePathAction.triggered.connect(self.addHomePathFunc)
         self.view.zipAction.triggered.connect(self.zipFunc)
+        self.view.unzipAction.triggered.connect(self.unzipFunc)
         self.view.newFolderAction.triggered.connect(self.zen.newFolderFunc)
         self.view.renameAction.triggered.connect(self.zen.rename)
 
@@ -720,6 +723,12 @@ class iconview(QWidget):
                             zipper.write(os.path.relpath(os.path.join(root, name)))
                 else:
                     zipper.write(os.path.relpath(i))
+
+    def unzipFunc(self):
+        src = self.zen.selected()
+        for s in src:
+            with zipfile.ZipFile(s, 'r') as zipper:
+                zipper.extractall(os.path.splitext(s)[0])
 
     def home(self):
         # self.npath.emit(os.path.expanduser("~"))

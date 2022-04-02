@@ -14,8 +14,8 @@ There are also some other features:
 * ZIP functionality built in.  
 
 ```mermaid
-graph LR
-Z([Index Paths])--> A(Downloads)
+flowchart LR
+Z(Index Paths)--> A(Downloads)
 A --> D(my stuff)
 C(Documents) --> E(and yet more)
 A --> B(more stuff)

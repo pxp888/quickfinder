@@ -75,17 +75,22 @@ class prevpane(QScrollArea):
             txtfiles = ['py','txt','bat','json','ini','log','sh','h','cpp','conf','csv']
             images = ['jpg','png','bmp','jpeg','webp']
             zipfiles = ['zip']
+            mkdownfiles = ['md']
 
             if len(paths)==1:
                 path = paths[0]
-                if path.split('.')[-1].lower() in txtfiles:
+                ext = path.split('.')[-1].lower()
+                if ext in txtfiles:
                     self.showtext(path)
                     return
-                if path.split('.')[-1].lower() in images:
+                if ext in images:
                     self.showimage(path)
                     return
-                if path.split('.')[-1].lower() in zipfiles:
+                if ext in zipfiles:
                     self.showzip(path)
+                    return
+                if ext in mkdownfiles:
+                    self.showmarkdown(path)
                     return
             if len(paths)>1: 
                 self.showmany(paths)
@@ -114,6 +119,19 @@ class prevpane(QScrollArea):
             fin.close()
         except:
             pass
+
+    def showmarkdown(self, path):
+        self.label1.hide()
+        self.text.show()
+        self.extractbutton.hide()
+        self.zipbutton.hide()
+        self.zipname.hide()
+        try:
+            fin = open(path,'r')
+            self.text.setMarkdown(fin.read(10000))
+            fin.close()
+        except:
+            pass        
 
     def showimage(self,path):
         self.label1.show()

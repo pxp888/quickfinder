@@ -61,12 +61,15 @@ class renameClass(QDialog):
 		self.line = QLineEdit()
 		self.confirmbut = QPushButton('Rename Files')
 
-		layout.addWidget(self.line,0,1)
-		layout.addWidget(QLabel('From'),1,0)
-		layout.addWidget(QLabel('To'),1,1)
-		layout.addWidget(self.srclist,2,0)
-		layout.addWidget(self.destlist,2,1)
-		layout.addWidget(self.confirmbut,3,1)
+		layout.addWidget(self.line,2,1)
+		layout.addWidget(QLabel('From'),3,0)
+		layout.addWidget(QLabel('To'),3,1)
+		layout.addWidget(self.srclist,4,0)
+		layout.addWidget(self.destlist,4,1)
+		layout.addWidget(self.confirmbut,5,1)
+
+		layout.addWidget(QLabel('# - insert sequence number'),0,1)
+		layout.addWidget(QLabel('* - original filename'),1,1)
 
 		self.line.setText('* #')
 		self.line.textChanged.connect(self.preview)

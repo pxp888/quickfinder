@@ -1,18 +1,10 @@
 <!DOCTYPE RCC>
 <RCC version="1.0">
     <qresource prefix="icons">
-        <file alias="folder.png">folder.png</file>
-        <file alias="icon.ico">icon.ico</file>
         <file alias="settings.png">settings.png</file>
-        <file alias="photo.png">photo.png</file>
-        <file alias="movie.png">movie.png</file>
-        <file alias="music.png">music.png</file>
-        <file alias="sheet.png">sheet.png</file>
-        <file alias="word.png">word.png</file>
-        <file alias="pdf.png">pdf.png</file>
-        <file alias="drive.png">drive.png</file>
         <file alias="iconview.png">iconview.png</file>
         <file alias="treeview.png">treeview.png</file>
         <file alias="colview.png">colview.png</file>
+        <file alias="helptext.md">helptext.md</file>
     </qresource>
 </RCC>

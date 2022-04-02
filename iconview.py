@@ -155,6 +155,7 @@ class mview(QGraphicsView):
         
         self.copyAction = QAction("Copy",self)
         self.pasteAction = QAction("Paste",self)
+        self.renameAction = QAction("Rename",self)
         self.zipAction = QAction("ZIP Selection",self)
         self.deleteAction = QAction("Delete Selection",self)
         self.noIndexAction = QAction("No Index",self)
@@ -170,6 +171,7 @@ class mview(QGraphicsView):
             menu = QMenu(self)
             menu.addAction(self.copyAction)
             menu.addAction(self.pasteAction)
+            menu.addAction(self.renameAction)
             menu.addAction(self.zipAction)
             menu.addAction(self.newFolderAction)
             menu.addAction(self.deleteAction)
@@ -635,6 +637,7 @@ class iconview(QWidget):
         self.view.addHomePathAction.triggered.connect(self.addHomePathFunc)
         self.view.zipAction.triggered.connect(self.zipFunc)
         self.view.newFolderAction.triggered.connect(self.zen.newFolderFunc)
+        self.view.renameAction.triggered.connect(self.zen.rename)
 
         layout.addWidget(self.view)
         self.zen.reflow(self.width())

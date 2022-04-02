@@ -136,21 +136,21 @@ class primo(QWidget):
         super(primo, self).focusOutEvent(event)
 
     def setupStatButtons(self):
-        icbut = QPushButton('')
+        icbut = QPushButton('icon view')
         icbut.setIcon(QIcon(':/icons/iconview.png'))
         self.stat.addPermanentWidget(icbut)
         icbut.clicked.connect(self.showIconView)
         icbut.setFocusPolicy(Qt.NoFocus)
         icbut.setToolTip('Ctrl + 1')
 
-        treebut = QPushButton('')
+        treebut = QPushButton('list view')
         treebut.setIcon(QIcon(':/icons/treeview.png'))
         self.stat.addPermanentWidget(treebut)
         treebut.clicked.connect(self.showTreeView)
         treebut.setFocusPolicy(Qt.NoFocus)
         treebut.setToolTip('Ctrl + 2')
 
-        prevbut = QPushButton('')
+        prevbut = QPushButton('preview')
         prevbut.setIcon(QIcon(':/icons/colview.png'))
         self.stat.addPermanentWidget(prevbut)
         prevbut.clicked.connect(self.toggleprev)
@@ -331,7 +331,7 @@ if __name__ == "__main__":
         def __init__(self, parent=None):
             super(mainwin, self).__init__(parent)
 
-            self.setWindowTitle('Quick Finder 1.1.4')
+            self.setWindowTitle('Quick Finder 1.1.5 beta')
             frame = QFrame()
             self.setCentralWidget(frame)
             layout = QGridLayout()

@@ -146,6 +146,7 @@ class setwin(QDialog):
         # layout.setContentsMargins(0, 0, 0, 0)
         # layout.setSpacing(0)
         # self.resize(1200,900)
+        self.setFont(QFont("Arial",11))
 
         self.core = core
 
@@ -164,14 +165,19 @@ class setwin(QDialog):
         self.dark.clicked.connect(self.color)
         self.dark.setFocusPolicy(Qt.NoFocus)
 
+
         explain1 = QLabel('Double click list items to remove.')
         explain1.setFont(QFont("Arial",11))
+
+        self.helper = QLabel()
+        self.sethelper()
 
         layout.addWidget(self.leftlist,1,1)
         layout.addWidget(self.namelist,1,2)
         layout.addWidget(self.pathlist,1,3)
         layout.addWidget(self.indexlist,1,4)
         layout.addWidget(explain1,0,0)
+        layout.addWidget(self.helper,2,0,1,2)
         # layout.addWidget(self.dark,2,3)
 
         self.leftlist.data = self.core.ff.left
@@ -189,6 +195,23 @@ class setwin(QDialog):
         layout.addWidget(self.homelist,1,0)
         self.homelist.update()
 
+        darkPalette = QPalette()
+        darkPalette.setColor(QPalette.Base, QColor(40, 42, 54));
+        darkPalette.setColor(QPalette.Text, QColor(200, 200, 200));
+        self.leftlist.setPalette(darkPalette)
+        self.namelist.setPalette(darkPalette)
+        self.pathlist.setPalette(darkPalette)
+        self.homelist.setPalette(darkPalette)
+        self.indexlist.setPalette(darkPalette)
+
+    def sethelper(self):
+        fin = QFile(':/icons/helptext.md')
+        fin.open(QIODevice.ReadOnly | QIODevice.Text)
+        a = fin.read(10000).decode('utf-8')
+        self.helper.setText(a)
+        # self.helper.setSizePolicy(QSizePolicy.Expanding,QSizePolicy.Expanding)
+
+        
     def save(self):
         self.set = setter('quickfinder1')
         self.set.set('ff',self.core.ff)

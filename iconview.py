@@ -125,13 +125,13 @@ class fileitem(QGraphicsItem):
         pen = QPen(Qt.white,1)
         painter.setPen(pen)
         painter.setFont(QFont("Arial",8))
-        trect = self.boundingRect().adjusted(5,self.h-40,-5,-2)
-        painter.drawText(trect,Qt.TextWordWrap | Qt.AlignHCenter ,os.path.split(self.path)[1][:30])
+        trect = self.boundingRect().adjusted(5,self.h-50,-5,-2)
+        painter.drawText(trect, Qt.TextWrapAnywhere | Qt.AlignHCenter , os.path.split(self.path)[1])
 
         if not self.pic==None:
             s = self.pic.size()
-            s.scale(self.w-20, self.h-50, Qt.KeepAspectRatio)
-            painter.drawPixmap( int((self.w-s.width())/2) , 10 ,  s.width(), s.height(), self.pic)
+            s.scale(self.w-20, self.h-55, Qt.KeepAspectRatio)
+            painter.drawPixmap( int((self.w-s.width())/2) , 5 ,  s.width(), s.height(), self.pic)
 
     def setpic(self, pic):
         self.pic = pic

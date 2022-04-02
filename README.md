@@ -8,7 +8,7 @@ There are also some other features:
 * Sort by size, including directory sizes.  
 * Full drag and drop, copy-paste compatibility with explorer.  
 * File previews for images and text files. (More formats coming later.)
-* QuickFinder only searches filenames, so it is actually worse than using the normal file explorer, but it is **_much_** faster and starts searching as soon as you type.  It also employs fuzzy search so you can be a little wrong if you don't remember filenames exactly.  
+* QuickFinder only searches filenames, so it is actually worse at detailed search than using the normal windows file explorer, but it is **_much_** faster and starts searching as soon as you type.  It also employs fuzzy search so you can be a little wrong if you don't remember filenames exactly.  
 * Instantly open explorer windows, command prompt, or WSL terminals at the location you are browsing.  
 * Very simple bulk renaming.  
 * ZIP functionality built in.  
@@ -23,6 +23,8 @@ B-->F[...]
 F-->G[WHAT I ACTUALLY WANT]
 Z --> C
 ```
+
+![iconview](https://github.com/pxp888/quickfinder/blob/main/resources/qf4.png)
 ![iconview](https://github.com/pxp888/quickfinder/blob/main/resources/qf1.png)
 ![listview](https://github.com/pxp888/quickfinder/blob/main/resources/qf3.png)
 ***What it's not for:*** It is very bad with remote folders.  The forward scanning requires a lot of bandwidth, so unless your server is **_very_** fast or in the same room, you are better off with a normal file explorer.  

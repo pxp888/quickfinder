@@ -13,16 +13,7 @@ There are also some other features:
 * Very simple bulk renaming.  
 * ZIP functionality built in.  
 
-```mermaid
-graph LR
-Z([Index Paths])--> A(Downloads)
-A --> D(my stuff)
-C(Documents) --> E(and yet more)
-A --> B(more stuff)
-B-->F(...)
-F-->G([WHAT I ACTUALLY WANT])
-Z --> C
-```
+
 
 ![iconview](https://github.com/pxp888/quickfinder/blob/main/resources/qf4.png)
 ![iconview](https://github.com/pxp888/quickfinder/blob/main/resources/qf1.png)

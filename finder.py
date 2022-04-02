@@ -114,7 +114,7 @@ class fscene(QGraphicsScene):
 
         self.cols = 1
 
-        for i in range(50):
+        for i in range(18):
             it = resitem('it : ' + str(i))
             self.addItem(it)
             self.its.append(it)
@@ -135,7 +135,7 @@ class fscene(QGraphicsScene):
         base = self.core.n.fpath()
         if path==base: return
         baselen = len(base)
-        self.tree.top(score, res, 50)
+        self.tree.top(score, res, 18)
         out = self.tree.walkdown(2)
         if self.tree.count==1:
             self.sel = 0

@@ -61,6 +61,7 @@ class blabel(QWidget):
 
 class primo(QWidget):
     npath = pyqtSignal(object)
+    quit = pyqtSignal()
     def __init__(self, parent=None):
         super(primo, self).__init__(parent)
         layout = QVBoxLayout()
@@ -274,6 +275,7 @@ class primo(QWidget):
             if x==78: self.segundo()
             if x==84: self.terminal1()
             if x==76: self.terminal2()
+            if x==87: self.quit.emit()
             return
         if x==16777249: self.ctrlkey=True
         super(primo,self).keyPressEvent(event)
@@ -331,7 +333,7 @@ if __name__ == "__main__":
         def __init__(self, parent=None):
             super(mainwin, self).__init__(parent)
 
-            self.setWindowTitle('Quick Finder 1.1.9 beta')
+            self.setWindowTitle('Quick Finder 1.2.0')
             frame = QFrame()
             self.setCentralWidget(frame)
             layout = QGridLayout()
@@ -343,6 +345,7 @@ if __name__ == "__main__":
             self.thing = primo()
             layout.addWidget(self.thing)
             self.thing.npath.connect(self.setWindowTitle)
+            self.thing.quit.connect(self.close)
 
     app = QApplication(sys.argv)
     app.setStyle(QStyleFactory.create("Fusion"))

@@ -212,7 +212,7 @@ def find2(detail, foo):
     # score = fuzz.partial_ratio(tar.lower(), k.name.lower())
     # score = fuzz.token_sort_ratio(tar.lower(), k.name.lower())
     score = fuzz.token_set_ratio(tar.lower(), i.name.lower())
-    if score > 25:
+    if score > 5:
         entry = (tar, score, i.fpath(), i.dir)
         foo.put(entry)
 

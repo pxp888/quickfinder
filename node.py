@@ -43,6 +43,15 @@ class filefilter():
         self.paths = {}
         self.left = {}
 
+        self.addLeft('ntuser.dat')
+        self.addLeft('NTUSER.DAT')
+        self.addName('desktop.ini')
+        self.addName('ntuser.ini')
+
+        self.addNoIndex(os.path.join(os.path.expanduser("~"),'AppData'))
+        self.addNoIndex(os.path.join(os.path.expanduser("~"),'Application Data'))
+
+
     def test(self, path, name):
         if name in self.names: return 0
         if path in self.paths: return 0
@@ -306,14 +315,8 @@ class coreClass():
 
         self.base = node()
         self.n = None
-        self.ff = self.set.get('ff',None)
-        if self.ff==None:
-            self.ff = filefilter()
-            self.ff.addLeft('ntuser.dat')
-            self.ff.addLeft('NTUSER.DAT')
-            self.ff.addName('desktop.ini')
-            self.ff.addName('ntuser.ini')
-
+        self.ff = self.set.get('ff',filefilter())
+        
         self.sniffer = node()
 
         self.homepaths = self.set.get('homepaths',[])

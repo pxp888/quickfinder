@@ -31,7 +31,7 @@ Z --> C
 
 ***What it's not for:*** It is very bad with remote folders.  The forward scanning requires a lot of bandwidth, so unless your server is **_very_** fast or in the same room, you are better off with a normal file explorer.  
 
-***This is not a replacement for file explorer.***  This is meant to work hand in hand with explorer, and offers features and navigation improvements.  Just pressing enter without a file selected will open an explorer window to that location.  
+***This is not a complete replacement for file explorer.***  This is meant to work hand in hand with explorer, and offers features and navigation improvements.  Just pressing enter without a file selected will open an explorer window to that location.  
 
 ## How to install?  
 Just extract the zip file into a folder and put it where you like.  It does create a data folder in your Documents folder called **"quickfinder1"** but otherwise it doesn't interfere with the operating system.  

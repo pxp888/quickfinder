@@ -218,7 +218,7 @@ def find2(detail, foo):
     # score = fuzz.partial_ratio(tar.lower(), k.name.lower())
     # score = fuzz.token_sort_ratio(tar.lower(), k.name.lower())
     score = fuzz.token_set_ratio(tar.lower(), i.name.lower())
-    if score > 5:
+    if score > 10:
         entry = (tar, score, i.fpath(), i.dir)
         foo.put(entry)
 
@@ -412,11 +412,11 @@ class coreClass():
     def find(self, tar, n=None):
         if n==None: n = self.n 
 
-        # for i in range(self.qin.qsize()):
+        # while 1:
         #     try:
         #         self.qin.get(False)
         #     except:
-        #         continue
+        #         break
 
         en = (2,(tar,n,0))
         self.qin.put(en)

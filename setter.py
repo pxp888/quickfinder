@@ -37,21 +37,16 @@ darkPalette.setColor(QPalette.Disabled, QPalette.HighlightedText, QColor(127, 12
 class iconMaker():
     def __init__(self):
         self.foldermap = QPixmap(':/icons/folder.png')
-        self.docmap = QPixmap(':/icons/icon.ico')
+        self.docmap = QPixmap(':/icons/doc.png')
         self.photomap = QPixmap(':/icons/photo.png')
-        self.moviemap = QPixmap(':/icons/movie.png')
-        self.musicmap = QPixmap(':/icons/music.png')
-        self.wordmap = QPixmap(':/icons/word.png')
-        self.sheetmap = QPixmap(':/icons/sheet.png')
-        self.pdfmap = QPixmap(':/icons/pdf.png')
 
         self.data = {}
         for i in ['jpg','png','webp','bmp','jpeg']: self.data[i]=self.photomap
-        for i in ['mp4','avi','mpg','mpeg','mkv','mov','webm','flv']: self.data[i] = self.moviemap
-        for i in ['mp3','flac','ogg']: self.data[i] = self.musicmap
-        for i in ['xls','xlsx']: self.data[i] = self.sheetmap
-        for i in ['doc','docx']: self.data[i] = self.wordmap
-        for i in ['pdf']: self.data[i] = self.pdfmap
+        # for i in ['mp4','avi','mpg','mpeg','mkv','mov','webm','flv']: self.data[i] = self.moviemap
+        # for i in ['mp3','flac','ogg']: self.data[i] = self.musicmap
+        # for i in ['xls','xlsx']: self.data[i] = self.sheetmap
+        # for i in ['doc','docx']: self.data[i] = self.wordmap
+        # for i in ['pdf']: self.data[i] = self.pdfmap
 
     def pic(self, name, dir):
         if dir: return self.foldermap

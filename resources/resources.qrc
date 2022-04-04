@@ -6,5 +6,8 @@
         <file alias="treeview.png">treeview.png</file>
         <file alias="colview.png">colview.png</file>
         <file alias="helptext.md">helptext.md</file>
+        <file alias="folder.png">folder.png</file>
+        <file alias="doc.png">doc.png</file>
+        <file alias="photo.png">photo.png</file>
     </qresource>
 </RCC>

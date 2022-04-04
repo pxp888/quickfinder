@@ -38,6 +38,13 @@ Just extract the zip file into a folder and put it where you like.  It does crea
 
 Download here : [**quickfinder.zip**](https://github.com/pxp888/quickfinder/raw/main/resources/quickfinder.zip)
 
+## Size Searching
+The size sort feature doesn't just look at files in the current directory, it looks all the way down the file system and show the size of each directory in full.  
+
+This can be time consuming when done on very large directories.  This is not meant to replace excellent visualization tools like Grand Perspective or Windirstat, it is only meant to give you a better view of the directory you're looking at.  
+
+This will only work on user-accessible directories, and will skip any marked "no index" (see below)
+
 ## Tweaks
 It works much faster with a little direction so it doesn't waste time on folders you aren't interested in looking at.  These are all available either by right clicking items, or through the settings window.  
 #### _Index Paths_

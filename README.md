@@ -36,7 +36,7 @@ Z --> C
 ## How to install?  
 Just extract the zip file into a folder and put it where you like.  It does create a data folder in your Documents folder called **"quickfinder1"** but otherwise it doesn't interfere with the operating system.  
 
-Download here : [**quickfinder.zip**](https://github.com/pxp888/quickfinder/blob/main/resources/quickfinder.zip)
+Download here : [**quickfinder.zip**](https://github.com/pxp888/quickfinder/raw/main/resources/quickfinder.zip)
 
 ## Tweaks
 It works much faster with a little direction so it doesn't waste time on folders you aren't interested in looking at.  These are all available either by right clicking items, or through the settings window.  

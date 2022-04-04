@@ -22,6 +22,7 @@ import zipfile
 import node
 import setter
 import mover 
+import btree 
 
 
 def remove_readonly(func, path, exc_info):
@@ -96,6 +97,7 @@ class fileitem(QGraphicsItem):
         self.dir = dir 
         self.size = 0 
         self.msize = 0 
+        self.mtime = 0
 
         self.setAcceptHoverEvents(True)
         if self.dir: self.setAcceptDrops(True)
@@ -260,26 +262,55 @@ class mscene(QGraphicsScene):
             self.its[i].setpic(pic)
 
     def refresh(self):
-        for i in self.its: self.removeItem(i)
-        self.its = []
-        self.paths = []
-
-        self.cursA = -1
-        self.cursB = -1
-        self.shiftkey = False
-        self.ctrlkey = False
-        self.cols = 1
-
+        np = len(self.its)
+        curnodes = []
+        curpaths = []
         for n in list(self.core.n.kids.values()):
             path = n.fpath()
-            self.thunder.getThumb(path, n.mtime)
-            it = fileitem(path, n.dir)
-            it.setpic(self.icmaker.icon(QFileInfo(path)).pixmap(256,256))
-            it.size = n.size 
-            it.msize = 0 
-            self.addItem(it)
-            self.its.append(it)
-            self.paths.append(path)
+            curpaths.append(path)
+            curnodes.append(n)
+
+        kill = []
+        for i in range(len(self.paths)):
+            if not self.paths[i] in curpaths:
+                kill.insert(0,i)
+        for i in kill:
+            path = self.paths.pop(i)
+            it = self.its.pop(i)
+            self.removeItem(it)
+
+
+        for n in curnodes:
+            path = n.fpath()
+            if not path in self.paths:
+                self.thunder.getThumb(path, n.mtime)
+                it = fileitem(path, n.dir)
+                it.setpic(self.icmaker.icon(QFileInfo(path)).pixmap(256,256))
+                it.size = n.size 
+                it.msize = 0
+                it.mtime = n.mtime  
+                self.addItem(it)
+                self.its.append(it)
+                self.paths.append(path)
+
+                cols = self.cols
+                itemw = self.iconwidth 
+                
+                it.w = itemw
+                it.h = self.iconheight
+                row = int(np / cols) * it.h
+                col = (np % cols ) * itemw
+                it.setPos(col,row)
+                np+=1
+            else: 
+                continue
+
+
+    def fresh(self):
+        for i in self.its: self.removeItem(i)
+        self.its=[]
+        self.paths=[]
+        self.refresh()
 
     def showsizes(self):
         msize = 0 
@@ -632,9 +663,6 @@ class iconview(QWidget):
         layout.addWidget(self.view)
         self.zen.reflow(self.width())
 
-
-
-
     def refresh(self, path=''):
         self.zen.refresh()
         self.zen.reflow(self.width())
@@ -656,7 +684,6 @@ class iconview(QWidget):
 
     def resizeEvent(self, event):
         self.zen.reflow(self.width())
-
         super(iconview,self).resizeEvent(event)
 
     def wheelEvent(self, event):
@@ -729,16 +756,19 @@ class iconview(QWidget):
         # self.view.refresh1()
         self.core.n.getsize()
         self.core.n.sort(1,0)
-        self.refresh()
+        self.zen.fresh()
         self.zen.showsizes()
+        self.zen.reflow(self.width())
 
     def timescan(self):
         self.core.n.sort(2,0)
-        self.refresh()
+        self.zen.fresh()
+        self.zen.reflow(self.width())
 
     def namescan(self):
         self.core.n.sort(0,1)
-        self.refresh()
+        self.zen.fresh()
+        self.zen.reflow(self.width())
 
 
 ######################################################################################################################################################

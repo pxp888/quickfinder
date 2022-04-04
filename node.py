@@ -169,6 +169,12 @@ class node():
             self.size += self.kids[i].getsize()
         return self.size
 
+    def childpaths(self):  
+        paths = []
+        for i in self.kids:
+            paths.append( self.kids[i].fpath() )
+        return paths 
+
 
 ######################################################################################################################################################
 
@@ -391,7 +397,7 @@ class coreClass():
         self.scan()
         return self.n
 
-    def scan(self, n=None, rec=8):
+    def scan(self, n=None, rec=7):
         if n==None: n=self.n
         check = [n]
         nc = []

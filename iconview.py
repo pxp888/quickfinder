@@ -230,7 +230,7 @@ class mscene(QGraphicsScene):
         super(mscene, self).__init__(parent)
 
         self.core = core
-        self.maker = setter.iconMaker()
+        # self.maker = setter.iconMaker()
         self.icmaker = QFileIconProvider()
 
         self.thunder = thumbmaker()
@@ -727,16 +727,18 @@ class iconview(QWidget):
 
     def zipFunc(self):
         src = self.zen.selected()
-        zname = src[0]+'.zip'
-        os.chdir(self.core.n.fpath())
-        with zipfile.ZipFile(zname, 'w', compression=zipfile.ZIP_DEFLATED, compresslevel=4) as zipper:
-            for i in src:
-                if os.path.isdir(i):
-                    for root, dirs, files in os.walk(i, topdown=False):
-                        for name in files:
-                            zipper.write(os.path.relpath(os.path.join(root, name)))
-                else:
-                    zipper.write(os.path.relpath(i))
+        curpath = self.core.n.fpath()
+        self.core.qin.put( (7,(src, curpath)) )
+        # zname = src[0]+'.zip'
+        # os.chdir(self.core.n.fpath())
+        # with zipfile.ZipFile(zname, 'w', compression=zipfile.ZIP_DEFLATED, compresslevel=4) as zipper:
+        #     for i in src:
+        #         if os.path.isdir(i):
+        #             for root, dirs, files in os.walk(i, topdown=False):
+        #                 for name in files:
+        #                     zipper.write(os.path.relpath(os.path.join(root, name)))
+        #         else:
+        #             zipper.write(os.path.relpath(i))
 
     def unzipFunc(self):
         src = self.zen.selected()

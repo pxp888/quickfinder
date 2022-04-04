@@ -14,7 +14,18 @@ def copmove(qin):
 	while 1:
 		job, src, dest = qin.get(True)
 		if job==1:
-			shutil.move(src, dest)
+			if os.path.isdir(src):
+				target = os.path.join(dest, os.path.split(src)[1])
+				while os.path.exists(target):
+					target = target + ' Copy'
+				shutil.move(src, target)
+			else:
+				target = os.path.join(dest, os.path.split(src)[1])
+				while os.path.exists(target):
+					base, ext = os.path.splitext(target) 
+					base = base + ' Copy'
+					target = base + ext 
+				shutil.move(src, target)
 		if job==2:
 			if os.path.isdir(src):
 				target = os.path.join(dest, os.path.split(src)[1])
@@ -25,7 +36,7 @@ def copmove(qin):
 				target = os.path.join(dest, os.path.split(src)[1])
 				while os.path.exists(target):
 					base, ext = os.path.splitext(target) 
-					base = base + ' copy'
+					base = base + ' Copy'
 					target = base + ext 
 				shutil.copy2(src, target)
 			

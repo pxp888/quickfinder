@@ -9,6 +9,7 @@ from PIL import Image, ImageOps
 import hashlib
 import base64
 from appdata import AppDataPaths
+import zipfile 
 
 from fuzzywuzzy import fuzz
 import setter
@@ -197,6 +198,7 @@ def threadwork(qin, ff, foo):
         if job==4: drivecheck(detail)
         if job==5: thumbnail(detail)
         if job==6: clearold(detail)
+        if job==7: zipFunc(detail)
     
 def scan1(detail, qin, ff):
     n, rec = detail 
@@ -298,7 +300,18 @@ def clearold(detail):
 
 
 
-
+def zipFunc(detail):
+    src, curpath = detail
+    zname = src[0]+'.zip'
+    os.chdir(curpath)
+    with zipfile.ZipFile(zname, 'w', compression=zipfile.ZIP_DEFLATED, compresslevel=4) as zipper:
+        for i in src:
+            if os.path.isdir(i):
+                for root, dirs, files in os.walk(i, topdown=False):
+                    for name in files:
+                        zipper.write(os.path.relpath(os.path.join(root, name)))
+            else:
+                zipper.write(os.path.relpath(i))
 
 
 

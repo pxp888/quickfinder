@@ -39,11 +39,13 @@ class iconMaker():
         self.foldermap = QPixmap(':/icons/folder.png')
         self.docmap = QPixmap(':/icons/doc.png')
         self.photomap = QPixmap(':/icons/photo.png')
+        self.moviemap = QPixmap(':/icons/video.png')
+        self.musicmap = QPixmap(':/icons/music.png')
 
         self.data = {}
         for i in ['jpg','png','webp','bmp','jpeg']: self.data[i]=self.photomap
-        # for i in ['mp4','avi','mpg','mpeg','mkv','mov','webm','flv']: self.data[i] = self.moviemap
-        # for i in ['mp3','flac','ogg']: self.data[i] = self.musicmap
+        for i in ['mp4','avi','mpg','mpeg','mkv','mov','webm','flv']: self.data[i] = self.moviemap
+        for i in ['mp3','flac','ogg','wav']: self.data[i] = self.musicmap
         # for i in ['xls','xlsx']: self.data[i] = self.sheetmap
         # for i in ['doc','docx']: self.data[i] = self.wordmap
         # for i in ['pdf']: self.data[i] = self.pdfmap

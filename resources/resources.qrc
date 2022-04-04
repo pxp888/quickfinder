@@ -9,5 +9,7 @@
         <file alias="folder.png">folder.png</file>
         <file alias="doc.png">doc.png</file>
         <file alias="photo.png">photo.png</file>
+        <file alias="video.png">video.png</file>
+        <file alias="music.png">music.png</file>
     </qresource>
 </RCC>

@@ -1,5 +1,5 @@
 # QuickFinder _(very alpha version)_
-![homepage](https://github.com/pxp888/quickfinder/releases/download/v1.2.7/quickfinder.zip)
+![homepage](https://github.com/pxp888/quickfinder/blob/main/resources/qf0.png)
 
 ## What is it? 
 This is a simple file explorer that looks ahead in the directory tree so you can **_instantly_** search and find what you're looking for.  
@@ -36,7 +36,7 @@ Z --> C
 ## How to install?  
 Just extract the zip file into a folder and put it where you like.  It does create a data folder in your Documents folder called **"quickfinder1"** but otherwise it doesn't interfere with the operating system.  
 
-Download here : [**quickfinder.zip**](https://github.com/pxp888/quickfinder/raw/main/resources/quickfinder.zip)
+Download here : [**quickfinder.zip**](https://github.com/pxp888/quickfinder/releases/download/v1.2.7/quickfinder.zip)
 
 ## Size Searching
 The size sort feature doesn't just look at files in the current directory, it looks all the way down the file system and show the size of each directory in full.  

@@ -34,7 +34,7 @@ Z --> C
 ***This is not a complete replacement for file explorer.***  This is meant to work hand in hand with explorer, and offers features and navigation improvements.  Just pressing enter without a file selected will open an explorer window to that location.  
 
 ## How to install?  
-Just extract the zip file into a folder and put it where you like.  It does create a data folder in your Documents folder called **"quickfinder1"** but otherwise it doesn't interfere with the operating system.  
+Just extract the zip file into a folder and put it where you like.  It does create a data folder in your User folder called **"quickfinder1"** but otherwise it doesn't interfere with the operating system.  
 
 Download here : [**quickfinder.zip**](https://github.com/pxp888/quickfinder/releases/download/v1.2.7/quickfinder.zip)
 

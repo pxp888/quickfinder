@@ -50,6 +50,17 @@ It works much faster with a little direction so it doesn't waste time on folders
 #### _Index Paths_
 These are paths that it should start looking at from the _homepage_.  
 Once you start navigating, it only looks forward from the currently showing directory.  
+Keep in mind that if one index path exists downstream of another that path will be searched twice, and results will appear twice.  
+
+~~~mermaid
+flowchart LR
+ip1([Index Path 1]) --> a(...) & d(...)
+w[Don't do this!] -.-> ip2
+a --> ip2([Index Path 2])
+ip2 --> b(...) & c(...)
+d --> e(...) & f(...)
+~~~
+
 #### _No Index Paths_
 These are directories that you may want to browse occasionally, but not have scanned ahead of time.  You can still browse these, but **QuickFinder** won't scan it's contents.  
 #### _Excluded Paths_

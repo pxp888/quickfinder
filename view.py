@@ -884,6 +884,7 @@ class iconview(QWidget):
         self.fin = finder.finderview(self.core)
         self.fin.searching.connect(self.searching)
         self.fin.npath.connect(self.npath)
+        self.fin.quit.connect(self.quit)
 
         self.zen.npath.connect(self.npath)
         self.zen.kevin.connect(self.kevin)

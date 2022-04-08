@@ -9,6 +9,7 @@ import os
 import sys
 import time
 import shutil 
+import zipfile 
 
 def copmove(qin):
 	while 1:
@@ -39,7 +40,7 @@ def copmove(qin):
 					base = base + ' Copy'
 					target = base + ext 
 				shutil.copy2(src, target)
-			
+
 
 class mover(QObject):
 	def __init__(self, parent=None):

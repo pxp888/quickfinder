@@ -89,6 +89,7 @@ class primo(QWidget):
         self.view.quit.connect(self.quit)
         self.view.home.connect(self.top.clear)
         self.view.preview.connect(self.prev.preview)
+        self.view.preview.connect(self.preview)
         self.view.segundo.connect(self.segundo)
         self.top.clicked.connect(self.setwin)
 
@@ -180,6 +181,21 @@ class primo(QWidget):
         else:
             self.prev.show()        
 
+    def preview(self, paths):
+        if len(paths)==1:
+            path = paths[0]
+            n = self.core.locate(path)
+            msg = '1 Selected,  ' + str(view.humanSize(n.size)) + '   Modified : ' + str(view.humanTime(n.mtime))
+            self.stat.showMessage(msg)
+            return
+        size = 0
+        for i in paths:
+            n = self.core.locate(i)
+            size+=n.size
+        msg = str(len(paths)) + ' Selected, '+ str(view.humanSize(size))
+        self.stat.showMessage(msg)
+
+
 if __name__ == "__main__":
     multiprocessing.freeze_support()
 
@@ -187,7 +203,7 @@ if __name__ == "__main__":
         def __init__(self, parent=None):
             super(mainwin, self).__init__(parent)
 
-            self.setWindowTitle('Quick Finder 1.3.3')
+            self.setWindowTitle('Quick Finder 1.3.4')
             frame = QFrame()
             self.setCentralWidget(frame)
             layout = QGridLayout()

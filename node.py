@@ -159,6 +159,7 @@ class node():
         return row
 
     def sort(self,i,order=1):
+        if len(self.kids)==0: return 
         tree = btree.leaf()
         if i==0:
             for i in self.kids: tree.add(str(i).lower(),self.kids[i])
@@ -184,6 +185,12 @@ class node():
         for i in self.kids:
             paths.append( self.kids[i].fpath() )
         return paths 
+
+    def children(self):
+        self.lock.acquire()
+        out = list(self.kids.values())
+        self.lock.release()
+        return out 
 
 
 ######################################################################################################################################################
@@ -299,10 +306,12 @@ def clearold(detail):
     print('total ',total, target)
 
 
-
 def zipFunc(detail):
     src, curpath = detail
-    zname = src[0]+'.zip'
+    if len(src)==1:
+        zname = src[0]+'.zip'
+    else:
+        zname = os.path.split(src[0])[0] + '.zip' 
     os.chdir(curpath)
     with zipfile.ZipFile(zname, 'w', compression=zipfile.ZIP_DEFLATED, compresslevel=4) as zipper:
         for i in src:

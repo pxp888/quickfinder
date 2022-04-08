@@ -201,16 +201,8 @@ class fline(QLineEdit):
     back = pyqtSignal()
     clearsig = pyqtSignal()
 
-    # def __init__(self, parent=None):
-    #     super(fline, self).__init__(parent)
-        # self.ctrlkey = False
-
     def keyPressEvent(self, event):
         x = event.key()
-        # print(x)
-        # if x==16777249:
-        #     self.ctrlkey=True
-            # return
         if x==16777234:
             self.blah.emit('L')
             return
@@ -246,6 +238,7 @@ class fline(QLineEdit):
 class finderview(QWidget):
     npath = pyqtSignal(object)
     searching = pyqtSignal(object)
+    home = pyqtSignal()
     def __init__(self, core, parent=None):
         super(finderview, self).__init__(parent)
         layout = QVBoxLayout()
@@ -261,7 +254,7 @@ class finderview(QWidget):
 
         self.line = fline()
         self.line.setFont(QFont("Arial",14))
-        self.line.setPlaceholderText('Search here ...')
+        self.line.setPlaceholderText('Search ...')
 
         self.zen = fscene(core)
         self.view = QGraphicsView(self.zen)
@@ -340,9 +333,7 @@ class finderview(QWidget):
         path = self.core.back()
         self.npath.emit(path)
 
-    def home(self):
-        # self.npath.emit(os.path.expanduser("~"))
-        self.npath.emit('home')
+
 
 
 ######################################################################################################################################################

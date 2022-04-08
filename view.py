@@ -371,9 +371,10 @@ class mscene(QGraphicsScene):
         
         curnodes = self.core.n.children()
         rows = int(len(curnodes)/cols)+1
-        self.setSceneRect(0,0,cols*self.iconwidth, rows*self.iconheight)
 
         if self.viewmode==0:
+
+            self.setSceneRect(0,0,cols*self.iconwidth, rows*self.iconheight)
             i = 0
             curit = {}
             for n in curnodes:
@@ -401,6 +402,7 @@ class mscene(QGraphicsScene):
             ch = fm.capHeight()
             self.listheight = int(ch*1.8)
             cols = 1 
+            self.setSceneRect(0,0,self.w, len(curnodes)*self.listheight)
 
             i = 0
             curit = {}
@@ -753,6 +755,7 @@ class mscene(QGraphicsScene):
         for i in self.its:
             self.its[i].sel = True
             self.its[i].update()
+        self.preview.emit(self.selected())
 
     def selectInvert(self):
         for i in self.its:
@@ -761,6 +764,7 @@ class mscene(QGraphicsScene):
             else:
                 self.its[i].sel=True 
             self.its[i].update()
+        self.preview.emit(self.selected())
 
     def seticonslot(self, path, pic):
         if path in self.its:

@@ -21,6 +21,7 @@ import preview
 class blabel(QWidget):
     clicked = pyqtSignal()
     npath = pyqtSignal(object)
+    home = pyqtSignal()
     def __init__(self, parent=None):
         super(blabel, self).__init__(parent)
         layout = QHBoxLayout()
@@ -51,7 +52,8 @@ class blabel(QWidget):
         self.label.setText(path)
 
     def mousePressEvent(self, event):
-        self.npath.emit('home')
+        self.label.clear()
+        self.home.emit()
         super(blabel, self).mousePressEvent(event)
 
 
@@ -92,6 +94,7 @@ class primo(QWidget):
         self.view.preview.connect(self.preview)
         self.view.segundo.connect(self.segundo)
         self.top.clicked.connect(self.setwin)
+        self.top.home.connect(self.view.homeFunc)
 
         self.view.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.top.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
@@ -203,7 +206,7 @@ if __name__ == "__main__":
         def __init__(self, parent=None):
             super(mainwin, self).__init__(parent)
 
-            self.setWindowTitle('Quick Finder 1.3.5')
+            self.setWindowTitle('Quick Finder 1.3.7')
             frame = QFrame()
             self.setCentralWidget(frame)
             layout = QGridLayout()

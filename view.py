@@ -484,6 +484,7 @@ class mscene(QGraphicsScene):
             if path in self.its: self.its[path].toggle()
             self.cursA = path 
             self.cursB = path 
+            self.preview.emit(self.selected())
             return
         
         if self.shiftkey:
@@ -503,6 +504,7 @@ class mscene(QGraphicsScene):
                     self.its[i].sel=True
                     if i==self.cursA: s=3
                 self.its[i].update()
+            self.preview.emit(self.selected())
             return
 
         for i in self.its:

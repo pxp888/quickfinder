@@ -12,17 +12,11 @@ import subprocess
 
 import node
 import setter
-import iconview
 import finder
-import preview
-# import treeview
+import view 
+import mover 
 import homepage
-import mover
-import listview 
-
-
-######################################################################################################################################################
-
+import preview 
 
 class blabel(QWidget):
     clicked = pyqtSignal()
@@ -41,10 +35,15 @@ class blabel(QWidget):
         self.setbut.setIcon(self.settingicon)
         self.setbut.clicked.connect(self.clicked)
         self.setbut.setFocusPolicy(Qt.NoFocus)
+        self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+        
 
         layout.addWidget(self.label)
         layout.addStretch()
         layout.addWidget(self.setbut)
+
+    def clear(self):
+        self.label.setText('')
 
     def setPath(self,path):
         if not os.path.isdir(path):
@@ -55,8 +54,6 @@ class blabel(QWidget):
         self.npath.emit('home')
         super(blabel, self).mousePressEvent(event)
 
-
-######################################################################################################################################################
 
 
 class primo(QWidget):
@@ -71,259 +68,61 @@ class primo(QWidget):
         # self.setFont(QFont("Arial",10))
         self.layout = layout
 
-        self.set = setter.setter('quickfinder1')
-        self.mover = mover.mover()
-
-        home = os.path.expanduser("~")
-        self.core = node.coreClass()
-        self.core.setPath(home)
-
-        self.ctrlkey = False
-
         self.bros = []
 
-        self.homepage = homepage.homeClass(self.core)
-        self.homepage.setup()
-
-        self.label = blabel()
-        self.fin = finder.finderview(self.core)
-        self.view = iconview.iconview(self.core)
+        self.core = node.coreClass()
+        self.core.setPath(os.path.expanduser("~"))
+        self.core.scan()
+        
+        self.top = blabel()
+        self.view = view.iconview(self.core)
+        self.move = mover.mover()
         self.prev = preview.prevpane()
-        self.stat = QStatusBar()
+        self.split = QSplitter()
 
-        self.prev.setFocusPolicy(Qt.NoFocus)
-
-        self.label.clicked.connect(self.setwin)
-        self.label.npath.connect(self.setPath)
-        self.npath.connect(self.label.setPath)
-        self.fin.npath.connect(self.setPath)
-        self.fin.searching.connect(self.searching)
-        self.homepage.npath.connect(self.setPath)
-        self.homepage.kevin.connect(self.kevin)
-        self.homepage.nmove.connect(self.mover.move)
-
-        self.fin.line.returnPressed.connect(self.view.view.setFocus)
         self.npath.connect(self.view.setPath)
+        self.npath.connect(self.top.setPath)
         self.view.npath.connect(self.setPath)
-        self.view.kevin.connect(self.kevin)
-        self.view.preview.connect(self.preview)
+        self.view.ncopy.connect(self.move.copy)
+        self.view.nmove.connect(self.move.move)
+        self.view.quit.connect(self.quit)
+        self.view.home.connect(self.top.clear)
         self.view.preview.connect(self.prev.preview)
-        self.view.nmove.connect(self.mover.move)
-        self.view.ncopy.connect(self.mover.copy)
         self.view.segundo.connect(self.segundo)
+        self.top.clicked.connect(self.setwin)
 
-        self.sbs = QSplitter()
-        self.sbs.addWidget(self.view)
-        self.sbs.addWidget(self.prev)
-        self.sbs.setSizePolicy(QSizePolicy.Expanding,QSizePolicy.Expanding)
-        self.sbs.setSizes([int(self.width()*(2/3)), int(self.width()*(1/3))])
+        self.view.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.top.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.prev.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.split.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
-        layout.addWidget(self.label)
-        layout.addWidget(self.fin)
-        layout.addWidget(self.homepage)
-        layout.addWidget(self.sbs)
-        layout.addWidget(self.stat)
+        self.view.refresh()
 
-        self.sbs.hide()
-        self.front='home'
-
-        self.setupStatButtons()
-
-        self.prev.setVisible(self.set.get('previewvisible',True))
-
-    def focusOutEvent(self, event):
-        self.shiftkey = False
-        self.ctrlkey = False
-        super(primo, self).focusOutEvent(event)
-
-    def setupStatButtons(self):
-        icbut = QPushButton('icon view')
-        icbut.setIcon(QIcon(':/icons/iconview.png'))
-        self.stat.addPermanentWidget(icbut)
-        icbut.clicked.connect(self.showIconView)
-        icbut.setFocusPolicy(Qt.NoFocus)
-        icbut.setToolTip('Ctrl + 1')
-
-        treebut = QPushButton('list view')
-        treebut.setIcon(QIcon(':/icons/treeview.png'))
-        self.stat.addPermanentWidget(treebut)
-        treebut.clicked.connect(self.showTreeView)
-        treebut.setFocusPolicy(Qt.NoFocus)
-        treebut.setToolTip('Ctrl + 2')
-
-        prevbut = QPushButton('preview')
-        prevbut.setIcon(QIcon(':/icons/colview.png'))
-        self.stat.addPermanentWidget(prevbut)
-        prevbut.clicked.connect(self.toggleprev)
-        prevbut.setFocusPolicy(Qt.NoFocus)
-        prevbut.setToolTip('Ctrl + 3')
-
-        namebut = QPushButton('Name Sort')
-        self.stat.addPermanentWidget(namebut)
-        namebut.clicked.connect(self.namescan)
-        namebut.setFocusPolicy(Qt.NoFocus)
-        namebut.setToolTip('Ctrl + 4')
-
-        deepbut = QPushButton('Size Sort')
-        self.stat.addPermanentWidget(deepbut)
-        deepbut.clicked.connect(self.deepscan)
-        deepbut.setFocusPolicy(Qt.NoFocus)
-        deepbut.setToolTip('Ctrl + 5')
-
-        timebut = QPushButton('Sort Latest')
-        self.stat.addPermanentWidget(timebut)
-        timebut.clicked.connect(self.timescan)
-        timebut.setFocusPolicy(Qt.NoFocus)
-        timebut.setToolTip('Ctrl + 6')
-
-    def toggleprev(self):
-        if self.prev.isVisible():
-            self.prev.hide()
-            self.set.set('previewvisible',False)
-        else:
-            self.prev.show()
-            self.set.set('previewvisible',True)
-
-    def namescan(self):
-        self.view.namescan()
-
-    def deepscan(self):
-        self.view.deepscan()
-
-    def timescan(self):
-        self.view.timescan()
-
-    def showTreeView(self):
-        if self.core.n==self.core.sniffer: self.setPath(os.path.expanduser("~"))
-        self.view.cleanup()
-        self.newview = listview.listview(self.core)
-        self.sbs.replaceWidget(0,self.newview)
-        self.sbs.setSizes([int(self.width()*(2/3)), int(self.width()*(1/3))])
-        self.npath.connect(self.newview.setPath)
-        self.fin.line.returnPressed.connect(self.newview.view.setFocus)
-        self.newview.npath.connect(self.setPath)
-        self.newview.kevin.connect(self.kevin)
-        self.newview.preview.connect(self.preview)
-        self.newview.preview.connect(self.prev.preview)
-        self.newview.nmove.connect(self.mover.move)
-        self.newview.ncopy.connect(self.mover.copy)
-        self.newview.refresh()
-        self.view.deleteLater()
-        self.view = self.newview
-        self.view.segundo.connect(self.segundo)
-
-    def showIconView(self):
-        if self.core.n==self.core.sniffer: self.setPath(os.path.expanduser("~"))
-        self.view.cleanup()
-        self.newview = iconview.iconview(self.core)
-        self.sbs.replaceWidget(0,self.newview)
-        self.sbs.setSizes([int(self.width()*(2/3)), int(self.width()*(1/3))])
-        self.npath.connect(self.newview.setPath)
-        self.fin.line.returnPressed.connect(self.newview.view.setFocus)
-        self.newview.npath.connect(self.setPath)
-        self.newview.kevin.connect(self.kevin)
-        self.newview.preview.connect(self.preview)
-        self.newview.preview.connect(self.prev.preview)
-        self.newview.nmove.connect(self.mover.move)
-        self.newview.ncopy.connect(self.mover.copy)
-        self.newview.refresh()
-        self.view.deleteLater()
-        self.view = self.newview
-        self.view.segundo.connect(self.segundo)
-
-    def kevin(self, event):
-        self.fin.line.setFocus()
-        self.fin.line.keyPressEvent(event)
+        layout.addWidget(self.top)
+        layout.addWidget(self.split)
+        self.split.addWidget(self.view)
+        self.split.addWidget(self.prev)
+        self.split.setSizes([int(self.width()*(2/3)), int(self.width()*(1/3))])
+        self.prev.hide()
 
     def setPath(self, path):
-        if path=='home':
-            path = os.path.expanduser("~")
-            self.sbs.hide()
-            self.homepage.show()
-            self.homepage.setup()
-            self.label.label.setText('')
-            self.front='home'
-            return
-        else:
-            self.sbs.show()
-            self.homepage.hide()
-            self.front='view'
-
         self.core.setPath(path)
         self.npath.emit(path)
-
-    def searching(self, n):
-        if n==1:
-            self.sbs.hide()
-            self.homepage.hide()
-        else:
-            if self.front=='home':
-                self.homepage.show()
-            else:
-                self.sbs.show()
-
-    def keyPressEvent(self, event):
-        x = event.key()
-        # print('primo',x)
-        if self.ctrlkey:
-            if x==49: self.showIconView()
-            if x==50: self.showTreeView()
-            if x==51: self.toggleprev()
-            if x==52: self.namescan()
-            if x==53: self.deepscan()
-            if x==54: self.timescan()
-            if x==78: self.segundo()
-            if x==84: self.terminal1()
-            if x==76: self.terminal2()
-            if x==87: self.quit.emit()
-            return
-        if x==16777249: self.ctrlkey=True
-        super(primo,self).keyPressEvent(event)
-
-    def terminal1(self):
-        path = self.core.n.fpath()
-        if path=='': path = os.path.expanduser("~")
-        os.chdir(path)
-        subprocess.run('start cmd',shell=True)
-
-    def terminal2(self):
-        path = self.core.n.fpath()
-        if path=='': path = os.path.expanduser("~")
-        os.chdir(path)
-        subprocess.run('start wsl',shell=True)
-
-    def keyReleaseEvent(self, event):
-        x = event.key()
-        if x==16777249:
-            self.ctrlkey=False
-            # return
-        super(primo,self).keyReleaseEvent(event)
 
     def setwin(self):
         self.setwin = setter.setwin(self.core)
         self.setwin.show()
 
-    def preview(self, paths):
-        if len(paths)==1:
-            path = paths[0]
-            n = self.core.locate(path)
-            msg = '1 Selected,  ' + str(listview.humanSize(n.size)) + '   Modified : ' + str(listview.humanTime(n.mtime))
-            self.stat.showMessage(msg)
-            return
-        size = 0
-        for i in paths:
-            n = self.core.locate(i)
-            size+=n.size
-        msg = str(len(paths)) + ' Selected, '+ str(listview.humanSize(size))
-        self.stat.showMessage(msg)
-
-    def segundo(self):
-        w = mainwin()
-        w.show()
-        self.bros.append(w)
-
-
-######################################################################################################################################################
+    def segundo(self, s):
+        if s==0:
+            w = mainwin()
+            w.show()
+            self.bros.append(w)
+        if s==1:
+            if self.prev.isVisible():
+                self.prev.hide()
+            else:
+                self.prev.show()
 
 
 if __name__ == "__main__":
@@ -333,7 +132,7 @@ if __name__ == "__main__":
         def __init__(self, parent=None):
             super(mainwin, self).__init__(parent)
 
-            self.setWindowTitle('Quick Finder 1.2.7')
+            self.setWindowTitle('Quick Finder 1.3.0')
             frame = QFrame()
             self.setCentralWidget(frame)
             layout = QGridLayout()

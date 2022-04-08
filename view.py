@@ -433,7 +433,7 @@ class mscene(QGraphicsScene):
             del self.its[i]
         self.its = curit 
 
-    def reflow(self, w, h):
+    def reflow(self, w=None, h=None):
         if w==None:
             w = self.w 
             h = self.h 
@@ -546,6 +546,8 @@ class mscene(QGraphicsScene):
             if x==54: self.timesort()
             if x==55: self.deepsort()
             if x==51: self.segundo.emit(1)
+            if x==43: self.zoom(True)
+            if x==45: self.zoom(False)
             if x==78:
                 if self.shiftkey:
                     self.newFolderFunc()
@@ -848,6 +850,24 @@ class mscene(QGraphicsScene):
         for s in src:
             with zipfile.ZipFile(s, 'r') as zipper:
                 zipper.extractall(os.path.splitext(s)[0])
+
+    def zoom(self, f):
+        if self.viewmode==0:
+            if f:
+                self.iconwidth+=4
+                self.iconheight+=4
+            else:
+                self.iconwidth-=4
+                self.iconheight-=4
+            self.reflow()
+            return
+        if self.viewmode==1:
+            if f:
+                self.fsize+=1
+            else:
+                self.fsize-=1
+            self.reflow()
+            return
 
 
 ######################################################################################################################################################

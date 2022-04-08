@@ -107,6 +107,53 @@ class primo(QWidget):
         self.split.setSizes([int(self.width()*(2/3)), int(self.width()*(1/3))])
 
         self.prev.hide()
+        self.setupStatButtons()
+
+    def setupStatButtons(self):
+        icbut = QPushButton('icon view')
+        icbut.setIcon(QIcon(':/icons/iconview.png'))
+        self.stat.addPermanentWidget(icbut)
+        icbut.clicked.connect(self.view.zen.viewicons)
+        icbut.setFocusPolicy(Qt.NoFocus)
+        icbut.setToolTip('Ctrl + 1')
+
+        treebut = QPushButton('list view')
+        treebut.setIcon(QIcon(':/icons/treeview.png'))
+        self.stat.addPermanentWidget(treebut)
+        treebut.clicked.connect(self.view.zen.viewlist)
+        treebut.setFocusPolicy(Qt.NoFocus)
+        treebut.setToolTip('Ctrl + 2')
+
+        prevbut = QPushButton('preview')
+        prevbut.setIcon(QIcon(':/icons/colview.png'))
+        self.stat.addPermanentWidget(prevbut)
+        prevbut.clicked.connect(self.toggleprev)
+        prevbut.setFocusPolicy(Qt.NoFocus)
+        prevbut.setToolTip('Ctrl + 3')
+
+        namebut = QPushButton('Name Sort')
+        self.stat.addPermanentWidget(namebut)
+        namebut.clicked.connect(self.view.zen.namesort)
+        namebut.setFocusPolicy(Qt.NoFocus)
+        namebut.setToolTip('Ctrl + 4')
+
+        sizebut = QPushButton('Size Sort')
+        self.stat.addPermanentWidget(sizebut)
+        sizebut.clicked.connect(self.view.zen.sizesort)
+        sizebut.setFocusPolicy(Qt.NoFocus)
+        sizebut.setToolTip('Ctrl + 5')
+
+        timebut = QPushButton('Sort Latest')
+        self.stat.addPermanentWidget(timebut)
+        timebut.clicked.connect(self.view.zen.timesort)
+        timebut.setFocusPolicy(Qt.NoFocus)
+        timebut.setToolTip('Ctrl + 6')
+
+        deepbut = QPushButton('Depth Size')
+        self.stat.addPermanentWidget(deepbut)
+        deepbut.clicked.connect(self.view.zen.deepsort)
+        deepbut.setFocusPolicy(Qt.NoFocus)
+        deepbut.setToolTip('Ctrl + 7')
 
     def setPath(self, path):
         self.core.setPath(path)
@@ -127,6 +174,12 @@ class primo(QWidget):
             else:
                 self.prev.show()
 
+    def toggleprev(self):
+        if self.prev.isVisible():
+            self.prev.hide()
+        else:
+            self.prev.show()        
+
 if __name__ == "__main__":
     multiprocessing.freeze_support()
 
@@ -134,7 +187,7 @@ if __name__ == "__main__":
         def __init__(self, parent=None):
             super(mainwin, self).__init__(parent)
 
-            self.setWindowTitle('Quick Finder 1.3.2 blah blah')
+            self.setWindowTitle('Quick Finder 1.3.3')
             frame = QFrame()
             self.setCentralWidget(frame)
             layout = QGridLayout()

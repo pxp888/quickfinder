@@ -79,6 +79,7 @@ class primo(QWidget):
         self.move = mover.mover()
         self.prev = preview.prevpane()
         self.split = QSplitter()
+        self.stat = QStatusBar()
 
         self.npath.connect(self.view.setPath)
         self.npath.connect(self.top.setPath)
@@ -100,9 +101,11 @@ class primo(QWidget):
 
         layout.addWidget(self.top)
         layout.addWidget(self.split)
+        layout.addWidget(self.stat)
         self.split.addWidget(self.view)
         self.split.addWidget(self.prev)
         self.split.setSizes([int(self.width()*(2/3)), int(self.width()*(1/3))])
+
         self.prev.hide()
 
     def setPath(self, path):
@@ -124,7 +127,6 @@ class primo(QWidget):
             else:
                 self.prev.show()
 
-
 if __name__ == "__main__":
     multiprocessing.freeze_support()
 
@@ -132,7 +134,7 @@ if __name__ == "__main__":
         def __init__(self, parent=None):
             super(mainwin, self).__init__(parent)
 
-            self.setWindowTitle('Quick Finder 1.3.1')
+            self.setWindowTitle('Quick Finder 1.3.2')
             frame = QFrame()
             self.setCentralWidget(frame)
             layout = QGridLayout()

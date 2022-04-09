@@ -76,7 +76,7 @@ class fileitem(QGraphicsItem):
             painter.setPen(pen)
             painter.setFont(QFont("Arial",8))
             trect = self.boundingRect().adjusted(5,self.h-20,-5,-2)
-            stext = str(self.used//2**30) + ' GB  / ' + str(self.total//2**30)+' GB'
+            stext = str((self.total-self.used)//2**30) + ' GB free of ' + str(self.total//2**30)+' GB'
             painter.drawText(trect,Qt.TextWordWrap | Qt.AlignHCenter ,stext)
 
         if not self.pic==None:

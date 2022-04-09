@@ -95,6 +95,8 @@ class primo(QWidget):
         self.top.clicked.connect(self.setwin)
         self.top.home.connect(self.view.homeFunc)
 
+        self.move.fileops.connect(self.fileops)
+
         self.view.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.top.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
         self.prev.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
@@ -113,6 +115,9 @@ class primo(QWidget):
         self.setupStatButtons()
 
     def setupStatButtons(self):
+        self.joblabel = QLabel()
+        self.stat.addPermanentWidget(self.joblabel)
+
         icbut = QPushButton('icon view')
         icbut.setIcon(QIcon(':/icons/iconview.png'))
         self.stat.addPermanentWidget(icbut)
@@ -158,6 +163,13 @@ class primo(QWidget):
         deepbut.setFocusPolicy(Qt.NoFocus)
         deepbut.setToolTip('Ctrl + 7')
 
+    def fileops(self, j):
+        if j ==0: 
+            self.joblabel.setText('')
+            self.stat.showMessage('File Ops Finished' , 2000)
+        else:
+            self.joblabel.setText('File Ops : '+str(j))
+        
     def setPath(self, path):
         self.core.setPath(path)
         self.npath.emit(path)
@@ -205,7 +217,7 @@ if __name__ == "__main__":
         def __init__(self, parent=None):
             super(mainwin, self).__init__(parent)
 
-            self.setWindowTitle('Quick Finder 1.3.8c')
+            self.setWindowTitle('Quick Finder 1.3.9')
             frame = QFrame()
             self.setCentralWidget(frame)
             layout = QGridLayout()

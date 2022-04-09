@@ -11,58 +11,96 @@ import time
 import shutil 
 import zipfile 
 
-
-
 ############################################################################################################
 
 
 
 
-def copmove(qin):
+def copmove(qin, lock, jobs):
 	while 1:
 		job, src, dest = qin.get(True)
 		if job==1:
-			if os.path.isdir(src):
-				target = os.path.join(dest, os.path.split(src)[1])
-				while os.path.exists(target):
-					target = target + ' Copy'
-				shutil.move(src, target)
-			else:
-				target = os.path.join(dest, os.path.split(src)[1])
-				while os.path.exists(target):
-					base, ext = os.path.splitext(target) 
-					base = base + ' Copy'
-					target = base + ext 
-				shutil.move(src, target)
+			try:
+				if os.path.isdir(src):
+					target = os.path.join(dest, os.path.split(src)[1])
+					while os.path.exists(target):
+						target = target + ' Copy'
+					shutil.move(src, target)
+				else:
+					target = os.path.join(dest, os.path.split(src)[1])
+					while os.path.exists(target):
+						base, ext = os.path.splitext(target) 
+						base = base + ' Copy'
+						target = base + ext 
+					shutil.move(src, target)
+				lock.acquire()
+				jobs[0] -=1
+				lock.release()
+			except:
+				print('move error : ', src, dest)
+				continue
+
 		if job==2:
-			if os.path.isdir(src):
-				target = os.path.join(dest, os.path.split(src)[1])
-				while os.path.exists(target):
-					target = target + ' Copy'
-				shutil.copytree(src, target)
-			else:
-				target = os.path.join(dest, os.path.split(src)[1])
-				while os.path.exists(target):
-					base, ext = os.path.splitext(target) 
-					base = base + ' Copy'
-					target = base + ext 
-				shutil.copy2(src, target)
+			try:
+				if os.path.isdir(src):
+					target = os.path.join(dest, os.path.split(src)[1])
+					while os.path.exists(target):
+						target = target + ' Copy'
+					shutil.copytree(src, target)
+				else:
+					target = os.path.join(dest, os.path.split(src)[1])
+					while os.path.exists(target):
+						base, ext = os.path.splitext(target) 
+						base = base + ' Copy'
+						target = base + ext 
+					shutil.copy2(src, target)
+				lock.acquire()
+				jobs[0] -=1
+				lock.release()
+			except:
+				print('copy error : ', src, dest)
 
 
-class mover1(QObject):
+class mover(QObject):
+	fileops = pyqtSignal(object)
 	def __init__(self, parent=None):
 		super(mover, self).__init__(parent)
 		self.qin = SimpleQueue()
-		self.tred = threading.Thread(target=copmove,args=(self.qin,),daemon=True)
+		self.lock = threading.Lock()
+		self.jobs = []
+		self.jobs.append(0)
+
+		self.tred = threading.Thread(target=copmove,args=(self.qin, self.lock, self.jobs),daemon=True)
 		self.tred.start()
 
+		self.tim = QTimer()
+		self.tim.setInterval(500)
+		self.tim.timeout.connect(self.report)
+
+	def report(self):
+		self.lock.acquire()
+		j = self.jobs[0]
+		self.lock.release()
+		self.fileops.emit(j)
+		if j==0: self.tim.stop()
+
 	def move(self, src, dest):
+		if not self.tim.isActive(): self.tim.start()
 		if not dest=='':
+			self.lock.acquire()
+			self.jobs[0] +=1
+			self.lock.release()
+
 			src = QDir.toNativeSeparators(src)
 			src = src.strip(os.path.sep)
 			self.qin.put((1,src,dest))
 
 	def copy(self, src, dest):
+		if not self.tim.isActive(): self.tim.start()
+		self.lock.acquire()
+		self.jobs[0] +=1
+		self.lock.release()
+
 		src = QDir.toNativeSeparators(src)
 		src = src.strip(os.path.sep)
 		self.qin.put((2,src,dest))
@@ -72,100 +110,160 @@ class mover1(QObject):
 
 
 
+
+############################################################################################################
+
+
+
+
+# def copmove(qin):
+# 	while 1:
+# 		job, src, dest = qin.get(True)
+# 		if job==1:
+# 			if os.path.isdir(src):
+# 				target = os.path.join(dest, os.path.split(src)[1])
+# 				while os.path.exists(target):
+# 					target = target + ' Copy'
+# 				shutil.move(src, target)
+# 			else:
+# 				target = os.path.join(dest, os.path.split(src)[1])
+# 				while os.path.exists(target):
+# 					base, ext = os.path.splitext(target) 
+# 					base = base + ' Copy'
+# 					target = base + ext 
+# 				shutil.move(src, target)
+# 		if job==2:
+# 			if os.path.isdir(src):
+# 				target = os.path.join(dest, os.path.split(src)[1])
+# 				while os.path.exists(target):
+# 					target = target + ' Copy'
+# 				shutil.copytree(src, target)
+# 			else:
+# 				target = os.path.join(dest, os.path.split(src)[1])
+# 				while os.path.exists(target):
+# 					base, ext = os.path.splitext(target) 
+# 					base = base + ' Copy'
+# 					target = base + ext 
+# 				shutil.copy2(src, target)
+
+
+# class mover(QObject):
+# 	def __init__(self, parent=None):
+# 		super(mover, self).__init__(parent)
+# 		self.qin = SimpleQueue()
+# 		self.tred = threading.Thread(target=copmove,args=(self.qin,),daemon=True)
+# 		self.tred.start()
+
+# 	def move(self, src, dest):
+# 		if not dest=='':
+# 			src = QDir.toNativeSeparators(src)
+# 			src = src.strip(os.path.sep)
+# 			self.qin.put((1,src,dest))
+
+# 	def copy(self, src, dest):
+# 		src = QDir.toNativeSeparators(src)
+# 		src = src.strip(os.path.sep)
+# 		self.qin.put((2,src,dest))
+# 		# shutil.copy2(src, dest)
+
+
+
+
+
 ############################################################################################################
 
 
 
 
 
-def tmove(src, dest, lock, jobs):
-	src = QDir.toNativeSeparators(src)
-	src = src.strip(os.path.sep)
-	if os.path.isdir(src):
-		target = os.path.join(dest, os.path.split(src)[1])
-		while os.path.exists(target):
-			target = target + ' Copy'
-		shutil.move(src, target)
-	else:
-		target = os.path.join(dest, os.path.split(src)[1])
-		while os.path.exists(target):
-			base, ext = os.path.splitext(target) 
-			base = base + ' Copy'
-			target = base + ext 
-		shutil.move(src, target)
-	lock.acquire()
-	jobs[0] -=1
-	lock.release()
+# def tmove(src, dest, lock, jobs):
+# 	src = QDir.toNativeSeparators(src)
+# 	src = src.strip(os.path.sep)
+# 	if os.path.isdir(src):
+# 		target = os.path.join(dest, os.path.split(src)[1])
+# 		while os.path.exists(target):
+# 			target = target + ' Copy'
+# 		shutil.move(src, target)
+# 	else:
+# 		target = os.path.join(dest, os.path.split(src)[1])
+# 		while os.path.exists(target):
+# 			base, ext = os.path.splitext(target) 
+# 			base = base + ' Copy'
+# 			target = base + ext 
+# 		shutil.move(src, target)
+# 	lock.acquire()
+# 	jobs[0] -=1
+# 	lock.release()
 
-def tcopy(src, dest, lock, jobs):
-	src = QDir.toNativeSeparators(src)
-	src = src.strip(os.path.sep)
-	if os.path.isdir(src):
-		target = os.path.join(dest, os.path.split(src)[1])
-		while os.path.exists(target):
-			target = target + ' Copy'
-		shutil.copytree(src, target)
-	else:
-		target = os.path.join(dest, os.path.split(src)[1])
-		while os.path.exists(target):
-			base, ext = os.path.splitext(target) 
-			base = base + ' Copy'
-			target = base + ext 
-		shutil.copy2(src, target)
-	lock.acquire()
-	jobs[0] -=1
-	lock.release()
+# def tcopy(src, dest, lock, jobs):
+# 	src = QDir.toNativeSeparators(src)
+# 	src = src.strip(os.path.sep)
+# 	if os.path.isdir(src):
+# 		target = os.path.join(dest, os.path.split(src)[1])
+# 		while os.path.exists(target):
+# 			target = target + ' Copy'
+# 		shutil.copytree(src, target)
+# 	else:
+# 		target = os.path.join(dest, os.path.split(src)[1])
+# 		while os.path.exists(target):
+# 			base, ext = os.path.splitext(target) 
+# 			base = base + ' Copy'
+# 			target = base + ext 
+# 		shutil.copy2(src, target)
+# 	lock.acquire()
+# 	jobs[0] -=1
+# 	lock.release()
 
-class mover(QObject):
-	def __init__(self, parent=None):
-		super(mover, self).__init__(parent)
-		self.pros = []
-		self.lock = threading.Lock()
-		self.jobs = []
-		self.jobs.append(0)
+# class mover(QObject):
+# 	def __init__(self, parent=None):
+# 		super(mover, self).__init__(parent)
+# 		self.pros = []
+# 		self.lock = threading.Lock()
+# 		self.jobs = []
+# 		self.jobs.append(0)
 
-		self.tim = QTimer()
-		self.tim.setInterval(500)
-		self.tim.timeout.connect(self.report)
-		self.tim.start()
+# 		self.tim = QTimer()
+# 		self.tim.setInterval(500)
+# 		self.tim.timeout.connect(self.report)
+# 		self.tim.start()
 
-	def report(self):
-		self.cleanup()
+# 	def report(self):
+# 		self.cleanup()
 
-		self.lock.acquire()
-		j = self.jobs[0]
-		self.lock.release()
-		print(j, len(self.pros), self)
+# 		self.lock.acquire()
+# 		j = self.jobs[0]
+# 		self.lock.release()
+# 		print(j, len(self.pros), self)
 
-	def cleanup(self):
-		kill = []
-		for i in self.pros:
-			if not i.is_alive():
-				kill.append(i)
-		for i in kill:
-			self.pros.remove(i)
+# 	def cleanup(self):
+# 		kill = []
+# 		for i in self.pros:
+# 			if not i.is_alive():
+# 				kill.append(i)
+# 		for i in kill:
+# 			self.pros.remove(i)
 
-	def move(self, src, dest):
-		if dest=='': return 
-		self.lock.acquire()
-		self.jobs[0] +=1
-		self.lock.release()
+# 	def move(self, src, dest):
+# 		if dest=='': return 
+# 		self.lock.acquire()
+# 		self.jobs[0] +=1
+# 		self.lock.release()
 
-		t = threading.Thread(target=tmove, args=(src, dest, self.lock, self.jobs), daemon=True)
-		self.pros.append(t)
-		t.start()
-		# self.cleanup()
+# 		t = threading.Thread(target=tmove, args=(src, dest, self.lock, self.jobs), daemon=True)
+# 		self.pros.append(t)
+# 		t.start()
+# 		# self.cleanup()
 
-	def copy(self, src, dest):
-		if dest=='': return 
-		self.lock.acquire()
-		self.jobs[0] +=1
-		self.lock.release()
+# 	def copy(self, src, dest):
+# 		if dest=='': return 
+# 		self.lock.acquire()
+# 		self.jobs[0] +=1
+# 		self.lock.release()
 
-		t = threading.Thread(target=tcopy, args=(src, dest, self.lock, self.jobs), daemon=True)
-		self.pros.append(t)
-		t.start()
-		# self.cleanup()
+# 		t = threading.Thread(target=tcopy, args=(src, dest, self.lock, self.jobs), daemon=True)
+# 		self.pros.append(t)
+# 		t.start()
+# 		# self.cleanup()
 
 
 

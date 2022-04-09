@@ -11,6 +11,13 @@ import time
 import shutil 
 import zipfile 
 
+
+
+############################################################################################################
+
+
+
+
 def copmove(qin):
 	while 1:
 		job, src, dest = qin.get(True)
@@ -62,8 +69,16 @@ class mover1(QObject):
 		# shutil.copy2(src, dest)
 
 
+
+
+
+############################################################################################################
+
+
+
+
+
 def tmove(src, dest, lock, jobs):
-	# print('move start')
 	src = QDir.toNativeSeparators(src)
 	src = src.strip(os.path.sep)
 	if os.path.isdir(src):
@@ -79,12 +94,10 @@ def tmove(src, dest, lock, jobs):
 			target = base + ext 
 		shutil.move(src, target)
 	lock.acquire()
-	jobs[0] = jobs[0] - 1
+	jobs[0] -=1
 	lock.release()
-	# print('move done')
 
 def tcopy(src, dest, lock, jobs):
-	# print('copy start')
 	src = QDir.toNativeSeparators(src)
 	src = src.strip(os.path.sep)
 	if os.path.isdir(src):
@@ -100,9 +113,8 @@ def tcopy(src, dest, lock, jobs):
 			target = base + ext 
 		shutil.copy2(src, target)
 	lock.acquire()
-	jobs[0] = jobs[0] - 1
+	jobs[0] -=1
 	lock.release()
-	# print('copy done')
 
 class mover(QObject):
 	def __init__(self, parent=None):
@@ -118,6 +130,8 @@ class mover(QObject):
 		self.tim.start()
 
 	def report(self):
+		self.cleanup()
+
 		self.lock.acquire()
 		j = self.jobs[0]
 		self.lock.release()
@@ -134,24 +148,31 @@ class mover(QObject):
 	def move(self, src, dest):
 		if dest=='': return 
 		self.lock.acquire()
-		self.jobs[0] = self.jobs[0] + 1
+		self.jobs[0] +=1
 		self.lock.release()
 
 		t = threading.Thread(target=tmove, args=(src, dest, self.lock, self.jobs), daemon=True)
 		self.pros.append(t)
 		t.start()
-		self.cleanup()
+		# self.cleanup()
 
 	def copy(self, src, dest):
 		if dest=='': return 
 		self.lock.acquire()
-		self.jobs[0] = self.jobs[0] + 1
+		self.jobs[0] +=1
 		self.lock.release()
 
 		t = threading.Thread(target=tcopy, args=(src, dest, self.lock, self.jobs), daemon=True)
 		self.pros.append(t)
 		t.start()
-		self.cleanup()
+		# self.cleanup()
+
+
+
+
+
+
+############################################################################################################
 
 
 

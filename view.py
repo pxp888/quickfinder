@@ -911,6 +911,7 @@ class iconview(QWidget):
         self.fin.searching.connect(self.searching)
         self.fin.npath.connect(self.npath)
         self.fin.quit.connect(self.quit)
+        self.fin.segundo.connect(self.segundo)
 
         self.zen.npath.connect(self.npath)
         self.zen.kevin.connect(self.kevin)

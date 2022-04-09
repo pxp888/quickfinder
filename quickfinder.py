@@ -152,7 +152,7 @@ class primo(QWidget):
         timebut.setFocusPolicy(Qt.NoFocus)
         timebut.setToolTip('Ctrl + 6')
 
-        deepbut = QPushButton('Depth Size')
+        deepbut = QPushButton('Deep Size')
         self.stat.addPermanentWidget(deepbut)
         deepbut.clicked.connect(self.view.zen.deepsort)
         deepbut.setFocusPolicy(Qt.NoFocus)
@@ -205,7 +205,7 @@ if __name__ == "__main__":
         def __init__(self, parent=None):
             super(mainwin, self).__init__(parent)
 
-            self.setWindowTitle('Quick Finder 1.3.8')
+            self.setWindowTitle('Quick Finder 1.3.8b')
             frame = QFrame()
             self.setCentralWidget(frame)
             layout = QGridLayout()

@@ -42,7 +42,7 @@ def copmove(qin):
 				shutil.copy2(src, target)
 
 
-class mover(QObject):
+class mover1(QObject):
 	def __init__(self, parent=None):
 		super(mover, self).__init__(parent)
 		self.qin = SimpleQueue()
@@ -60,6 +60,101 @@ class mover(QObject):
 		src = src.strip(os.path.sep)
 		self.qin.put((2,src,dest))
 		# shutil.copy2(src, dest)
+
+
+def tmove(src, dest, lock, jobs):
+	# print('move start')
+	src = QDir.toNativeSeparators(src)
+	src = src.strip(os.path.sep)
+	if os.path.isdir(src):
+		target = os.path.join(dest, os.path.split(src)[1])
+		while os.path.exists(target):
+			target = target + ' Copy'
+		shutil.move(src, target)
+	else:
+		target = os.path.join(dest, os.path.split(src)[1])
+		while os.path.exists(target):
+			base, ext = os.path.splitext(target) 
+			base = base + ' Copy'
+			target = base + ext 
+		shutil.move(src, target)
+	lock.acquire()
+	jobs[0] = jobs[0] - 1
+	lock.release()
+	# print('move done')
+
+def tcopy(src, dest, lock, jobs):
+	# print('copy start')
+	src = QDir.toNativeSeparators(src)
+	src = src.strip(os.path.sep)
+	if os.path.isdir(src):
+		target = os.path.join(dest, os.path.split(src)[1])
+		while os.path.exists(target):
+			target = target + ' Copy'
+		shutil.copytree(src, target)
+	else:
+		target = os.path.join(dest, os.path.split(src)[1])
+		while os.path.exists(target):
+			base, ext = os.path.splitext(target) 
+			base = base + ' Copy'
+			target = base + ext 
+		shutil.copy2(src, target)
+	lock.acquire()
+	jobs[0] = jobs[0] - 1
+	lock.release()
+	# print('copy done')
+
+class mover(QObject):
+	def __init__(self, parent=None):
+		super(mover, self).__init__(parent)
+		self.pros = []
+		self.lock = threading.Lock()
+		self.jobs = []
+		self.jobs.append(0)
+
+		self.tim = QTimer()
+		self.tim.setInterval(500)
+		self.tim.timeout.connect(self.report)
+		self.tim.start()
+
+	def report(self):
+		self.lock.acquire()
+		j = self.jobs[0]
+		self.lock.release()
+		print(j, len(self.pros), self)
+
+	def cleanup(self):
+		kill = []
+		for i in self.pros:
+			if not i.is_alive():
+				kill.append(i)
+		for i in kill:
+			self.pros.remove(i)
+
+	def move(self, src, dest):
+		if dest=='': return 
+		self.lock.acquire()
+		self.jobs[0] = self.jobs[0] + 1
+		self.lock.release()
+
+		t = threading.Thread(target=tmove, args=(src, dest, self.lock, self.jobs), daemon=True)
+		self.pros.append(t)
+		t.start()
+		self.cleanup()
+
+	def copy(self, src, dest):
+		if dest=='': return 
+		self.lock.acquire()
+		self.jobs[0] = self.jobs[0] + 1
+		self.lock.release()
+
+		t = threading.Thread(target=tcopy, args=(src, dest, self.lock, self.jobs), daemon=True)
+		self.pros.append(t)
+		t.start()
+		self.cleanup()
+
+
+
 
 
 class renameClass(QDialog):

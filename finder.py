@@ -201,6 +201,7 @@ class fline(QLineEdit):
     back = pyqtSignal()
     clearsig = pyqtSignal()
     quit = pyqtSignal()
+    segundo = pyqtSignal(object)
     def __init__(self, parent=None):
         super(fline, self).__init__(parent)
         self.ctrlkey = False
@@ -209,6 +210,7 @@ class fline(QLineEdit):
         x = event.key()
         if self.ctrlkey:
             if x==87: self.quit.emit()
+            if x==78: self.segundo.emit(0)
             return
         if x==16777249: self.ctrlkey=True
         if x==16777234:
@@ -257,6 +259,7 @@ class finderview(QWidget):
     searching = pyqtSignal(object)
     home = pyqtSignal()
     quit = pyqtSignal()
+    segundo = pyqtSignal(object)
     def __init__(self, core, parent=None):
         super(finderview, self).__init__(parent)
         layout = QVBoxLayout()
@@ -288,6 +291,7 @@ class finderview(QWidget):
         self.line.blah.connect(self.zen.blah)
         self.line.clearsig.connect(self.clear)
         self.line.quit.connect(self.quit)
+        self.line.segundo.connect(self.segundo)
 
         self.zen.search.connect(self.view.setVisible)
         self.zen.npath.connect(self.npath)

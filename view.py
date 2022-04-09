@@ -675,7 +675,7 @@ class mscene(QGraphicsScene):
     def mouseMoveEvent(self, event):
         if not event.buttons()&1: return 
         dx = (event.buttonDownScenePos(1)-event.scenePos()).manhattanLength()
-        if dx < 60: return 
+        if dx < 100: return 
 
         cur = self.selected()
         if not cur:

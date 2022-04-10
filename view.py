@@ -327,6 +327,8 @@ class mscene(QGraphicsScene):
     kevin = pyqtSignal(object)
     segundo = pyqtSignal(object)
     home = pyqtSignal()
+    nzip = pyqtSignal(object, object)
+    nunzip = pyqtSignal(object)
     def __init__(self, core, parent=None):
         super(mscene, self).__init__(parent)
 
@@ -849,13 +851,15 @@ class mscene(QGraphicsScene):
     def zipFunc(self):
         src = self.selected()
         curpath = self.core.n.fpath()
-        self.core.qin.put( (7,(src, curpath)) )
+        # self.core.qin.put( (7,(src, curpath)) )
+        self.nzip.emit(src, curpath)
 
     def unzipFunc(self):
         src = self.selected()
-        for s in src:
-            with zipfile.ZipFile(s, 'r') as zipper:
-                zipper.extractall(os.path.splitext(s)[0])
+        self.nunzip.emit(src)
+        # for s in src:
+        #     with zipfile.ZipFile(s, 'r') as zipper:
+        #         zipper.extractall(os.path.splitext(s)[0])
 
     def zoom(self, f):
         if self.viewmode==0:
@@ -880,9 +884,11 @@ class mscene(QGraphicsScene):
 
 
 class iconview(QWidget):
-    npath = pyqtSignal(object)
-    ncopy=pyqtSignal(object, object)
-    nmove=pyqtSignal(object, object)
+    npath =pyqtSignal(object)
+    ncopy =pyqtSignal(object, object)
+    nmove =pyqtSignal(object, object)
+    nzip = pyqtSignal(object, object)
+    nunzip = pyqtSignal(object)
     quit = pyqtSignal()
     preview = pyqtSignal(object)
     home = pyqtSignal()
@@ -916,6 +922,8 @@ class iconview(QWidget):
         self.zen.npath.connect(self.npath)
         self.zen.kevin.connect(self.kevin)
         self.zen.ncopy.connect(self.ncopy)
+        self.zen.nzip.connect(self.nzip)
+        self.zen.nunzip.connect(self.nunzip)
         self.zen.quit.connect(self.quit)
         self.zen.preview.connect(self.preview)
         self.zen.segundo.connect(self.segundo)

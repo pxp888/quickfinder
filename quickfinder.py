@@ -87,6 +87,8 @@ class primo(QWidget):
         self.view.npath.connect(self.setPath)
         self.view.ncopy.connect(self.move.copy)
         self.view.nmove.connect(self.move.move)
+        self.view.nzip.connect(self.move.zipFunc)
+        self.view.nunzip.connect(self.move.unzipFunc)
         self.view.quit.connect(self.quit)
         self.view.home.connect(self.top.clear)
         self.view.preview.connect(self.prev.preview)
@@ -217,7 +219,7 @@ if __name__ == "__main__":
         def __init__(self, parent=None):
             super(mainwin, self).__init__(parent)
 
-            self.setWindowTitle('Quick Finder 1.3.9b')
+            self.setWindowTitle('Quick Finder 1.3.10')
             frame = QFrame()
             self.setCentralWidget(frame)
             layout = QGridLayout()

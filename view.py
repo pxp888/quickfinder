@@ -935,6 +935,7 @@ class iconview(QWidget):
         self.view.noNameAction.triggered.connect(self.noNameFunc)
         self.view.noPathAction.triggered.connect(self.noPathFunc)
         self.view.addHomePathAction.triggered.connect(self.addHomePathFunc)
+        self.view.deleteAction.triggered.connect(self.zen.deleteFiles)
 
         self.homepage = homepage.homeClass(self.core)
         self.homepage.npath.connect(self.npath)

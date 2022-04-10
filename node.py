@@ -8,7 +8,6 @@ import shutil
 from PIL import Image, ImageOps
 import hashlib
 import base64
-from appdata import AppDataPaths
 import zipfile 
 
 from fuzzywuzzy import fuzz
@@ -277,9 +276,8 @@ def thumbnail(detail):
 def clearold(detail):
     maxsize = detail
 
-    paths = AppDataPaths('quickfinder1')
-    paths.setup()
-    thumbroot = paths.logs_path
+    thpath = os.path.join(os.path.expanduser("~"),'quickfinder')
+    thumbroot = os.path.join(thpath, 'thumbnails')
     path = thumbroot
     
     if not os.path.exists(path): return 
@@ -360,7 +358,7 @@ class coreClass():
             self.pros.append(t)
             t.start()
 
-        self.qin.put(  (6, ( 1000*(2**20) )  )  )  ### Trim thumbnail cache down to size
+        self.qin.put(  (6, ( 700*(2**20) )  )  )  ### Trim thumbnail cache down to size
 
     def addHomePath(self, path):
         self.homepaths.append(path)

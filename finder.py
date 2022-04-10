@@ -11,7 +11,6 @@ from queue import Queue
 import threading
 import resources
 from PIL import Image
-from appdata import AppDataPaths
 
 import node
 import setter

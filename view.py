@@ -11,7 +11,6 @@ from queue import SimpleQueue
 import threading
 import resources
 from PIL import Image, ImageOps
-from appdata import AppDataPaths
 import base64
 import hashlib
 import shutil 
@@ -84,10 +83,9 @@ class thumbmaker(QObject):
         # self.pro = mp.Process(target=thumbnailpro, args=(self.qin, self.qoo),daemon=True)
         # self.pro.start()
 
-        paths = AppDataPaths('quickfinder1')
-        paths.setup()
-        self.thumbroot = paths.logs_path
-        # self.qin.put((6,(self.thumbroot, 10000)))
+        thpath = os.path.join(os.path.expanduser("~"),'quickfinder')
+        self.thumbroot = os.path.join(thpath, 'thumbnails')
+        if not os.path.exists(self.thumbroot): os.mkdir(self.thumbroot)
 
     def cleanup(self):
         pass 

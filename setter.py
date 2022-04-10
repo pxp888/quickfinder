@@ -3,7 +3,6 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 
 import pickle
-from appdata import AppDataPaths
 
 import resources
 from node import *
@@ -34,6 +33,9 @@ darkPalette.setColor(QPalette.HighlightedText, Qt.white);
 darkPalette.setColor(QPalette.Disabled, QPalette.HighlightedText, QColor(127, 127, 127));
 
 
+######################################################################################################
+
+
 class iconMaker():
     def __init__(self):
         self.foldermap = QPixmap(':/icons/folder.png')
@@ -62,26 +64,33 @@ class iconMaker():
         return QIcon(self.pic(name,dir))
 
 
+######################################################################################################
+
+
 class setter():
     def __init__(self, name):
-        self.paths = AppDataPaths(name)
-        self.paths.setup()
-        try:
-            with open(self.paths.config_path, 'rb') as fin:
-                self.data = pickle.load(fin)
-        except:
-            self.data = {}
-
-    def get(self, key, default=None):
-        if key in self.data:
-            return self.data[key]
-        else:
-            return default
+        path = os.path.join(os.path.expanduser("~"),'quickfinder')
+        if not os.path.exists(path): os.mkdir(path)
+        self.path = path 
 
     def set(self, key, val):
-        self.data[key] = val
-        with open(self.paths.config_path, 'wb') as foo:
-            pickle.dump(self.data, foo)
+        kpath = os.path.join(self.path, key)
+        with open(kpath, 'wb') as foo:
+            pickle.dump(val, foo)
+
+    def get(self, key, default=None):
+        kpath = os.path.join(self.path, key)
+        try:
+            with open(kpath, 'rb') as foo:
+                val = pickle.load(foo)
+            return val 
+        except:
+            return default
+
+
+######################################################################################################
+
+
 
 
 class listthing(QWidget):

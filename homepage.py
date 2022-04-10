@@ -12,7 +12,6 @@ from queue import SimpleQueue
 import threading
 import resources
 from PIL import Image, ImageOps
-from appdata import AppDataPaths
 
 import node
 import setter

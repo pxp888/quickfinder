@@ -541,6 +541,7 @@ class mscene(QGraphicsScene):
         if x==16777219: self.back()
         if x==16777265: self.rename()
         if x==16777223: self.deleteFiles()
+        if x==16777268: self.checkagain()
 
         if self.ctrlkey:
             if x==65: self.selectAll()
@@ -936,6 +937,9 @@ class mscene(QGraphicsScene):
         msg.setEscapeButton(QMessageBox.Ok)
         retval = msg.exec_()
 
+    def checkagain(self):
+        self.core.scan()
+        self.refresh()
 
 
 

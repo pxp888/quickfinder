@@ -887,13 +887,13 @@ class mscene(QGraphicsScene):
 
     def md5Func(self):
         n = self.selected()
-        if not len(n)==1: return 
+        if not len(n)==1: return
         try:
             with open(n[0],'rb') as fin:
                 h = hashlib.md5(fin.read()).hexdigest()
         except:
             msg = QMessageBox()
-            # msg.setIcon(QMessageBox.Information)
+            msg.setIcon(QMessageBox.Information)
             msg.setText('Hash Failed for :'+n[0])
             # msg.setInformativeText(str(i))
             # msg.setWindowTitle('MD5 Hash : ' + n[0])
@@ -903,7 +903,7 @@ class mscene(QGraphicsScene):
             return 
         msg = QMessageBox()
         msg.setFont(QFont("Arial",14))
-        # msg.setIcon(QMessageBox.Information)
+        msg.setIcon(QMessageBox.Information)
         msg.setText(str(h))
         # msg.setInformativeText(str(i))
         msg.setWindowTitle('MD5 Hash : ' + n[0])

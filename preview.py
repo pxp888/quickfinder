@@ -79,19 +79,13 @@ class prevpane(QScrollArea):
             if len(paths)==1:
                 path = paths[0]
                 ext = path.split('.')[-1].lower()
-                if ext in txtfiles:
-                    self.showtext(path)
-                    return
-                if ext in images:
-                    self.showimage(path)
-                    return
-                if ext in zipfiles:
-                    self.showzip(path)
-                    return
-                if ext in mkdownfiles:
-                    self.showmarkdown(path)
-                    return
-            if len(paths)>1: 
+                self.clear()
+                if ext in txtfiles: self.showtext(path)
+                if ext in images: self.showimage(path)
+                if ext in zipfiles: self.showzip(path)
+                if ext in mkdownfiles: self.showmarkdown(path)
+                return
+            if len(paths)>1:
                 self.showmany(paths)
                 return 
             
@@ -101,17 +95,16 @@ class prevpane(QScrollArea):
 
     def clear(self):
         self.text.hide()
+        self.text.clear()
         self.label1.hide()
         self.extractbutton.hide()
         self.zipbutton.hide()
         self.zipname.hide()
 
     def showtext(self, path):
-        self.label1.hide()
+        self.clear()
         self.text.show()
-        self.extractbutton.hide()
-        self.zipbutton.hide()
-        self.zipname.hide()
+        self.text.show()
         try:
             fin = open(path,'r')
             self.text.setPlainText(fin.read(10000))
@@ -120,11 +113,9 @@ class prevpane(QScrollArea):
             pass
 
     def showmarkdown(self, path):
-        self.label1.hide()
+        self.clear()
         self.text.show()
-        self.extractbutton.hide()
-        self.zipbutton.hide()
-        self.zipname.hide()
+        self.text.show()
         try:
             fin = open(path,'r')
             self.text.setMarkdown(fin.read(10000))
@@ -133,11 +124,8 @@ class prevpane(QScrollArea):
             pass        
 
     def showimage(self,path):
+        self.clear()
         self.label1.show()
-        self.text.hide()
-        self.extractbutton.hide()
-        self.zipbutton.hide()
-        self.zipname.hide()
 
         im = Image.open(path)
         im = ImageOps.exif_transpose(im)
@@ -158,11 +146,9 @@ class prevpane(QScrollArea):
         self.label1.setPixmap(pic)
 
     def showzip(self, path):
-        self.label1.hide()
+        self.clear()
         self.text.show()
         self.extractbutton.show()
-        self.zipbutton.hide()
-        self.zipname.hide()
 
         t = ''
         with zipfile.ZipFile(path, 'r') as zipper:
@@ -179,9 +165,8 @@ class prevpane(QScrollArea):
 
 
     def showmany(self, paths):
-        self.label1.hide()
+        self.clear()
         self.text.show()
-        self.extractbutton.hide()
         self.zipbutton.show()
         self.zipname.show()
 

@@ -265,17 +265,23 @@ class mview(QGraphicsView):
         self.noPathAction = QAction("Ignore Path",self)
         self.addHomePathAction = QAction("Add Index Path",self)
         self.newFolderAction = QAction("Create new Folder",self)
+        self.md5Action = QAction("MD5 Hash", self)
+        self.sha256Action = QAction("SHA256 Hash", self)
 
         self.setAlignment(Qt.AlignTop | Qt.AlignLeft)
 
     def contextMenuEvent(self, event):
-        if self.scene().selected():
+        sel = self.scene().selected()
+        if sel:
             menu = QMenu(self)
             menu.addAction(self.copyAction)
             menu.addAction(self.pasteAction)
             menu.addAction(self.renameAction)
             menu.addAction(self.zipAction)
-            menu.addAction(self.unzipAction)
+            if len(sel)==1: 
+                menu.addAction(self.unzipAction)
+                menu.addAction(self.md5Action)
+                menu.addAction(self.sha256Action)
             menu.addAction(self.newFolderAction)
             menu.addAction(self.deleteAction)
             menu.addSeparator()
@@ -813,7 +819,7 @@ class mscene(QGraphicsScene):
         cur = self.selected()
         if not cur: return 
         msg = QMessageBox()
-        msg.setIcon(QMessageBox.Information)
+        msg.setIcon(QMessageBox.Warning)
         msg.setText("Are you sure?")
         msg.setInformativeText("This cannot be undone.")
         msg.setWindowTitle("Confirm Delete")
@@ -877,6 +883,60 @@ class mscene(QGraphicsScene):
             self.reflow()
             return
 
+    def md5Func(self):
+        n = self.selected()
+        if not len(n)==1: return 
+        try:
+            with open(n[0],'rb') as fin:
+                h = hashlib.md5(fin.read()).hexdigest()
+        except:
+            msg = QMessageBox()
+            # msg.setIcon(QMessageBox.Information)
+            msg.setText('Hash Failed for :'+n[0])
+            # msg.setInformativeText(str(i))
+            # msg.setWindowTitle('MD5 Hash : ' + n[0])
+            msg.setStandardButtons(QMessageBox.Ok)
+            msg.setEscapeButton(QMessageBox.Ok)
+            retval = msg.exec_()
+            return 
+        msg = QMessageBox()
+        msg.setFont(QFont("Arial",14))
+        # msg.setIcon(QMessageBox.Information)
+        msg.setText(str(h))
+        # msg.setInformativeText(str(i))
+        msg.setWindowTitle('MD5 Hash : ' + n[0])
+        msg.setStandardButtons(QMessageBox.Ok)
+        msg.setEscapeButton(QMessageBox.Ok)
+        retval = msg.exec_()
+
+    def sha256Func(self):
+        n = self.selected()
+        if not len(n)==1: return 
+        try:
+            with open(n[0],'rb') as fin:
+                h = hashlib.sha256(fin.read()).hexdigest()
+        except:
+            msg = QMessageBox()
+            # msg.setIcon(QMessageBox.Information)
+            msg.setText('Hash Failed for :'+n[0])
+            # msg.setInformativeText(str(i))
+            # msg.setWindowTitle('MD5 Hash : ' + n[0])
+            msg.setStandardButtons(QMessageBox.Ok)
+            msg.setEscapeButton(QMessageBox.Ok)
+            retval = msg.exec_()
+            return 
+        msg = QMessageBox()
+        msg.setFont(QFont("Arial",14))
+        # msg.setIcon(QMessageBox.Information)
+        msg.setText(str(h))
+        # msg.setInformativeText(str(i))
+        msg.setWindowTitle('SHA256 Hash : ' + n[0])
+        msg.setStandardButtons(QMessageBox.Ok)
+        msg.setEscapeButton(QMessageBox.Ok)
+        retval = msg.exec_()
+
+
+
 
 ######################################################################################################################################################
 
@@ -936,6 +996,8 @@ class iconview(QWidget):
         self.view.noPathAction.triggered.connect(self.noPathFunc)
         self.view.addHomePathAction.triggered.connect(self.addHomePathFunc)
         self.view.deleteAction.triggered.connect(self.zen.deleteFiles)
+        self.view.md5Action.triggered.connect(self.zen.md5Func)
+        self.view.sha256Action.triggered.connect(self.zen.sha256Func)
 
         self.homepage = homepage.homeClass(self.core)
         self.homepage.npath.connect(self.npath)

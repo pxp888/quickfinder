@@ -279,7 +279,8 @@ class mview(QGraphicsView):
             menu.addAction(self.renameAction)
             menu.addAction(self.zipAction)
             if len(sel)==1: 
-                menu.addAction(self.unzipAction)
+                if sel[0][-3:]=='zip':
+                    menu.addAction(self.unzipAction)
                 menu.addAction(self.md5Action)
                 menu.addAction(self.sha256Action)
             menu.addAction(self.newFolderAction)

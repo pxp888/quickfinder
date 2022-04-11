@@ -85,9 +85,12 @@ def copmove(qin, lock, jobs):
 
         if job==4:
             src = detail
-            for s in src:
-                with zipfile.ZipFile(s, 'r') as zipper:
-                    zipper.extractall(os.path.splitext(s)[0])
+            try:
+                for s in src:
+                    with zipfile.ZipFile(s, 'r') as zipper:
+                        zipper.extractall(os.path.splitext(s)[0])
+            except:
+                print('unzip failed : ',s)                
             lock.acquire()
             jobs[0] -=1
             lock.release()

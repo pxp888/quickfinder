@@ -182,8 +182,8 @@ class setwin(QDialog):
         layout.addWidget(self.namelist,1,2)
         layout.addWidget(self.pathlist,1,3)
         layout.addWidget(self.indexlist,1,4)
-        layout.addWidget(explain1,0,0)
-        layout.addWidget(self.helper,2,0,1,2)
+        layout.addWidget(explain1,2,0)
+        layout.addWidget(self.helper,3,2,1,2)
         # layout.addWidget(self.dark,2,3)
 
         self.leftlist.data = self.core.ff.left

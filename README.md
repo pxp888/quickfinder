@@ -12,6 +12,7 @@ There are also some other features:
 * Instantly open explorer windows, command prompt, or WSL terminals at the location you are browsing.  
 * Very simple bulk renaming.  
 * ZIP functionality built in.  
+* MD5 and SHA256 checksums
 
 ```mermaid
 flowchart LR

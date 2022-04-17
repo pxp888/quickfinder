@@ -37,7 +37,7 @@ Z --> C
 ## How to install?  
 Just extract the zip file into a folder and put it where you like.  It does create a data folder in your User folder called **"quickfinder"** but otherwise it doesn't interfere with the operating system.  
 
-Download here : [**quickfinder.zip**](https://github.com/pxp888/quickfinder/releases/download/v1.4.5/quickfinder.zip)
+Download here : [**quickfinder.zip**](https://github.com/pxp888/quickfinder/releases/download/v1.4.6/quickfinder.zip)
 
 ## Size Searching
 The size sort feature doesn't just look at files in the current directory, it looks all the way down the file system and show the size of each directory in full.  

@@ -699,6 +699,8 @@ class mscene(QGraphicsScene):
         mimedata.setUrls(urls)
         drag = QDrag(self)
         drag.setMimeData(mimedata)
+        
+        drag.setPixmap(self.its[cur[0]].pic.scaledToWidth(80))
         drag.exec(Qt.MoveAction | Qt.CopyAction)
 
     def entered(self):

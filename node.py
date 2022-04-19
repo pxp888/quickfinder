@@ -14,7 +14,6 @@ from fuzzywuzzy import fuzz
 import setter
 import btree
 
-
 def chain(path):
     out = []
     while 1:

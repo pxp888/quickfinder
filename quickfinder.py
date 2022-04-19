@@ -9,6 +9,8 @@ import pickle
 import threading
 import multiprocessing
 import subprocess
+import urllib.request
+
 
 import node
 import setter
@@ -17,6 +19,20 @@ import view
 import mover 
 import homepage
 import preview 
+
+
+class vchecker(QThread):
+    version = pyqtSignal(object)
+    def run(self):
+        try:
+            url = 'https://pxp-globals.s3.ap-southeast-1.amazonaws.com/quickfinderversion.txt'
+            v = urllib.request.urlopen(url).read().decode('utf-8')
+            if v[-1]=='\n': v = v[:-1]
+            self.version.emit(v)
+        except:
+            print('version check failed')
+            return
+
 
 class blabel(QWidget):
     clicked = pyqtSignal()
@@ -54,7 +70,6 @@ class blabel(QWidget):
         self.label.clear()
         self.home.emit()
         super(blabel, self).mousePressEvent(event)
-
 
 
 class primo(QWidget):
@@ -219,7 +234,7 @@ if __name__ == "__main__":
         def __init__(self, parent=None):
             super(mainwin, self).__init__(parent)
 
-            self.setWindowTitle('Quick Finder 1.4.6b')
+            self.setWindowTitle('Quick Finder 1.4.7')
             self.setWindowIcon(QIcon(':/icons/s7.ico'))
             frame = QFrame()
             self.setCentralWidget(frame)
@@ -233,6 +248,29 @@ if __name__ == "__main__":
             layout.addWidget(self.thing)
             self.thing.npath.connect(self.setWindowTitle)
             self.thing.quit.connect(self.close)
+
+            self.upper = vchecker(self)
+            self.upper.version.connect(self.version)
+            self.upper.finished.connect(self.upper.deleteLater)
+            self.upper.start()
+
+        def version(self, v):
+            vset = setter.setter()
+            lastversion = vset.get('aversion','no version')
+            vset.set('aversion',v)
+            if not v==lastversion:
+                msg = QMessageBox()
+                msg.setFont(QFont("Arial",14))
+                msg.setIcon(QMessageBox.Information)
+                msg.setText('Version '+ v + ' is available')
+                msg.setInformativeText('Download at www.quickfinder.info')
+                msg.setWindowTitle('Update available')
+                msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Close)
+                msg.setEscapeButton(QMessageBox.Close)
+                retval = msg.exec_()
+                if retval==1024:
+                    import webbrowser
+                    webbrowser.open('www.quickfinder.info',autoraise=True)
 
     app = QApplication(sys.argv)
     app.setStyle(QStyleFactory.create("Fusion"))

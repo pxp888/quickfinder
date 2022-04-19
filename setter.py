@@ -68,7 +68,7 @@ class iconMaker():
 
 
 class setter():
-    def __init__(self, name):
+    def __init__(self, name=None):
         path = os.path.join(os.path.expanduser("~"),'quickfinder')
         if not os.path.exists(path): os.mkdir(path)
         self.path = path 
@@ -89,8 +89,6 @@ class setter():
 
 
 ######################################################################################################
-
-
 
 
 class listthing(QWidget):
@@ -140,6 +138,19 @@ class listthing(QWidget):
         self.save.emit()
 
 
+class vchecker(QThread):
+    version = pyqtSignal(object)
+    def run(self):
+        import urllib.request
+        try:
+            url = 'https://pxp-globals.s3.ap-southeast-1.amazonaws.com/quickfinderversion.txt'
+            v = urllib.request.urlopen(url).read().decode('utf-8')
+            if v[-1]=='\n': v = v[:-1]
+            self.version.emit(v)
+        except:
+            print('version check failed')
+            return
+
 class setwin(QDialog):
     color = pyqtSignal()
     def __init__(self, core=None, parent=None):
@@ -171,19 +182,26 @@ class setwin(QDialog):
         self.dark.clicked.connect(self.color)
         self.dark.setFocusPolicy(Qt.NoFocus)
 
-
         explain1 = QLabel('Double click list items to remove.')
         explain1.setFont(QFont("Arial",11))
 
         self.helper = QLabel()
         self.sethelper()
 
+        self.sitebut = QPushButton('www.quickfinder.info')
+        self.sitebut.clicked.connect(self.opensite)
+
+        self.updatebut = QPushButton('Check for Updates')
+        self.updatebut.clicked.connect(self.versioncheck)
+
         layout.addWidget(self.leftlist,1,1)
         layout.addWidget(self.namelist,1,2)
         layout.addWidget(self.pathlist,1,3)
         layout.addWidget(self.indexlist,1,4)
         layout.addWidget(explain1,2,0)
-        layout.addWidget(self.helper,3,2,1,2)
+        layout.addWidget(self.sitebut,3,0)
+        layout.addWidget(self.updatebut,4,0)
+        layout.addWidget(self.helper,5,3,1,2)
         # layout.addWidget(self.dark,2,3)
 
         self.leftlist.data = self.core.ff.left
@@ -210,6 +228,41 @@ class setwin(QDialog):
         self.homelist.setPalette(darkPalette)
         self.indexlist.setPalette(darkPalette)
 
+    def versioncheck(self):
+        self.upper = vchecker(self)
+        self.upper.version.connect(self.version)
+        self.upper.finished.connect(self.upper.deleteLater)
+        self.upper.start()
+
+    def version(self, v):
+        if not v=='1.4.7':
+            msg = QMessageBox()
+            msg.setFont(QFont("Arial",14))
+            msg.setIcon(QMessageBox.Information)
+            msg.setText('Version '+ v + ' is available')
+            msg.setInformativeText('Download at www.quickfinder.info')
+            msg.setWindowTitle('Update available')
+            msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Close)
+            msg.setEscapeButton(QMessageBox.Close)
+            retval = msg.exec_()
+            if retval==1024:
+                import webbrowser
+                webbrowser.open('www.quickfinder.info',autoraise=True)
+        else:
+            msg = QMessageBox()
+            msg.setFont(QFont("Arial",14))
+            msg.setIcon(QMessageBox.Information)
+            msg.setText(v + ' is the current version')
+            # msg.setInformativeText('Download at www.quickfinder.info')
+            msg.setWindowTitle('Quickfinder is current')
+            msg.setStandardButtons(QMessageBox.Ok)
+            msg.setEscapeButton(QMessageBox.Ok)
+            retval = msg.exec_()
+
+    def opensite(self):
+        import webbrowser
+        webbrowser.open('www.quickfinder.info',autoraise=True)
+
     def sethelper(self):
         fin = QFile(':/icons/helptext.md')
         fin.open(QIODevice.ReadOnly | QIODevice.Text)
@@ -217,7 +270,6 @@ class setwin(QDialog):
         self.helper.setText(a)
         # self.helper.setSizePolicy(QSizePolicy.Expanding,QSizePolicy.Expanding)
 
-        
     def save(self):
         self.set = setter('quickfinder1')
         self.set.set('ff',self.core.ff)

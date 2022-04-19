@@ -256,7 +256,7 @@ if __name__ == "__main__":
 
         def version(self, v):
             vset = setter.setter()
-            lastversion = vset.get('aversion','no version')
+            lastversion = vset.get('aversion','1.4.7')
             vset.set('aversion',v)
             if not v==lastversion:
                 msg = QMessageBox()
